@@ -12,13 +12,13 @@ router.get("/", async (_, res) => {
   }).catch(error => console.log(error))
 })
 
-router.post("/", async (_, res) => {
-  const getRepo = getRepository(User);
-  getRepo.insert({
-    userName: "Brayn",
-    age: 24
-  });
-  return res.json();
-})
+// router.post("/", async (_, res) => {
+//   const getRepo = getRepository(User);
+//   getRepo.insert({
+//     userName: "Brayn",
+//     age: 24
+//   });
+//   return res.json();
+// })
 
 export { router as userRouter }
