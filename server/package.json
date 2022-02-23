@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "watch": "tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./dist/index.js",
-    "build": "tsc",
     "start": "node ./dist/index.js",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js"
   },
   "keywords": [],
@@ -20,6 +20,10 @@
     "typescript": "3.3.3333"
   },
   "dependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
     "mysql": "^2.14.1",
     "mysql2": "^2.3.3",
     "reflect-metadata": "^0.1.10",
