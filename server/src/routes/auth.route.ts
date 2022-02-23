@@ -46,9 +46,45 @@ router.post("/register/", async (req, res) => {
 })
 
 // ANCHOR Login function
-// router.post("/login", (req, res) => {
-//   const getRepo = getRepository(User);
-
-// })
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const getRepo = getRepository(User);
+    // Find is the enail existed
+    const userCheck = await getRepo.findOne({
+      where: {
+        email: email
+      }
+    })
+    // ANCHOR First filter: Email validation
+    if (userCheck) {
+      const validPassword = await bcrypt.compare(password, userCheck.password)
+      // ANCHOR Second filter : Password validation
+      if (validPassword) {
+        res
+          .status(200)
+          .json({
+            success: true,
+            message: "Valid email and password!"
+          })
+      } else {
+        res.json({
+          success: false,
+          error: {
+            message: 'Wrong password!'
+          }
+        })
+      }
+    } else {
+      res.status(404)
+        .json({
+          message: "User not found!"
+        })
+    }
+  } catch (e) {
+    console.log(e)
+    res.status(500).send("Something is broken!")
+  }
+})
 
 export { router as authRouter }
