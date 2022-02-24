@@ -2,6 +2,8 @@ import express from "express";
 import { getRepository } from "typeorm";
 import { User } from "../entity/User";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+require('dotenv').config();
 
 const router = express.Router()
 
@@ -10,7 +12,6 @@ router.post("/register/", async (req, res) => {
   try {
     const { email, username, password } = req.body;
     const getRepo = getRepository(User);
-
     //ANCHOR Register - Find is the email existed
     const checkEmail = await getRepo.findOne({
       where: {
@@ -42,13 +43,13 @@ router.post("/register/", async (req, res) => {
       } else {
         //ANCHOR Register - Success data insert
         // bcrypt the password
-        const hashPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
         // insert user into database
-        getRepo.insert({
-          email: email,
-          username: username,
-          password: hashPassword,
-        })
+        const newUser = new User();
+        newUser.email = email;
+        newUser.username = username;
+        newUser.password = hashedPassword;
+        getRepo.save(newUser);
         return res
           .status(200)
           .json({
@@ -61,7 +62,7 @@ router.post("/register/", async (req, res) => {
     console.log(e);
     return res
       .status(500)
-      .send("Something is broken!")
+      .send("Register : Something is broken!")
   }
 })
 
@@ -82,11 +83,19 @@ router.post("/login", async (req, res) => {
       // ANCHOR Login - 2 filter : Password validation
       if (validPassword) {
         //ANCHOR Login - Success sending JWT
+        // Create a plaintext payload for the JWT
+        const userInform = {
+          id: userCheck.id,
+          email: userCheck.email,
+          username: userCheck.username
+        }
+        const accessToken = jwt.sign(userInform, process.env.ACCESS_TOKEN_SECRET!);
         res
           .status(200)
           .json({
             success: true,
-            message: "Valid email and password!"
+            message: "Valid email and password!",
+            accessToken: accessToken,
           })
       } else {
         res
@@ -106,7 +115,7 @@ router.post("/login", async (req, res) => {
     }
   } catch (e) {
     console.log(e)
-    res.status(500).send("Something is broken!")
+    res.status(500).send("Login: Something is broken!")
   }
 })
 
