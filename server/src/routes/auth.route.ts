@@ -1,9 +1,9 @@
+require('dotenv').config();
 import express from "express";
 import { getRepository } from "typeorm";
 import { User } from "../entity/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-require('dotenv').config();
 
 const router = express.Router()
 
