@@ -1,9 +1,9 @@
-import userInterface from "../src/const/user.interface"
+import authUserInterface from "../src/constInterface/authUserInterface"
 export { }
 declare global {
   namespace Express {
     interface Request {
-      user?: userInterface;
+      user?: authUserInterface;
     }
   }
 }

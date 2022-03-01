@@ -1,7 +1,7 @@
 require('dotenv').config();
 import express from "express";
 import { getRepository } from "typeorm";
-import { User } from "../entity/User";
+import User from "../entity/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -73,6 +73,7 @@ router.post("/login", async (req, res) => {
     const getRepo = getRepository(User);
     //ANCHOR Login - Find is the enail existed
     const userCheck = await getRepo.findOne({
+      select: ["id", "password"],
       where: {
         email: email
       }
@@ -85,9 +86,7 @@ router.post("/login", async (req, res) => {
         //ANCHOR Login - Success sending JWT
         // Create a plaintext payload for the JWT
         const userInform = {
-          id: userCheck.id,
-          email: userCheck.email,
-          username: userCheck.username
+          id: userCheck.id
         }
         const accessToken = jwt.sign(userInform, process.env.ACCESS_TOKEN_SECRET!);
         res
