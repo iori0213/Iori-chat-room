@@ -1,6 +1,6 @@
 import React from 'react'
 import { Dimensions, Image, ImageBackground, StyleSheet, View } from 'react-native'
-import bgImage from '../../images/Login_Page_Image.jpg';
+import bgImage from '../../assets/images/Login_Page_Image.jpg';
 
 const LoginCard: React.FC = () => {
   return (

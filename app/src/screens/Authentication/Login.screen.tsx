@@ -5,6 +5,7 @@ import { ImageBackground, View, StyleSheet, Text, Dimensions } from "react-nativ
 import BackgroundCard from "../../components/Auth/BackgroundCard"
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import LoginCard from "../../components/Auth/LoginCard";
 
 interface LoginScreenProps {
   navigation: any;
@@ -16,6 +17,7 @@ const LoginScreen: React.FC<LoginScreenProps> = (props) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* <LoginCard></LoginCard> */}
       <BackgroundCard></BackgroundCard>
     </SafeAreaView>
   )
