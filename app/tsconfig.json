@@ -11,6 +11,7 @@
     ],
     "strict": true,
     "esModuleInterop": true,
+    "rootDir": ".",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
