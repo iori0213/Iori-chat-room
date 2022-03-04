@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import 'react-native-gesture-handler';
-import { LogBox, View, Text } from 'react-native';
+import { LogBox } from 'react-native';
 import AuthRouter from './src/routes/AuthRouter';
 
 
