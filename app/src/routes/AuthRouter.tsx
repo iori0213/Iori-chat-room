@@ -6,9 +6,13 @@ import LoginScreen from "../screens/Authentication/Login.screen";
 import RegisterScreen from "../screens/Authentication/Register.screen";
 import HomeScreen from "../screens/Home.screen";
 
+type RootStackParamList = {
+  Login: undefined;
+  Register: undefined;
+  Home: undefined;
+}
 
-
-const stack = createNativeStackNavigator();
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 const AuthRouter: React.FC = () => {
 
@@ -16,11 +20,11 @@ const AuthRouter: React.FC = () => {
   return (
     <NavigationContainer>
       {/* can add  */}
-      <stack.Navigator initialRouteName="Home" screenOptions={{ gestureEnabled: false, headerShown: false }}>
-        <stack.Screen name="Login" component={LoginScreen} />
-        <stack.Screen name="Register" component={RegisterScreen} />
-        <stack.Screen name="Home" component={HomeScreen} />
-      </stack.Navigator>
+      <RootStack.Navigator initialRouteName="Home" screenOptions={{ gestureEnabled: false, headerShown: false }}>
+        <RootStack.Screen name="Login" component={LoginScreen} />
+        <RootStack.Screen name="Register" component={RegisterScreen} />
+        <RootStack.Screen name="Home" component={HomeScreen} />
+      </RootStack.Navigator>
     </NavigationContainer>
   )
 }
