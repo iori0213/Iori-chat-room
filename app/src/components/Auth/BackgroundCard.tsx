@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native'
 import { windowHeight, windowWidth } from '../../constants/cssConst'
-import { Entypo } from "@expo/vector-icons/"
-import { SimpleLineIcons } from '@expo/vector-icons';
+import { Entypo, SimpleLineIcons, Ionicons, Fontisto } from "@expo/vector-icons/"
 
 const BackgroundCard: React.FC = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [passSecure, setPassSecure] = useState(true);
 
   return (
     <View style={styles.backgroundContainer}>
@@ -26,18 +25,32 @@ const BackgroundCard: React.FC = () => {
       {/* Main container */}
       <View style={styles.mainContainer}>
         <View style={styles.inputContainer}>
+          <View style={styles.inputIconContainer}>
+            <Fontisto name="email" size={inputIconSize} color="#FFF" />
+          </View>
           <TextInput
             placeholder='Enter email'
-            placeholderTextColor="#477"
+            placeholderTextColor={placeholderColor}
+
             onChangeText={(val) => setEmail(val)}
+            value={email}
+            // autoCompleteType="email"
             style={styles.input} />
         </View>
         <View style={styles.inputContainer}>
+          <View style={styles.inputIconContainer}>
+            <Fontisto name="locked" size={inputIconSize} color="#FFF" />
+          </View>
           <TextInput
             placeholder='Enter password'
-            placeholderTextColor="#477"
+            placeholderTextColor={placeholderColor}
             onChangeText={(val) => setPassword(val)}
+            value={password}
+            secureTextEntry={passSecure}
             style={styles.passwordInput} />
+          <TouchableOpacity style={styles.eyeIcon} onPress={() => setPassSecure(!passSecure)}>
+            <Ionicons name={(passSecure) ? "eye-off-outline" : "eye-outline"} size={inputIconSize} color="#FFF" />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -82,8 +95,11 @@ const cornerRadius = windowWidth * 0.23;
 const bg_LightColor = "#45c1b9";
 const bg_DarkColor = "#171535";
 const font_color = "#AFF";
-//Bottom icon size
+const placeholderColor = "#477";
+//Size
+const inputIconSize = windowWidth * 0.07;
 const bottomIconSize = windowWidth * 0.07;
+const inputFontSize = windowWidth * 0.04;
 
 const styles = StyleSheet.create({
   backgroundContainer: {
@@ -99,8 +115,8 @@ const styles = StyleSheet.create({
   cuttingTopContainer: {
     flex: 1,
     backgroundColor: bg_DarkColor,
-    // borderBottomRightRadius: cornerRadius,
     borderBottomLeftRadius: cornerRadius,
+    borderTopRightRadius: cornerRadius,
   },
   headerContainer: {
     paddingLeft: windowWidth * 0.07,
@@ -124,12 +140,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: bg_LightColor,
     borderTopRightRadius: cornerRadius,
-    borderTopLeftRadius: cornerRadius,
-    borderBottomRightRadius: cornerRadius,
     borderBottomLeftRadius: cornerRadius,
   },
   inputContainer: {
-    width: windowWidth * 0.8,
+    width: windowWidth * 0.9,
     height: windowHeight * 0.07,
     borderRadius: windowHeight * 0.035,
     backgroundColor: bg_DarkColor,
@@ -137,20 +151,38 @@ const styles = StyleSheet.create({
     marginVertical: windowHeight * 0.03,
     alignItems: "flex-start",
     justifyContent: "center",
+    flexDirection: "row"
+  },
+  inputIconContainer: {
+    width: windowWidth * 0.15,
+    height: windowHeight * 0.07,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingLeft: windowWidth * 0.02
   },
   input: {
-    width: windowWidth * 0.8,
+    width: windowWidth * 0.75,
     height: windowHeight * 0.07,
     borderRadius: windowHeight * 0.035,
-    paddingLeft: windowWidth * 0.05,
     color: font_color,
+    fontSize: inputFontSize,
   },
   passwordInput: {
-    width: windowWidth * 0.8,
+    width: windowWidth * 0.6,
     height: windowHeight * 0.07,
-    borderRadius: windowHeight * 0.035,
-    paddingLeft: windowWidth * 0.05,
+    borderTopLeftRadius: windowHeight * 0.035,
+    borderBottomLeftRadius: windowHeight * 0.035,
     color: font_color,
+    fontSize: inputFontSize,
+  },
+  eyeIcon: {
+    width: windowWidth * 0.15,
+    height: windowHeight * 0.07,
+    alignItems: "center",
+    justifyContent: "center",
+    borderTopRightRadius: cornerRadius,
+    borderBottomRightRadius: cornerRadius,
+
   },
 
   //Bottom container========================================
@@ -168,14 +200,14 @@ const styles = StyleSheet.create({
   authBtnContainer: {
     width: windowWidth,
     height: windowHeight * 0.25,
-    paddingTop: windowHeight * 0.03,
+    paddingTop: windowHeight * 0.02,
     alignItems: "center",
     // justifyContent: "center",
   },
   authBtn: {
     width: windowWidth * 0.6,
     height: windowHeight * 0.07,
-    marginTop: windowHeight * 0.02,
+    marginTop: windowHeight * 0.03,
     borderWidth: 1.5,
     borderColor: bg_LightColor,
     borderRadius: windowHeight * 0.035,
@@ -184,7 +216,7 @@ const styles = StyleSheet.create({
   },
   btnText: {
     fontFamily: "MajorMonoDisplay",
-    fontSize: windowWidth * 0.05,
+    fontSize: windowWidth * 0.08,
     color: "#FFF",
   },
   Oauth2BtnContainer: {
