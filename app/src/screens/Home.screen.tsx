@@ -3,11 +3,11 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { Text } from "react-native";
 
-interface mainScreenProps {
+interface HomeScreenProps {
   navigation: any;
 }
 
-const MainScreen: React.FC<mainScreenProps> = (props) => {
+const HomeScreen: React.FC<HomeScreenProps> = (props) => {
 
   useEffect(() => {
 
@@ -18,4 +18,4 @@ const MainScreen: React.FC<mainScreenProps> = (props) => {
   )
 }
 
-export default MainScreen
+export default HomeScreen

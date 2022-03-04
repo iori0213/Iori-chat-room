@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 //import routes
 import LoginScreen from "../screens/Authentication/Login.screen";
-import MainScreen from "../screens/Main.screen";
+import HomeScreen from "../screens/Home.screen";
 
 const stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -12,11 +12,11 @@ const Drawer = createDrawerNavigator();
 const AppRouter: React.FC = () => {
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Main">
-        <Drawer.Screen name="Main" component={MainScreen} />
+      <Drawer.Navigator initialRouteName="Home">
+        <Drawer.Screen name="Home" component={HomeScreen} />
       </Drawer.Navigator>
       <stack.Navigator screenOptions={{ gestureEnabled: false, headerShown: false }}>
-        <stack.Screen name="Main" component={MainScreen} />
+        <stack.Screen name="Home" component={HomeScreen} />
         <stack.Screen name="Login" component={LoginScreen} />
       </stack.Navigator>
     </NavigationContainer>
