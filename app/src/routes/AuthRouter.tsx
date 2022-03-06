@@ -20,7 +20,7 @@ const AuthRouter: React.FC = () => {
   return (
     <NavigationContainer>
       {/* can add  */}
-      <RootStack.Navigator initialRouteName="Home" screenOptions={{ gestureEnabled: false, headerShown: false }}>
+      <RootStack.Navigator initialRouteName="Register" screenOptions={{ gestureEnabled: false, headerShown: false }}>
         <RootStack.Screen name="Login" component={LoginScreen} />
         <RootStack.Screen name="Register" component={RegisterScreen} />
         <RootStack.Screen name="Home" component={HomeScreen} />

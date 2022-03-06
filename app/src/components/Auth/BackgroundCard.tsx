@@ -1,7 +1,18 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native'
-import { windowHeight, windowWidth } from '../../constants/cssConst'
 import { Entypo, SimpleLineIcons, Ionicons, Fontisto } from "@expo/vector-icons/"
+import {
+  windowHeight,
+  windowWidth,
+  cornerRadius,
+  bg_LightColor,
+  bg_DarkColor,
+  font_color,
+  placeholderColor,
+  inputFontSize,
+  inputIconSize,
+  bottomIconSize
+} from '../../constants/cssConst'
 
 const BackgroundCard: React.FC = () => {
 
@@ -16,8 +27,8 @@ const BackgroundCard: React.FC = () => {
       <View style={styles.topContainer}>
         <View style={styles.cuttingTopContainer}>
           <View style={styles.headerContainer}>
-            <Entypo name='chat' size={windowWidth * 0.22} color={bg_LightColor} style={styles.iconContainer} />
-            <Text style={styles.welcomeContainer}>WELCOME BACK</Text>
+            <Entypo name='chat' size={windowWidth * 0.25} color={bg_LightColor} style={styles.iconContainer} />
+            <Text style={styles.welcomeContainer}>WelcoMe bacK</Text>
           </View>
         </View>
       </View>
@@ -31,10 +42,7 @@ const BackgroundCard: React.FC = () => {
           <TextInput
             placeholder='Enter email'
             placeholderTextColor={placeholderColor}
-
             onChangeText={(val) => setEmail(val)}
-            value={email}
-            // autoCompleteType="email"
             style={styles.input} />
         </View>
         <View style={styles.inputContainer}>
@@ -45,7 +53,6 @@ const BackgroundCard: React.FC = () => {
             placeholder='Enter password'
             placeholderTextColor={placeholderColor}
             onChangeText={(val) => setPassword(val)}
-            value={password}
             secureTextEntry={passSecure}
             style={styles.passwordInput} />
           <TouchableOpacity style={styles.eyeIcon} onPress={() => setPassSecure(!passSecure)}>
@@ -89,17 +96,17 @@ export default BackgroundCard
 
 
 //Css Constants==========================================
-//Radius
-const cornerRadius = windowWidth * 0.23;
-//Colors
-const bg_LightColor = "#45c1b9";
-const bg_DarkColor = "#171535";
-const font_color = "#AFF";
-const placeholderColor = "#477";
-//Size
-const inputIconSize = windowWidth * 0.07;
-const bottomIconSize = windowWidth * 0.07;
-const inputFontSize = windowWidth * 0.04;
+// //Radius
+// const cornerRadius = windowWidth * 0.23;
+// //Colors
+// const bg_LightColor = "#45c1b9";
+// const bg_DarkColor = "#171535";
+// const font_color = "#AFF";
+// const placeholderColor = "#477";
+// //Size
+// const inputIconSize = windowWidth * 0.07;
+// const bottomIconSize = windowWidth * 0.07;
+// const inputFontSize = windowWidth * 0.04;
 
 const styles = StyleSheet.create({
   backgroundContainer: {
@@ -111,6 +118,8 @@ const styles = StyleSheet.create({
     width: windowWidth,
     height: windowHeight * 0.2,
     backgroundColor: bg_LightColor,
+    borderWidth: 0,
+    borderColor: "yellow",
   },
   cuttingTopContainer: {
     flex: 1,
@@ -119,7 +128,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: cornerRadius,
   },
   headerContainer: {
-    paddingLeft: windowWidth * 0.07,
+    paddingLeft: windowWidth * 0.1,
     paddingTop: windowHeight * 0.027,
     flexDirection: "row",
   },
@@ -127,10 +136,11 @@ const styles = StyleSheet.create({
 
   },
   welcomeContainer: {
-    paddingTop: windowHeight * 0.08,
+    marginLeft: windowWidth * -0.15,
+    paddingTop: windowHeight * 0.1,
     color: "#FFF",
     fontFamily: "MajorMonoDisplay",
-    fontSize: windowWidth * 0.07,
+    fontSize: windowWidth * 0.085,
   },
   //Main container========================================
   mainContainer: {
@@ -182,7 +192,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderTopRightRadius: cornerRadius,
     borderBottomRightRadius: cornerRadius,
-
   },
 
   //Bottom container========================================
@@ -215,7 +224,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   btnText: {
-    fontFamily: "MajorMonoDisplay",
+    fontFamily: "Roboto_Thin",
     fontSize: windowWidth * 0.08,
     color: "#FFF",
   },
@@ -225,6 +234,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
+    paddingBottom: windowHeight * 0.05,
   },
   Oauth2Btn: {
     marginHorizontal: windowWidth * 0.09,
