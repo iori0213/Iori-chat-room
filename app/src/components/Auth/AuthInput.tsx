@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
 import * as Icon from "@expo/vector-icons"
-import { windowWidth, windowHeight, bg_DarkColor, font_color, inputFontSize, inputIconSize, cornerRadius } from '../../constants/cssConst';
+import { Dimensions } from 'react-native';
+
 type AuthInputProps = {
   InputIcon: React.ReactNode;
   SetInput: (val: string) => void;
@@ -12,8 +13,8 @@ type AuthInputProps = {
 }
 
 const AuthInput: React.FC<AuthInputProps> = ({ InputIcon, SetInput, PlaceHolder, PlaceHolderColor, PasswordMode }) => {
-  const [passSecure, setPassSecure] = useState(false);
-
+  //State of the TextInput secureTextEntry
+  const [passInputSecure, setPassInputSecure] = useState(true);
   return (
     <View style={styles.inputContainer}>
       <View style={styles.inputIconContainer}>
@@ -24,49 +25,65 @@ const AuthInput: React.FC<AuthInputProps> = ({ InputIcon, SetInput, PlaceHolder,
         placeholder={PlaceHolder}
         placeholderTextColor={PlaceHolderColor}
         style={styles.input}
-        secureTextEntry={(PasswordMode) ? passSecure : false}
+        secureTextEntry={(PasswordMode) ? passInputSecure : false}
+        autoCapitalize="none"
       />
-      {(PasswordMode) ? <TouchableOpacity style={styles.eyeIcon} onPress={() => setPassSecure(!passSecure)}>
-        <Icon.Ionicons name={(passSecure) ? "eye-off-outline" : "eye-outline"} size={inputIconSize} color="#FFF" />
-      </TouchableOpacity> : <></>}
+      {(PasswordMode) ?
+        <TouchableOpacity style={styles.eyeIcon} onPress={() => setPassInputSecure(!passInputSecure)}>
+          <Icon.Ionicons name={(passInputSecure) ? "eye-off-outline" : "eye-outline"} size={inputIconSize} color="#FFF" />
+        </TouchableOpacity > : null}
     </View>
   );
 }
 export default AuthInput;
 
+//getting the window width and height
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
+//input layout params
+const inputWidth = windowWidth * 0.85;
+const inputHeight = windowHeight * 0.07;
+const inputRadius = windowWidth * 0.025;
+//fonts and icons size
+const inputFontSize = windowWidth * 0.04;
+const inputIconSize = windowWidth * 0.07;
+//color
+const inputBackgroundColor = "#171535";
+const inputBorderColor = "#45c1b9";
+
 const styles = StyleSheet.create({
   inputContainer: {
-    width: windowWidth * 0.9,
-    height: windowHeight * 0.07,
-    borderRadius: windowHeight * 0.035,
-    backgroundColor: "#533",
+    width: inputWidth,
+    height: inputHeight,
+    borderRadius: inputRadius,
+    backgroundColor: inputBackgroundColor,
     opacity: 0.9,
-    marginVertical: windowHeight * 0.03,
+    marginVertical: inputHeight / 3,
     alignItems: "flex-start",
     justifyContent: "center",
-    flexDirection: "row"
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: inputBorderColor,
   },
   inputIconContainer: {
-    width: windowWidth * 0.15,
-    height: windowHeight * 0.07,
+    width: inputWidth / 6,
+    height: inputHeight,
     alignItems: "center",
     justifyContent: "center",
-    paddingLeft: windowWidth * 0.02
   },
   input: {
     flex: 1,
-    height: windowHeight * 0.07,
-    borderRadius: windowHeight * 0.035,
-    color: font_color,
+    height: inputHeight,
+    borderRadius: inputRadius,
+    color: "#FFF",
     fontSize: inputFontSize,
   },
   eyeIcon: {
-    width: windowWidth * 0.15,
-    height: windowHeight * 0.07,
+    width: inputWidth / 6,
+    height: inputHeight,
     alignItems: "center",
     justifyContent: "center",
-    borderTopRightRadius: cornerRadius,
-    borderBottomRightRadius: cornerRadius,
+    borderTopRightRadius: inputRadius,
+    borderBottomRightRadius: inputRadius,
   },
-
 })
