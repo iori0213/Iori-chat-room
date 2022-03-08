@@ -5,14 +5,13 @@ import { Dimensions } from 'react-native';
 
 type AuthInputProps = {
   InputIcon: React.ReactNode;
-  SetInput: (val: string) => void;
+  SetInputState: (val: string) => void;
   PlaceHolder: string;
-  PlaceHolderColor: string;
   //PasswordMode switch
   PasswordMode: boolean;
 }
 
-const AuthInput: React.FC<AuthInputProps> = ({ InputIcon, SetInput, PlaceHolder, PlaceHolderColor, PasswordMode }) => {
+const AuthInput: React.FC<AuthInputProps> = ({ InputIcon, SetInputState: SetInput, PlaceHolder, PasswordMode }) => {
   //State of the TextInput secureTextEntry
   const [passInputSecure, setPassInputSecure] = useState(true);
   return (
@@ -23,7 +22,7 @@ const AuthInput: React.FC<AuthInputProps> = ({ InputIcon, SetInput, PlaceHolder,
       <TextInput
         onChangeText={(val) => SetInput(val)}
         placeholder={PlaceHolder}
-        placeholderTextColor={PlaceHolderColor}
+        placeholderTextColor={placeholderColor}
         style={styles.input}
         secureTextEntry={(PasswordMode) ? passInputSecure : false}
         autoCapitalize="none"
@@ -50,6 +49,7 @@ const inputIconSize = windowWidth * 0.07;
 //color
 const inputBackgroundColor = "#171535";
 const inputBorderColor = "#45c1b9";
+const placeholderColor = "#477";
 
 const styles = StyleSheet.create({
   inputContainer: {
