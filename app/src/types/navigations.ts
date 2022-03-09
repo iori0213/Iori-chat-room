@@ -1,21 +1,18 @@
-export type AuthScreenNavigationProp = {
+export type AuthParamList = {
+  //navigation
+  HomeNavigation: undefined;
+  //screens
   LoginScreen: undefined;
   RegisterScreen: undefined;
   ChatroomsScreen: undefined;
-  HomeTab: undefined;
 }
 
 export type AppParamList = {
-  HomeScreen: undefined;
-  ChatroomsScreen: undefined;
-  UserInfoScreen: undefined;
-}
-
-export type RootStackParamList = {
-  LoginScreen: undefined;
-  RegisterScreen: undefined;
-  HomeScreen: undefined;
-  ChatroomsScreen: undefined;
-  UserInfoScreen: undefined;
+  //navigation
+  AuthNavigation: undefined;
   HomeTab: undefined;
-}; 
+  //
+  ChatroomsScreen: undefined;
+  ProfileScreen: undefined;
+  HomeScreen: undefined;
+}

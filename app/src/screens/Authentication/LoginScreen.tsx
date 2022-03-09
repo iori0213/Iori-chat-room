@@ -8,17 +8,18 @@ import AuthInput from "../../components/Auth/AuthInput";
 //navigation
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-import { AuthScreenNavigationProp } from "../../types/navigations"
+import { AuthParamList } from "../../types/navigations"
 //css const
 import { bg_DarkColor, bg_LightColor, bottomIconSize, cornerRadius, windowHeight, windowWidth } from "../../constants/cssConst";
 //import vector icons
 import { Entypo, SimpleLineIcons, Fontisto } from "@expo/vector-icons/"
+import { LoginScreenProps } from "../../types/screenProps";
 
 
 
-const LoginScreen: React.FC<AuthScreenNavigationProp> = () => {
+const LoginScreen: React.FC<LoginScreenProps> = () => {
   //useNavigation injecting types
-  const navigation = useNavigation<NativeStackNavigationProp<AuthScreenNavigationProp>>();
+  const navigation = useNavigation<NativeStackNavigationProp<AuthParamList>>();
   //useState
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,7 +54,7 @@ const LoginScreen: React.FC<AuthScreenNavigationProp> = () => {
         <View style={styles.cuttingBottomContainer}>
           {/* Auth container */}
           <View style={styles.authBtnContainer}>
-            <TouchableOpacity style={styles.authBtn} onPress={() => navigation.navigate("HomeTab")}>
+            <TouchableOpacity style={styles.authBtn} onPress={() => navigation.navigate("HomeNavigation")}>
               <Text style={styles.btnText}>LOGIN</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.authBtn} onPress={() => navigation.navigate("RegisterScreen")}>
