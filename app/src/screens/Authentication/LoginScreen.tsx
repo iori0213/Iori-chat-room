@@ -53,7 +53,7 @@ const LoginScreen: React.FC<AuthScreenNavigationProp> = () => {
         <View style={styles.cuttingBottomContainer}>
           {/* Auth container */}
           <View style={styles.authBtnContainer}>
-            <TouchableOpacity style={styles.authBtn} onPress={() => navigation.navigate("ChatroomsScreen")}>
+            <TouchableOpacity style={styles.authBtn} onPress={() => navigation.navigate("HomeTab")}>
               <Text style={styles.btnText}>LOGIN</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.authBtn} onPress={() => navigation.navigate("RegisterScreen")}>

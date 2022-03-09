@@ -2,6 +2,7 @@ export type AuthScreenNavigationProp = {
   LoginScreen: undefined;
   RegisterScreen: undefined;
   ChatroomsScreen: undefined;
+  HomeTab: undefined;
 }
 
 export type AppParamList = {
@@ -16,4 +17,5 @@ export type RootStackParamList = {
   HomeScreen: undefined;
   ChatroomsScreen: undefined;
   UserInfoScreen: undefined;
+  HomeTab: undefined;
 }; 

@@ -24,6 +24,7 @@ import {
 import {
   MajorMonoDisplay_400Regular as MajorMonoDisplay
 } from '@expo-google-fonts/major-mono-display'
+import RootRouter from './src/routes/RootRouter';
 
 
 export default function App() {
@@ -43,6 +44,6 @@ export default function App() {
 
   LogBox.ignoreLogs(['Remote debugger']);
   return (
-    <AuthRouter />
+    <RootRouter />
   );
 }

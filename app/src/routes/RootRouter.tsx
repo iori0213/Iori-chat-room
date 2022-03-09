@@ -10,9 +10,9 @@ import ChatroomsScreen from '../screens/User/ChatroomsScreen';
 import UserInfoScreen from '../screens/User/UserInfoScreen';
 import { RootStackParamList, AppParamList } from '../types/navigations';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeTab from './HomeTab';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator<AppParamList>();
 const RootRouter: React.FC = () => {
   return (
     <NavigationContainer>
@@ -21,12 +21,9 @@ const RootRouter: React.FC = () => {
         <RootStack.Screen name='RegisterScreen' component={RegisterScreen} />
         <RootStack.Screen name='ChatroomsScreen' component={ChatroomsScreen} />
         <RootStack.Screen name='UserInfoScreen' component={UserInfoScreen} />
+        <RootStack.Screen name='HomeTab' component={HomeTab} />
         {/* <RootStack.Screen name='HomeScreen' component={HomeScreen} /> */}
       </RootStack.Navigator>
-      <Tab.Navigator>
-        <Tab.Screen name='ChatroomsScreen' component={ChatroomsScreen} />
-        <Tab.Screen name='UserInfoScreen' component={UserInfoScreen} />
-      </Tab.Navigator>
     </NavigationContainer>
   );
 }
