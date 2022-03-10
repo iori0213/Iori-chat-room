@@ -2,13 +2,13 @@ require('dotenv').config();
 import express from "express";
 import { getRepository } from "typeorm";
 import User from "../entity/User";
-import { Authentication } from "../middlewares/Authentication.middleware";
+import { TokenAuthentication } from "../middlewares/TokenAuthentication.middleware";
 
 
 const router = express.Router();
 
 // ANCHOR get all user request
-router.get("/userInfo", Authentication, async (req, res) => {
+router.get("/userInfo", TokenAuthentication, async (req, res) => {
   const getRepo = getRepository(User);
   getRepo.find({
     select: ["id", "email", "username"],

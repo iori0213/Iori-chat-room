@@ -1,9 +1,11 @@
 require("dotenv").config();
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import authUserInterface from "../constInterface/authUserInterface";
+import { accessTokenInterface } from "../constInterface/authUserInterface";
+// import express from "express";
+// import { getRepository } from "typeorm";
 
-export const Authentication = async (
+export const TokenAuthentication = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -48,6 +50,6 @@ export const Authentication = async (
       .status(400)
       .json({ message: "Error : Invalid token!" })
   }
-  req.user = claims as authUserInterface;
+  req.user = claims as accessTokenInterface;
   return next();
 }

@@ -15,4 +15,7 @@ export default class User {
   @Column()
   password: string;
 
+  @Column({ type: "simple-array", nullable: true })
+  refreshToken: string[];
+
 }

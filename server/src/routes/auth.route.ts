@@ -4,6 +4,7 @@ import { getRepository } from "typeorm";
 import User from "../entity/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { refreshTokenInterface } from "../constInterface/authUserInterface"
 
 const router = express.Router()
 
@@ -67,13 +68,13 @@ router.post("/register/", async (req, res) => {
 })
 
 // ANCHOR Login function
-router.post("/login", async (req, res) => {
+router.post("/login/", async (req, res) => {
   try {
     const { email, password } = req.body;
     const getRepo = getRepository(User);
     //ANCHOR Login - Find is the enail existed
     const userCheck = await getRepo.findOne({
-      select: ["id", "password"],
+      select: ["id", "password", "refreshToken"],
       where: {
         email: email
       }
@@ -88,13 +89,21 @@ router.post("/login", async (req, res) => {
         const userInform = {
           id: userCheck.id
         }
-        const accessToken = jwt.sign(userInform, process.env.ACCESS_TOKEN_SECRET!);
+        const accessToken = jwt.sign(userInform, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "5s" });
+        // FIXME I need to be fix!!!!!!!!!!!!
+        const refreshToken = jwt.sign(userInform, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: "5m" });
+        // //add new refreshToken to databse
+        let newRefreshToken: string[] = userCheck.refreshToken;
+        if (!newRefreshToken) { newRefreshToken = [refreshToken] }
+        else { newRefreshToken.push(refreshToken) }
+        await getRepo.update({ refreshToken: newRefreshToken }, { id: userCheck.id })
         res
           .status(200)
           .json({
             success: true,
             message: "Valid email and password!",
             accessToken: accessToken,
+            refreshToken: refreshToken,
           })
       } else {
         res
@@ -115,6 +124,81 @@ router.post("/login", async (req, res) => {
   } catch (e) {
     console.log(e)
     res.status(500).send("Login: Something is broken!")
+  }
+})
+
+router.post("/tokenchecking", async (req, res) => {
+  //check if the req.headers["authorization"] exist
+  if (!req.headers["authorization"]) {
+    return res.
+      status(400)
+      .json({
+        success: false,
+        message: "Error : Missing Authorization Header provided!"
+      })
+  }
+
+  const authHeader: string = req.headers["authorization"];
+  //getting authMethod and accessToken from the authHeader
+  const authMethod: string = authHeader.split(" ")[0]; //authMethod == Bearer
+  const accessToken: string = authHeader.split(" ")[1];
+  const refreshToken: string = authHeader.split(" ")[2];
+
+  //check is the authMethod & accessToken exist and the is method correct
+  if (!authMethod || !accessToken || !refreshToken) {
+    return (res
+      .status(400)
+      .json({
+        success: false,
+        message: "Error : Invalid auth header!"
+      })
+    )
+  } else if (authMethod !== "Bearer") {
+    return (res
+      .status(400)
+      .json({
+        success: false,
+        message: "Error : Invalid auth method!"
+      })
+    )
+  }
+  //verify accessToken
+  const accessTokenVerify = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!);
+  if (!accessTokenVerify) { return res.json({ success: false, message: "Error : Access token invalid" }) }
+  //verify refreshToken
+  const refreshTokenVerify = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!);
+  if (!refreshTokenVerify) { return res.json({ success: false, message: "Error : Refresh token invalid" }) }
+  //take the userId from the refreshToken and check with database
+  const userInfo = refreshTokenVerify as refreshTokenInterface;
+  const getRepo = getRepository(User);
+  const OldRefreshTokens = await getRepo.findOne({
+    select: ["refreshToken"],
+    where: {
+      id: userInfo.id,
+    }
+  })
+  //if refreshTokens do return
+  console.log(userInfo.id);
+  if (!OldRefreshTokens) { return res.json({ success: false, message: "Error : invalid ID!" }) }
+  if (OldRefreshTokens.refreshToken.includes(refreshToken)) {
+
+    //delete old refreshToken
+    let updateTokens = OldRefreshTokens.refreshToken.filter((val) => val != refreshToken)
+    await getRepo.update(
+      { refreshToken: updateTokens },
+      { id: userInfo.id }
+    )
+    //add new refreshToken
+    const newRefreshToken = jwt.sign(userInfo.id, process.env.REFRESH_TOKEN_SECRET!);
+    updateTokens.push(newRefreshToken);
+    await getRepo.update(
+      { refreshToken: updateTokens },
+      { id: userInfo.id }
+    )
+    //return new refreshToken
+    return newRefreshToken;
+  } else {
+    return res.json({ success: false, message: "Error : Token Invalid!" })
   }
 })
 
