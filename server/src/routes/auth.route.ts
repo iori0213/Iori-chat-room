@@ -89,14 +89,20 @@ router.post("/login/", async (req, res) => {
         const userInform = {
           id: userCheck.id
         }
-        const accessToken = jwt.sign(userInform, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "5s" });
-        // FIXME I need to be fix!!!!!!!!!!!!
-        const refreshToken = jwt.sign(userInform, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: "5m" });
+        const accessToken = jwt.sign(userInform, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "30s" });
+        const refreshToken = jwt.sign(userInform, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: "10m" });
         // //add new refreshToken to databse
         let newRefreshToken: string[] = userCheck.refreshToken;
-        if (!newRefreshToken) { newRefreshToken = [refreshToken] }
-        else { newRefreshToken.push(refreshToken) }
-        await getRepo.update({ refreshToken: newRefreshToken }, { id: userCheck.id })
+        if (!newRefreshToken) {
+          newRefreshToken = [refreshToken];
+          await getRepo.save({
+            id: userCheck.id,
+            refreshToken: newRefreshToken,
+          })
+        } else {
+          newRefreshToken.push(refreshToken)
+          await getRepo.update({ refreshToken: newRefreshToken }, { id: userCheck.id })
+        }
         res
           .status(200)
           .json({
@@ -127,7 +133,7 @@ router.post("/login/", async (req, res) => {
   }
 })
 
-router.post("/tokenchecking", async (req, res) => {
+router.post("/token/access", async (req, res) => {
   //check if the req.headers["authorization"] exist
   if (!req.headers["authorization"]) {
     return res.
@@ -139,13 +145,12 @@ router.post("/tokenchecking", async (req, res) => {
   }
 
   const authHeader: string = req.headers["authorization"];
-  //getting authMethod and accessToken from the authHeader
+  // //getting authMethod and accessToken from the authHeader
   const authMethod: string = authHeader.split(" ")[0]; //authMethod == Bearer
   const accessToken: string = authHeader.split(" ")[1];
-  const refreshToken: string = authHeader.split(" ")[2];
 
   //check is the authMethod & accessToken exist and the is method correct
-  if (!authMethod || !accessToken || !refreshToken) {
+  if (!authMethod || !accessToken) {
     return (res
       .status(400)
       .json({
@@ -153,7 +158,8 @@ router.post("/tokenchecking", async (req, res) => {
         message: "Error : Invalid auth header!"
       })
     )
-  } else if (authMethod !== "Bearer") {
+  }
+  else if (authMethod !== "Bearer") {
     return (res
       .status(400)
       .json({
@@ -163,9 +169,53 @@ router.post("/tokenchecking", async (req, res) => {
     )
   }
   //verify accessToken
-  const accessTokenVerify = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!);
-  if (!accessTokenVerify) { return res.json({ success: false, message: "Error : Access token invalid" }) }
-  //verify refreshToken
+  jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!, (err) => {
+    if (err) {
+      return res.json({ success: false, message: "AccessToken is expired!" })
+    }
+    return res.json({ success: true, message: "AccessToken is valid." })
+  });
+  return (res.json({ success: false, message: "this is the bottom, something went wrong!" }))
+})
+
+router.post("/token/refresh", async (req, res) => {
+  //check if the req.headers["authorization"] exist
+  if (!req.headers["authorization"]) {
+    return res.
+      status(400)
+      .json({
+        success: false,
+        message: "Error : Missing Authorization Header provided!"
+      })
+  }
+
+  const authHeader: string = req.headers["authorization"];
+  // //getting authMethod and accessToken from the authHeader
+  const authMethod: string = authHeader.split(" ")[0]; //authMethod == Bearer
+  const refreshToken: string = authHeader.split(" ")[1];
+
+  //check is the authMethod & accessToken exist and the is method correct
+  if (!authMethod || !refreshToken) {
+    return (res
+      .status(400)
+      .json({
+        success: false,
+        message: "Error : Invalid auth header!"
+      })
+    )
+  }
+  else if (authMethod !== "Bearer") {
+    return (res
+      .status(400)
+      .json({
+        success: false,
+        message: "Error : Invalid auth method!"
+      })
+    )
+  }
+
+
+  //verify refreshToken==========================================================
   const refreshTokenVerify = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!);
   if (!refreshTokenVerify) { return res.json({ success: false, message: "Error : Refresh token invalid" }) }
   //take the userId from the refreshToken and check with database
@@ -179,7 +229,7 @@ router.post("/tokenchecking", async (req, res) => {
   })
   //if refreshTokens do return
   console.log(userInfo.id);
-  if (!OldRefreshTokens) { return res.json({ success: false, message: "Error : invalid ID!" }) }
+  if (!OldRefreshTokens) { return res.json({ success: false, message: "Error : Invalid refresh token!" }) }
   if (OldRefreshTokens.refreshToken.includes(refreshToken)) {
 
     //delete old refreshToken
@@ -196,7 +246,11 @@ router.post("/tokenchecking", async (req, res) => {
       { id: userInfo.id }
     )
     //return new refreshToken
-    return newRefreshToken;
+    return res.json({
+      success: true,
+      message: "Valid refresh token.",
+      newRefreshToken: newRefreshToken
+    });
   } else {
     return res.json({ success: false, message: "Error : Token Invalid!" })
   }
