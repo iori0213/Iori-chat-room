@@ -3,6 +3,8 @@ export interface accessTokenInterface {
 }
 
 export interface refreshTokenInterface {
-  id: string
+  id: string,
+  iat: number,
+  exp: number,
 }
 
