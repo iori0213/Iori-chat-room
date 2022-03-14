@@ -16,7 +16,6 @@ const HomeNavigation: React.FC<HomeNavigationProps> = ({ }) => {
     <BottomTab.Navigator initialRouteName='ChatroomsScreen' screenOptions={{ headerShown: false }}>
       <BottomTab.Screen name='ChatroomsScreen' component={ChatroomsScreen} />
       <BottomTab.Screen name='ProfileScreen' component={ProfileScreen} />
-      {/* <BottomTab.Screen name='ProfileNavigation' component={ProfileNavigation} /> */}
     </BottomTab.Navigator>
   );
 }
