@@ -13,6 +13,12 @@ export type AppParamList = {
   HomeTab: undefined;
   //
   ChatroomsScreen: undefined;
+  // ProfileNavigation: undefined;
   ProfileScreen: undefined;
   HomeScreen: undefined;
+}
+
+export type ProfileParamList = {
+  AuthNavigation: undefined;
+  ProfileScreen: undefined;
 }

@@ -14,7 +14,6 @@ const AuthNavigation: React.FC = () => {
       <RootStack.Screen name='LoginScreen' component={LoginScreen} />
       <RootStack.Screen name='RegisterScreen' component={RegisterScreen} />
       <RootStack.Screen name='HomeNavigation' component={HomeNavigation} />
-      {/* <RootStack.Screen name='HomeScreen' component={HomeScreen} /> */}
     </RootStack.Navigator>
   );
 }

@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AuthInput from "../../components/Auth/AuthInput";
 //navigation
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import { AuthParamList } from "../../types/navigations"
 //css const
 import { bg_DarkColor, bg_LightColor, bottomIconSize, cornerRadius, windowHeight, windowWidth } from "../../constants/cssConst";
@@ -54,7 +54,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
         <View style={styles.cuttingBottomContainer}>
           {/* Auth container */}
           <View style={styles.authBtnContainer}>
-            <TouchableOpacity style={styles.authBtn} onPress={() => navigation.navigate("HomeNavigation")}>
+            <TouchableOpacity style={styles.authBtn} onPress={() => navigation.dispatch(CommonActions.reset({ routes: [{ name: "HomeNavigation" }] }))}>
               <Text style={styles.btnText}>LOGIN</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.authBtn} onPress={() => navigation.navigate("RegisterScreen")}>

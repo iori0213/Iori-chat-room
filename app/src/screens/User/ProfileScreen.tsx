@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -31,7 +31,7 @@ const ProfileScreen: React.FC<UserInfoScreenProps> = ({ }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* <CustomHeader userName="Bryan" logoutFunc={() => navigation.navigate("RootNavigation")} /> */}
-      <CustomHeader userName="Bryan" logoutFunc={() => navigation.dispatch(StackActions.popToTop())} />
+      <CustomHeader userName="Bryan" logoutFunc={() => navigation.dispatch(CommonActions.reset({ routes: [{ name: "AuthNavigation" }] }))} />
       <View style={styles.bodyContainer}>
         <Text style={{ color: bg_DarkColor }}>UserInfo Screen</Text>
       </View>
