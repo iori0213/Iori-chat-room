@@ -116,6 +116,7 @@ router.post("/login", async (req, res) => {
   return ("WTF?")
 })
 
+// ANCHOR Access token validation
 router.post("/token/access", async (req, res) => {
   try {
     //check if the req.headers["authorization"] exist
@@ -150,7 +151,7 @@ router.post("/token/access", async (req, res) => {
   }
   return ("WTF?")
 })
-
+// ANCHOR Refresh token validation
 router.post("/token/refresh", async (req, res) => {
   try {
     //check if the req.headers["authorization"] exist
@@ -199,7 +200,7 @@ router.post("/token/refresh", async (req, res) => {
   }
   return ("WTF?")
 })
-
+// ANCHOR Revoke refresh token after loagout
 router.post("/token/logout", async (req, res) => {
   try {
     //check if the req.headers["authorization"] exist
