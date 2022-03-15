@@ -3,10 +3,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { bg_DarkColor, windowHeight, windowWidth } from '../../constants/cssConst';
+import { bg_DarkColor, windowHeight } from '../../constants/cssConst';
 import { AppParamList } from '../../types/navigations';
 import { UserInfoScreenProps } from '../../types/screenProps';
-import { StackActions } from '@react-navigation/native';
 
 type CustomHeader = {
   userName: string;
