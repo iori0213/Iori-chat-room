@@ -4,7 +4,7 @@ import axios from "axios"
 import * as SecureStore from 'expo-secure-store';
 import { AuthAPI } from "../../constants/backendAPI";
 //components
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthInput from "../../components/Auth/AuthInput";
 //navigation
@@ -16,6 +16,7 @@ import { bg_DarkColor, bg_LightColor, bottomIconSize, cornerRadius, windowHeight
 //import vector icons
 import { Entypo, SimpleLineIcons, Fontisto } from "@expo/vector-icons/"
 import { LoginScreenProps } from "../../types/screenProps";
+import { ACCESS_KEY, REFRESH_KEY } from "../../constants/securestoreKey";
 
 
 
@@ -25,6 +26,26 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
   //useState
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const LoginProcess = async () => {
+    axios({
+      method: "post",
+      url: `${AuthAPI}/login`,
+      data: {
+        email: email,
+        password: password
+      }
+    }).then(async (loginResult) => {
+      if (loginResult.status != 200) { return Alert.alert("Login Error", loginResult.data.message) }
+      // const loginAccessToken = loginResult.data.accessToken;
+      // const loginRefreshToken = loginResult.data.refreshToken;
+      await SecureStore.setItemAsync(ACCESS_KEY, loginResult.data.accessToken);
+      await SecureStore.setItemAsync(REFRESH_KEY, loginResult.data.refreshToken);
+      console.log("local access", await SecureStore.getItemAsync(ACCESS_KEY))
+      console.log("local refresh", await SecureStore.getItemAsync(REFRESH_KEY))
+      navigation.dispatch(CommonActions.reset({ routes: [{ name: "HomeNavigation" }] }))
+    })
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
@@ -56,10 +77,10 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
         <View style={styles.cuttingBottomContainer}>
           {/* Auth container */}
           <View style={styles.authBtnContainer}>
-            <TouchableOpacity style={styles.authBtn} onPress={() => navigation.dispatch(CommonActions.reset({ routes: [{ name: "HomeNavigation" }] }))}>
+            <TouchableOpacity style={styles.authBtn} onPress={async () => await LoginProcess()}>
               <Text style={styles.btnText}>LOGIN</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.authBtn} onPress={() => navigation.navigate("RegisterScreen")}>
+            <TouchableOpacity style={styles.authBtn} onPress={async () => { console.log(await SecureStore.getItemAsync(ACCESS_KEY)); navigation.navigate("RegisterScreen") }}>
               <Text style={styles.btnText}>REGISTER</Text>
             </TouchableOpacity>
           </View>

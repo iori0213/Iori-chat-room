@@ -1,9 +1,13 @@
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import axios from 'axios';
+import * as SecureStore from 'expo-secure-store';
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AuthAPI } from '../../constants/backendAPI';
 import { bg_DarkColor, windowHeight } from '../../constants/cssConst';
+import { ACCESS_KEY, REFRESH_KEY } from '../../constants/securestoreKey';
 import { AppParamList } from '../../types/navigations';
 import { UserInfoScreenProps } from '../../types/screenProps';
 
@@ -27,10 +31,24 @@ const CustomHeader: React.FC<CustomHeader> = ({ userName, logoutFunc }) => {
 }
 const ProfileScreen: React.FC<UserInfoScreenProps> = ({ }) => {
   const navigation = useNavigation<NativeStackNavigationProp<AppParamList>>();
+  const LogoutProcess = async () => {
+    const localRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY)
+    if (!localRefreshToken) { console.log("No local refresh token"); return Alert.alert("Error") }
+    axios({
+      method: "post",
+      url: `${AuthAPI}/token/logout`,
+      headers: { "Authorization": `Bearer ${localRefreshToken}` },
+    }).then(async (result) => {
+      if (result.status != 200) { return Alert.alert("Error", result.data.message) }
+      await SecureStore.deleteItemAsync(ACCESS_KEY);
+      await SecureStore.deleteItemAsync(REFRESH_KEY);
+      navigation.dispatch(CommonActions.reset({ routes: [{ name: "AuthNavigation" }] }))
+    })
+  }
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* <CustomHeader userName="Bryan" logoutFunc={() => navigation.navigate("RootNavigation")} /> */}
-      <CustomHeader userName="Bryan" logoutFunc={() => navigation.dispatch(CommonActions.reset({ routes: [{ name: "AuthNavigation" }] }))} />
+      <CustomHeader userName="Bryan" logoutFunc={() => LogoutProcess()} />
       <View style={styles.bodyContainer}>
         <Text style={{ color: bg_DarkColor }}>UserInfo Screen</Text>
       </View>
