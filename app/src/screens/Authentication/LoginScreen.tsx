@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+//API
 import axios from "axios"
 import * as SecureStore from 'expo-secure-store';
+import { AuthAPI } from "../../constants/backendAPI";
 //components
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
