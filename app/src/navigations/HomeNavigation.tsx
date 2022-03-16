@@ -4,7 +4,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AppParamList } from '../types/navigations';
 //screens
 import ChatroomsScreen from '../screens/User/ChatroomsScreen';
-import ProfileNavigation from './ProfileNavigation';
 import ProfileScreen from '../screens/User/ProfileScreen';
 
 interface HomeNavigationProps {
