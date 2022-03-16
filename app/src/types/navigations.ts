@@ -14,7 +14,6 @@ export type AppParamList = {
   //
   ChatroomsScreen: undefined;
   // ProfileNavigation: undefined;
-  ProfileScreen: undefined;
   HomeScreen: undefined;
 }
 

@@ -8,8 +8,10 @@ export const cornerRadius = windowWidth * 0.23;
 //Colors
 export const bg_LightColor = "#45c1b9";
 export const bg_DarkColor = "#171535";
+export const bg_LessDarkColor = "#464285";
 export const font_color = "#AFF";
 export const placeholderColor = "#477";
+export const tabBarIconColor = "#FFF";
 //Size
 export const inputIconSize = windowWidth * 0.07;
 export const bottomIconSize = windowWidth * 0.07;
