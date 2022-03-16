@@ -6,31 +6,43 @@ import React from 'react'
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AuthAPI } from '../../constants/backendAPI';
-import { bg_DarkColor, windowHeight } from '../../constants/cssConst';
+import { bg_DarkColor, bg_LessDarkColor, font_color, windowHeight, windowWidth } from '../../constants/cssConst';
 import { ACCESS_KEY, REFRESH_KEY } from '../../constants/securestoreKey';
 import { AppParamList } from '../../types/navigations';
-import { UserInfoScreenProps } from '../../types/screenProps';
+import { HomeScreenProps } from '../../types/screenProps';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-type CustomHeader = {
+type HomeHeaderProps = {
   userName: string;
   logoutFunc: () => void;
 }
 
-const CustomHeader: React.FC<CustomHeader> = ({ userName, logoutFunc }) => {
+const HomeHeader: React.FC<HomeHeaderProps> = ({ userName, logoutFunc }) => {
   return (
     <View style={styles.customHeader}>
       <View style={styles.slideNavigatorContainer}></View>
-      <View style={styles.titleContainer}><Text>{userName}</Text></View>
+      <View style={styles.titleContainer}><Text style={styles.titleStyle}>{userName}</Text></View>
       <View style={styles.slideNavigatorContainer}>
-        <TouchableOpacity onPress={() => logoutFunc()}>
-          <Text>Logout</Text>
+        <TouchableOpacity onPress={() => Alert.alert("Logout check", "Do you want to logout?", [
+          {
+            text: "No",
+            onPress: () => { return }
+          },
+          {
+            text: "Yes",
+            onPress: () => { logoutFunc() }
+          }
+        ])}>
+          <MaterialCommunityIcons name="logout" size={windowWidth * 0.09} color={font_color} />
         </TouchableOpacity>
       </View>
     </View>
   )
 }
-const ProfileScreen: React.FC<UserInfoScreenProps> = ({ }) => {
+
+const HomeScreen: React.FC<HomeScreenProps> = ({ }) => {
   const navigation = useNavigation<NativeStackNavigationProp<AppParamList>>();
+  //ANCHOR Logout process
   const LogoutProcess = async () => {
     const localRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY)
     if (!localRefreshToken) { console.log("No local refresh token"); return Alert.alert("Error") }
@@ -45,39 +57,41 @@ const ProfileScreen: React.FC<UserInfoScreenProps> = ({ }) => {
       navigation.dispatch(CommonActions.reset({ routes: [{ name: "AuthNavigation" }] }))
     })
   }
+
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* <CustomHeader userName="Bryan" logoutFunc={() => navigation.navigate("RootNavigation")} /> */}
-      <CustomHeader userName="Bryan" logoutFunc={() => LogoutProcess()} />
+      <HomeHeader userName="Bryan" logoutFunc={() => LogoutProcess()} />
       <View style={styles.bodyContainer}>
-        <Text style={{ color: bg_DarkColor }}>UserInfo Screen</Text>
+        <Text style={{ color: "white" }}>UserInfo Screen</Text>
       </View>
     </SafeAreaView>
   );
 }
-export default ProfileScreen;
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFF",
-
+    backgroundColor: bg_LessDarkColor,
   },
   customHeader: {
     flexDirection: 'row',
-    height: windowHeight * 0.1,
-    borderWidth: 1,
-    borderColor: 'red',
+    height: windowHeight * 0.08,
+    backgroundColor: bg_LessDarkColor
   },
   titleContainer: {
     flex: 3,
     alignItems: "center",
     justifyContent: "center",
   },
+  titleStyle: {
+    fontSize: windowWidth * 0.08,
+    color: "#FFF",
+    fontFamily: "Roboto_Bold"
+  },
   slideNavigatorContainer: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "blue",
     alignItems: "center",
     justifyContent: "center",
 
@@ -86,5 +100,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: bg_DarkColor,
   }
 })
