@@ -9,10 +9,16 @@ import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import { AuthAPI } from '../constants/backendAPI';
 import { ACCESS_KEY, REFRESH_KEY } from '../constants/securestoreKey';
-import RootNavigation from '../navigations/RootNavigation';
+import LoadingScreen from '../components/Auth/LoadingScreen';
 
-
+type StackParamList = {
+  AuthNavigation: undefined;
+  HomeNavigation: undefined;
+}
 const RootRouter: React.FC = () => {
+  const Stack = createNativeStackNavigator<StackParamList>()
+  //fetching data status
+  const [fetching, setFetching] = useState<boolean>(true);
   // ANCHOR start token validation to do conditional navigation
   const [access, setAccess] = useState<boolean>(false);
   const trying = async () => {
@@ -34,17 +40,26 @@ const RootRouter: React.FC = () => {
       })
   }
 
-  try {
-    trying();
-  } catch (error) {
-    console.log(error)
-  } finally {
-    return (
-      <NavigationContainer>
-        <RootNavigation Access={access} />
-      </NavigationContainer>
-    );
-  }
+  useEffect(() => {
+    try {
+      trying();
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setTimeout(() => {
+        setFetching(false)
+      }, 2000);
+    }
+  }, [])
 
+  return (
+    (fetching) ? <LoadingScreen /> :
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={access ? "HomeNavigation" : "AuthNavigation"} screenOptions={{ headerShown: false }}>
+          <Stack.Screen name='AuthNavigation' component={AuthNavigation} />
+          <Stack.Screen name='HomeNavigation' component={HomeNavigation} />
+        </Stack.Navigator>
+      </NavigationContainer>
+  );
 }
 export default RootRouter;

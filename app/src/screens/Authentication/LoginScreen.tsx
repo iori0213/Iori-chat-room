@@ -40,8 +40,6 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
       // const loginRefreshToken = loginResult.data.refreshToken;
       await SecureStore.setItemAsync(ACCESS_KEY, loginResult.data.accessToken);
       await SecureStore.setItemAsync(REFRESH_KEY, loginResult.data.refreshToken);
-      console.log("local access", await SecureStore.getItemAsync(ACCESS_KEY))
-      console.log("local refresh", await SecureStore.getItemAsync(REFRESH_KEY))
       navigation.dispatch(CommonActions.reset({ routes: [{ name: "HomeNavigation" }] }))
     })
   }
@@ -80,7 +78,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
             <TouchableOpacity style={styles.authBtn} onPress={async () => await LoginProcess()}>
               <Text style={styles.btnText}>LOGIN</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.authBtn} onPress={async () => { console.log(await SecureStore.getItemAsync(ACCESS_KEY)); navigation.navigate("RegisterScreen") }}>
+            <TouchableOpacity style={styles.authBtn} onPress={async () => navigation.navigate("RegisterScreen")}>
               <Text style={styles.btnText}>REGISTER</Text>
             </TouchableOpacity>
           </View>
