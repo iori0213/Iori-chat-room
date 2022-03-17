@@ -1,9 +1,9 @@
 require('dotenv').config();
 import express from "express";
 import { getRepository } from "typeorm";
-import User from "../entity/User";
+import UserEntity from "../entity/UserEntity";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import Jwt from "jsonwebtoken";
 import { refreshTokenInterface } from "../constants/authUserInterface";
 import { accessToken_Exp, refreshToken_Exp, accessTokenSecret, refreshTokenSecret } from "../constants/tokenConstant";
 
@@ -15,7 +15,7 @@ router.post("/register", async (req, res) => {
   try {
     const { email, username, password } = req.body;
     //ANCHOR Register - Find is the email existed
-    const getRepo = getRepository(User);
+    const getRepo = getRepository(UserEntity);
     const checkEmail = await getRepo.findOne({
       where: {
         email: email
@@ -48,7 +48,7 @@ router.post("/register", async (req, res) => {
         // bcrypt the password
         const hashedPassword = await bcrypt.hash(password, 10);
         // insert user into database
-        const newUser = new User();
+        const newUser = new UserEntity();
         newUser.email = email;
         newUser.username = username;
         newUser.password = hashedPassword;
@@ -74,7 +74,7 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     //ANCHOR Login - Find is the enail existed
-    const getRepo = getRepository(User);
+    const getRepo = getRepository(UserEntity);
     const userCheck = await getRepo.findOne({
       select: ["id", "password", "refreshToken"],
       where: {
@@ -89,8 +89,8 @@ router.post("/login", async (req, res) => {
     //ANCHOR Login - Success sending JWT
     // Create a plaintext payload for the JWT
     const userInform = { id: userCheck.id }
-    const accessToken = jwt.sign(userInform, accessTokenSecret!, { expiresIn: accessToken_Exp });
-    const refreshToken = jwt.sign(userInform, refreshTokenSecret!, { expiresIn: refreshToken_Exp });
+    const accessToken = Jwt.sign(userInform, accessTokenSecret!, { expiresIn: accessToken_Exp });
+    const refreshToken = Jwt.sign(userInform, refreshTokenSecret!, { expiresIn: refreshToken_Exp });
     let newRefreshToken: string[];
     //process refreshToken saving
     if (!userCheck.refreshToken) {
@@ -99,7 +99,7 @@ router.post("/login", async (req, res) => {
       newRefreshToken = userCheck.refreshToken
       newRefreshToken.push(...[refreshToken])
     }
-    const updateRefreshToken = new User();
+    const updateRefreshToken = new UserEntity();
     updateRefreshToken.id = userCheck.id;
     updateRefreshToken.refreshToken = newRefreshToken;
     getRepo.save(updateRefreshToken);
@@ -139,7 +139,7 @@ router.post("/token/access", async (req, res) => {
     if (!authMethod || !accessToken) { return (res.status(400).json({ success: false, message: "Error : Invalid auth header!" })) }
     else if (authMethod !== "Bearer") { return (res.status(400).json({ success: false, message: "Error : Invalid auth method!" })) }
     //verify accessToken
-    jwt.verify(accessToken, accessTokenSecret!, (err) => {
+    Jwt.verify(accessToken, accessTokenSecret!, (err) => {
       if (err) {
         return res.status(401).json({ success: false, message: err })
       }
@@ -174,12 +174,12 @@ router.post("/token/refresh", async (req, res) => {
     else if (authMethod !== "Bearer") { return (res.status(400).json({ success: false, message: "Error : Invalid auth method!" })) }
 
     //verify refreshToken
-    jwt.verify(refreshToken, refreshTokenSecret!, async (err) => {
+    Jwt.verify(refreshToken, refreshTokenSecret!, async (err) => {
       if (err) {
         return (res.status(401).json({ success: false, message: err }));
       }
-      const refreshTokenPayloads = jwt.decode(refreshToken) as refreshTokenInterface;
-      const getRepo = getRepository(User);
+      const refreshTokenPayloads = Jwt.decode(refreshToken) as refreshTokenInterface;
+      const getRepo = getRepository(UserEntity);
       const refreshTokenCheck = await getRepo.findOne({
         select: ["refreshToken"],
         where: { id: refreshTokenPayloads.id }
@@ -191,7 +191,7 @@ router.post("/token/refresh", async (req, res) => {
       if (!refreshTokenList.includes(refreshToken)) { return (res.status(401).json({ success: false.valueOf, message: "Error : Token is not in the list!" })) }
       //the refresh token is valid so create and return a new access token
       const userInfo = { id: refreshTokenPayloads.id }
-      const newAccessToken = jwt.sign(userInfo, accessTokenSecret!, { expiresIn: accessToken_Exp });
+      const newAccessToken = Jwt.sign(userInfo, accessTokenSecret!, { expiresIn: accessToken_Exp });
       return (res.status(200).json({ success: true, message: "Valid refresh token.", newAccessToken: newAccessToken }))
     });
   } catch (e) {
@@ -222,8 +222,8 @@ router.post("/token/logout", async (req, res) => {
     if (!authMethod || !refreshToken) { return (res.status(400).json({ success: false, message: "Error : Invalid auth header!" })) }
     else if (authMethod !== "Bearer") { return (res.status(400).json({ success: false, message: "Error : Invalid auth method!" })) }
     //get the refreshToken list from database by tokenPoayloads id
-    const getRepo = getRepository(User);
-    const refreshTokenPayloads = jwt.decode(refreshToken) as refreshTokenInterface;
+    const getRepo = getRepository(UserEntity);
+    const refreshTokenPayloads = Jwt.decode(refreshToken) as refreshTokenInterface;
     const checkRefreshToken = await getRepo.findOne({
       select: ["refreshToken"],
       where: { id: refreshTokenPayloads.id }
@@ -237,7 +237,7 @@ router.post("/token/logout", async (req, res) => {
     //in the list
     refreshTokenList = refreshTokenList.filter((token) => token != refreshToken);
     //create a update user form
-    const updateRefreshToken = new User();
+    const updateRefreshToken = new UserEntity();
     updateRefreshToken.id = refreshTokenPayloads.id;
     updateRefreshToken.refreshToken = refreshTokenList;
     await getRepo.save(updateRefreshToken)
