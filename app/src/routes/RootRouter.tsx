@@ -21,35 +21,33 @@ const RootRouter: React.FC = () => {
   const [fetching, setFetching] = useState<boolean>(true);
   // ANCHOR start token validation to do conditional navigation
   const [access, setAccess] = useState<boolean>(false);
-  const trying = async () => {
+  const tokenValidation = async () => {
     const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
     const localRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY);
-    if (!localAccessToken || !localRefreshToken) { return setAccess(false) }
-    axios({ method: 'post', url: `${AuthAPI}/token/access`, headers: { "Authorization": `Bearer ${localAccessToken}` } })
-      .then(async (stage1) => {
-        if (stage1.status == 200) { return setAccess(true) }
-        return axios({
-          method: 'post',
-          url: `${AuthAPI}/token/refresh`,
-          headers: { "Authorization": `Bearer ${REFRESH_KEY}` }
-        }).then(async (stage2) => {
-          if (stage2.status != 200) { return setAccess(false) }
-          await SecureStore.setItemAsync(ACCESS_KEY, stage2.data.accessToken);
-          return setAccess(true);
-        })
-      })
+    if (!localAccessToken || !localRefreshToken) { return false }
+    const accessResult = await axios({ method: 'post', url: `${AuthAPI}/token/access`, headers: { "Authorization": `Bearer ${localAccessToken}` } })
+    if (accessResult.status == 200) { return true }
+    const refreshResult = await axios({ method: 'post', url: `${AuthAPI}/token/refresh`, headers: { "Authorization": `Bearer ${REFRESH_KEY}` } })
+    if (refreshResult.status != 200) { return false }
+    await SecureStore.setItemAsync(ACCESS_KEY, refreshResult.data.accessToken);
+    return true
   }
 
   useEffect(() => {
     try {
-      trying();
+      tokenValidation().then((isAccess) => {
+        if (isAccess) { setAccess(true) }
+        else { setAccess(false) }
+        setFetching(false)
+      });
     } catch (error) {
       console.error(error)
-    } finally {
-      setTimeout(() => {
-        setFetching(false)
-      }, 2000);
     }
+    // finally {
+    //   setTimeout(() => {
+    //     setFetching(false)
+    //   }, 100);
+    // }
   }, [])
 
   return (
