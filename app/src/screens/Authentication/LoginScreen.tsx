@@ -27,6 +27,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const LoginProcess = async () => {
+    if (email == "" || password == "") { return Alert.alert("Error", "email or password input is missing!") }
     axios({
       method: "post",
       url: `${AuthAPI}/login`,
