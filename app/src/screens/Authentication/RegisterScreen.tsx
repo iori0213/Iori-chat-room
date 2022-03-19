@@ -1,20 +1,40 @@
 import React, { useState } from "react";
 import axios from "axios"
-import * as SecureStore from 'expo-secure-store';
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { bg_DarkColor, bg_LightColor, cornerRadius, inputIconSize, placeholderColor, windowHeight, windowWidth } from "../../constants/cssConst"
 import AuthInput from "../../components/Auth/AuthInput";
 import { Fontisto, Feather } from "@expo/vector-icons"
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AuthAPI } from "../../constants/backendAPI";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AuthNavigationProps } from "../../types/navigations"
 interface RegisterScreenProps {
   navigation: any;
 }
 
 const RegisterScreen: React.FC<RegisterScreenProps> = (props) => {
+  const navigation = useNavigation<NativeStackNavigationProp<AuthNavigationProps>>();
   //useState
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+
+  const RegisterProcess = async () => {
+    if (email == "" || name == "" || password == "") return Alert.alert("Error", "Missing input value!");
+    axios({
+      method: "post",
+      url: `${AuthAPI}/register`,
+      data: {
+        email: email,
+        name: name,
+        password: password
+      }
+    }).then((result) => {
+      if (result.status == 400) return Alert.alert("Register error", result.data.message)
+      return Alert.alert("Register", result.data.message, [{ text: "OK", onPress: () => navigation.pop() }])
+    })
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -34,7 +54,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = (props) => {
         />
         <AuthInput
           InputIcon={<Feather name="user" size={windowWidth * 0.07} color="#FFF" />}
-          SetInputState={setUsername}
+          SetInputState={setName}
           PlaceHolder="Enter username"
           PasswordMode={false}
         />
@@ -49,7 +69,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = (props) => {
       <View style={styles.bottomContainer}>
         <View style={styles.cuttingBottomContainer}>
           {/* Auth container */}
-          <TouchableOpacity style={styles.authBtn} onPress={() => console.log("ohhhhh")}>
+          <TouchableOpacity style={styles.authBtn} onPress={() => RegisterProcess()}>
             <Text style={styles.btnText}>SUBMIT</Text>
           </TouchableOpacity>
         </View>

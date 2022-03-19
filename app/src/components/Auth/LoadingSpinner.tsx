@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, ActivityIndicator } from 'react-native';
-import { bg_DarkColor } from '../constants/cssConst';
+import { bg_DarkColor } from '../../constants/cssConst';
 interface LoadingSpinnerProps {
 
 }

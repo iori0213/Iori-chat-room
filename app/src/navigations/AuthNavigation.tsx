@@ -4,10 +4,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 //import screens
 import LoginScreen from "../screens/Authentication/LoginScreen";
 import RegisterScreen from "../screens/Authentication/RegisterScreen";
-import { AuthParamList } from '../types/navigations';
+import { AuthNavigationProps } from '../types/navigations';
 import HomeNavigation from './HomeNavigation';
 
-const RootStack = createNativeStackNavigator<AuthParamList>();
+const RootStack = createNativeStackNavigator<AuthNavigationProps>();
 const AuthNavigation: React.FC = () => {
   return (
     <RootStack.Navigator initialRouteName='LoginScreen' screenOptions={{ headerShown: false }}>

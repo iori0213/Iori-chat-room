@@ -10,7 +10,7 @@ import AuthInput from "../../components/Auth/AuthInput";
 //navigation
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { CommonActions, useNavigation } from "@react-navigation/native";
-import { AuthParamList } from "../../types/navigations"
+import { AuthNavigationProps } from "../../types/navigations"
 //css const
 import { bg_DarkColor, bg_LightColor, bottomIconSize, cornerRadius, windowHeight, windowWidth } from "../../constants/cssConst";
 //import vector icons
@@ -22,7 +22,7 @@ import { ACCESS_KEY, REFRESH_KEY } from "../../constants/securestoreKey";
 
 const LoginScreen: React.FC<LoginScreenProps> = () => {
   //useNavigation injecting types
-  const navigation = useNavigation<NativeStackNavigationProp<AuthParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<AuthNavigationProps>>();
   //useState
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

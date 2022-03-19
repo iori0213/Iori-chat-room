@@ -3,7 +3,7 @@ import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { AppParamList } from '../types/navigations';
+import { AppNavigationProps } from '../types/navigations';
 //screens
 import ChatroomsScreen from '../screens/Home/ChatroomsScreen';
 import HomeScreen from '../screens/Home/HomeScreen';
@@ -16,7 +16,7 @@ interface HomeNavigationProps {
 
 }
 const HomeNavigation: React.FC<HomeNavigationProps> = ({ }) => {
-  const BottomTab = createMaterialBottomTabNavigator<AppParamList>();
+  const BottomTab = createMaterialBottomTabNavigator<AppNavigationProps>();
   return (
     <BottomTab.Navigator initialRouteName='ChatroomsScreen' barStyle={{ backgroundColor: bg_LessDarkColor }}>
       <BottomTab.Screen name='ChatroomsScreen' component={ChatroomsScreen}

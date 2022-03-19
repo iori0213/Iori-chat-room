@@ -9,14 +9,11 @@ import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import { AuthAPI } from '../constants/backendAPI';
 import { ACCESS_KEY, REFRESH_KEY } from '../constants/securestoreKey';
-import LoadingScreen from '../components/Auth/LoadingScreen';
+import LoadingSpinner from '../components/Auth/LoadingSpinner';
+import { RootNavigationProps } from '../types/navigations';
 
-type StackParamList = {
-  AuthNavigation: undefined;
-  HomeNavigation: undefined;
-}
 const RootRouter: React.FC = () => {
-  const Stack = createNativeStackNavigator<StackParamList>()
+  const Stack = createNativeStackNavigator<RootNavigationProps>()
   //fetching data status
   const [fetching, setFetching] = useState<boolean>(true);
   // ANCHOR start token validation to do conditional navigation
@@ -43,15 +40,10 @@ const RootRouter: React.FC = () => {
     } catch (error) {
       console.error(error)
     }
-    // finally {
-    //   setTimeout(() => {
-    //     setFetching(false)
-    //   }, 100);
-    // }
   }, [])
 
   return (
-    (fetching) ? <LoadingScreen /> :
+    (fetching) ? <LoadingSpinner /> :
       <NavigationContainer>
         <Stack.Navigator initialRouteName={access ? "HomeNavigation" : "AuthNavigation"} screenOptions={{ headerShown: false }}>
           <Stack.Screen name='AuthNavigation' component={AuthNavigation} />
