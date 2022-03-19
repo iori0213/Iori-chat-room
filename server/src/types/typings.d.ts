@@ -1,4 +1,4 @@
-import { accessTokenInterface } from "../src/constants/authUserInterface"
+import { accessTokenInterface } from "./authUserInterface"
 export { }
 declare global {
   namespace Express {
