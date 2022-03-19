@@ -1,7 +1,7 @@
 require('dotenv').config();
 import express from "express";
 import { getRepository } from "typeorm";
-import UserEntity from "../entity/UserEntity";
+import User from "../entity/User";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import { refreshTokenInterface } from "../constants/authUserInterface";
@@ -13,9 +13,9 @@ const router = express.Router()
 // ANCHOR Register function
 router.post("/register", async (req, res) => {
   try {
-    const { email, username, password } = req.body;
+    const { email, name, password } = req.body;
     //ANCHOR Register - Find is the email existed
-    const getRepo = getRepository(UserEntity);
+    const getRepo = getRepository(User);
     const checkEmail = await getRepo.findOne({
       where: {
         email: email
@@ -33,7 +33,7 @@ router.post("/register", async (req, res) => {
       //ANCHOR Register - 2 Filter: check username
       const checkUsername = await getRepo.findOne({
         where: {
-          username: username
+          name: name
         }
       })
       if (checkUsername) {
@@ -48,9 +48,9 @@ router.post("/register", async (req, res) => {
         // bcrypt the password
         const hashedPassword = await bcrypt.hash(password, 10);
         // insert user into database
-        const newUser = new UserEntity();
+        const newUser = new User();
         newUser.email = email;
-        newUser.username = username;
+        newUser.name = name;
         newUser.password = hashedPassword;
         getRepo.save(newUser);
         return res
@@ -74,7 +74,7 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     //ANCHOR Login - Find is the enail existed
-    const getRepo = getRepository(UserEntity);
+    const getRepo = getRepository(User);
     const userCheck = await getRepo.findOne({
       select: ["id", "password", "refreshToken"],
       where: {
@@ -99,7 +99,7 @@ router.post("/login", async (req, res) => {
       newRefreshToken = userCheck.refreshToken
       newRefreshToken.push(...[refreshToken])
     }
-    const updateRefreshToken = new UserEntity();
+    const updateRefreshToken = new User();
     updateRefreshToken.id = userCheck.id;
     updateRefreshToken.refreshToken = newRefreshToken;
     getRepo.save(updateRefreshToken);
@@ -179,7 +179,7 @@ router.post("/token/refresh", async (req, res) => {
         return (res.status(401).json({ success: false, message: err }));
       }
       const refreshTokenPayloads = Jwt.decode(refreshToken) as refreshTokenInterface;
-      const getRepo = getRepository(UserEntity);
+      const getRepo = getRepository(User);
       const refreshTokenCheck = await getRepo.findOne({
         select: ["refreshToken"],
         where: { id: refreshTokenPayloads.id }
@@ -222,7 +222,7 @@ router.post("/token/logout", async (req, res) => {
     if (!authMethod || !refreshToken) { return (res.status(400).json({ success: false, message: "Error : Invalid auth header!" })) }
     else if (authMethod !== "Bearer") { return (res.status(400).json({ success: false, message: "Error : Invalid auth method!" })) }
     //get the refreshToken list from database by tokenPoayloads id
-    const getRepo = getRepository(UserEntity);
+    const getRepo = getRepository(User);
     const refreshTokenPayloads = Jwt.decode(refreshToken) as refreshTokenInterface;
     const checkRefreshToken = await getRepo.findOne({
       select: ["refreshToken"],
@@ -237,7 +237,7 @@ router.post("/token/logout", async (req, res) => {
     //in the list
     refreshTokenList = refreshTokenList.filter((token) => token != refreshToken);
     //create a update user form
-    const updateRefreshToken = new UserEntity();
+    const updateRefreshToken = new User();
     updateRefreshToken.id = refreshTokenPayloads.id;
     updateRefreshToken.refreshToken = refreshTokenList;
     await getRepo.save(updateRefreshToken)

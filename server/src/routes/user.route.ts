@@ -1,7 +1,7 @@
 require('dotenv').config();
 import express from "express";
 import { getRepository } from "typeorm";
-import UserEntity from "../entity/UserEntity";
+import User from "../entity/User";
 import { TokenAuthentication } from "../middlewares/TokenAuthentication.middleware";
 import Jwt from "jsonwebtoken";
 
@@ -10,7 +10,7 @@ const router = express.Router();
 
 //ANCHOR get Home page user info
 router.post("/userinfo", async (req, res) => {
-  const getRepo = getRepository(UserEntity);
+  const getRepo = getRepository(User);
   const { accessToken } = req.body;
   const userId = Jwt.decode(accessToken)
   const userInfo = await getRepo.findOne({ where: { id: userId } });
@@ -21,9 +21,9 @@ router.post("/userinfo", async (req, res) => {
 
 // ANCHOR get all user request
 router.get("/userInfo", TokenAuthentication, async (req, res) => {
-  const getRepo = getRepository(UserEntity);
+  const getRepo = getRepository(User);
   getRepo.find({
-    select: ["id", "email", "username"],
+    select: ["id", "email", "name"],
     where: {
       id: req.user!.id
     }
