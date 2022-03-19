@@ -4,19 +4,52 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import React from 'react'
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AuthAPI } from '../../constants/backendAPI';
 import { bg_DarkColor, bg_LessDarkColor, font_color, windowHeight, windowWidth } from '../../constants/cssConst';
 import { ACCESS_KEY, REFRESH_KEY } from '../../constants/securestoreKey';
-import { AppParamList } from '../../types/navigations';
+import { AppNavigationProps } from '../../types/navigations';
 import { HomeScreenProps } from '../../types/screenProps';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+
+
+const HomeScreen: React.FC<HomeScreenProps> = ({ }) => {
+  const navigation = useNavigation<NativeStackNavigationProp<AppNavigationProps>>();
+  //ANCHOR Logout process
+  const LogoutProcess = async () => {
+    const localRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY)
+    if (!localRefreshToken) { console.log("No local refresh token"); return Alert.alert("Error") }
+    axios({
+      method: "post",
+      url: `${AuthAPI}/token/logout`,
+      headers: { "Authorization": `Bearer ${localRefreshToken}` },
+    }).then(async (result) => {
+      if (result.status != 200) { return Alert.alert("Error", result.data.message) }
+      await SecureStore.deleteItemAsync(ACCESS_KEY);
+      await SecureStore.deleteItemAsync(REFRESH_KEY);
+      navigation.dispatch(CommonActions.reset({ routes: [{ name: "AuthNavigation" }] }))
+    })
+  }
+
+
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <HomeHeader userName="Bryan" logoutFunc={() => LogoutProcess()} />
+        <View style={styles.bodyContainer}>
+          <Text style={{ color: "white" }}>UserInfo Screen</Text>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+}
+export default HomeScreen;
+//custom Header
 type HomeHeaderProps = {
   userName: string;
   logoutFunc: () => void;
 }
-
 const HomeHeader: React.FC<HomeHeaderProps> = ({ userName, logoutFunc }) => {
   return (
     <View style={styles.customHeader}>
@@ -39,36 +72,6 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({ userName, logoutFunc }) => {
     </View>
   )
 }
-
-const HomeScreen: React.FC<HomeScreenProps> = ({ }) => {
-  const navigation = useNavigation<NativeStackNavigationProp<AppParamList>>();
-  //ANCHOR Logout process
-  const LogoutProcess = async () => {
-    const localRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY)
-    if (!localRefreshToken) { console.log("No local refresh token"); return Alert.alert("Error") }
-    axios({
-      method: "post",
-      url: `${AuthAPI}/token/logout`,
-      headers: { "Authorization": `Bearer ${localRefreshToken}` },
-    }).then(async (result) => {
-      if (result.status != 200) { return Alert.alert("Error", result.data.message) }
-      await SecureStore.deleteItemAsync(ACCESS_KEY);
-      await SecureStore.deleteItemAsync(REFRESH_KEY);
-      navigation.dispatch(CommonActions.reset({ routes: [{ name: "AuthNavigation" }] }))
-    })
-  }
-
-
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <HomeHeader userName="Bryan" logoutFunc={() => LogoutProcess()} />
-      <View style={styles.bodyContainer}>
-        <Text style={{ color: "white" }}>UserInfo Screen</Text>
-      </View>
-    </SafeAreaView>
-  );
-}
-export default HomeScreen;
 
 const styles = StyleSheet.create({
   safeArea: {
