@@ -1,7 +1,7 @@
-interface accessTokenInterface {
+interface AccessTokenInterface {
   id: string
 }
-interface refreshTokenInterface {
+interface RefreshTokenInterface {
   id: string,
   iat: number,
   exp: number,

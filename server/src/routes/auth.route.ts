@@ -177,7 +177,7 @@ router.post("/token/refresh", async (req, res) => {
       if (err) {
         return (res.status(401).json({ success: false, message: err }));
       }
-      const refreshTokenPayloads = Jwt.decode(refreshToken) as refreshTokenInterface;
+      const refreshTokenPayloads = Jwt.decode(refreshToken) as RefreshTokenInterface;
       const getRepo = getRepository(User);
       const refreshTokenCheck = await getRepo.findOne({
         select: ["refreshToken"],
@@ -222,7 +222,7 @@ router.post("/token/logout", async (req, res) => {
     else if (authMethod !== "Bearer") { return (res.status(400).json({ success: false, message: "Error : Invalid auth method!" })) }
     //get the refreshToken list from database by tokenPoayloads id
     const getRepo = getRepository(User);
-    const refreshTokenPayloads = Jwt.decode(refreshToken) as refreshTokenInterface;
+    const refreshTokenPayloads = Jwt.decode(refreshToken) as RefreshTokenInterface;
     const checkRefreshToken = await getRepo.findOne({
       select: ["refreshToken"],
       where: { id: refreshTokenPayloads.id }

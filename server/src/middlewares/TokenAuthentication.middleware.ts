@@ -49,6 +49,6 @@ export const TokenAuthentication = async (
       .status(400)
       .json({ message: "Error : Invalid token!" })
   }
-  req.user = claims as accessTokenInterface;
+  req.user = claims as AccessTokenInterface;
   return next();
 }
