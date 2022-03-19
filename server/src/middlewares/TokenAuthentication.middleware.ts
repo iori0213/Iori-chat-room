@@ -1,7 +1,6 @@
 require("dotenv").config();
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { accessTokenInterface } from "../constants/authUserInterface";
 // import express from "express";
 // import { getRepository } from "typeorm";
 

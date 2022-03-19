@@ -4,7 +4,6 @@ import { getRepository } from "typeorm";
 import User from "../entity/User";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
-import { refreshTokenInterface } from "../constants/authUserInterface";
 import { accessToken_Exp, refreshToken_Exp, accessTokenSecret, refreshTokenSecret } from "../constants/tokenConstant";
 
 const router = express.Router()
