@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, } from "typeorm";
-import ChatRoom from "../entity/ChatRoom";
-import { FriendList } from "./FriendList";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, } from "typeorm";
+// import ChatRoom from "../entity/ChatRoom";
+// import { FriendList } from "./FriendList";
+import { Profile } from "./Profile";
 
 @Entity()
 export default class User {
@@ -11,18 +12,19 @@ export default class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ unique: true })
-  name: string;
-
   @Column()
   password: string;
 
   @Column({ type: "simple-array", nullable: true })
   refreshToken: string[];
 
-  @ManyToMany(() => ChatRoom, (room) => room.members)
-  chatRooms: ChatRoom[]
+  @OneToOne(() => Profile, (profile) => profile.user, { onDelete: "CASCADE" })
+  @JoinColumn()
+  profile: Profile;
 
-  @OneToMany(() => FriendList, (list) => list.friend)
-  friends: FriendList[]
+  // @ManyToMany(() => ChatRoom, (room) => room.members)
+  // chatRooms: ChatRoom[]
+
+  // @OneToMany(() => FriendList, (list) => list.friend)
+  // friends: FriendList[]
 }
