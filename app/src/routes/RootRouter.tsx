@@ -32,6 +32,8 @@ const RootRouter: React.FC = () => {
 
   useEffect(() => {
     try {
+      // SecureStore.deleteItemAsync(ACCESS_KEY)
+      // SecureStore.deleteItemAsync(REFRESH_KEY)
       tokenValidation().then((isAccess) => {
         if (isAccess) { setAccess(true) }
         else { setAccess(false) }

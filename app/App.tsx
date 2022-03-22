@@ -2,8 +2,6 @@ import React from 'react';
 import 'react-native-gesture-handler';
 import { LogBox } from 'react-native';
 
-
-
 // //intialize the font loading process
 // //import useFonts hook & AppLoading
 import { useFonts } from "expo-font";
@@ -24,6 +22,12 @@ import {
   MajorMonoDisplay_400Regular as MajorMonoDisplay
 } from '@expo-google-fonts/major-mono-display'
 import RootRouter from './src/routes/RootRouter';
+
+
+//socket.io
+import { io } from "socket.io-client";
+import { BackendUrl } from './src/constants/backendAPI';
+export const socket = io(`${BackendUrl}`);
 
 
 export default function App() {
