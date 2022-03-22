@@ -1,6 +1,7 @@
 require("dotenv").config();
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import { accessTokenSecret } from "../constants/tokenConstant";
+import { jwtVerify } from "../utils/jwtController";
 // import express from "express";
 // import { getRepository } from "typeorm";
 
@@ -43,12 +44,12 @@ export const TokenAuthentication = async (
     )
   }
 
-  const claims = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!);
+  const claims = jwtVerify<AccessToken>(accessToken, accessTokenSecret!);
   if (!claims) {
     return res
       .status(400)
       .json({ message: "Error : Invalid token!" })
   }
-  req.user = claims as AccessToken;
+  req.profile = claims;
   return next();
 }

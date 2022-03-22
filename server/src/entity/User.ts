@@ -1,6 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, } from "typeorm";
-// import ChatRoom from "../entity/ChatRoom";
-// import { FriendList } from "./FriendList";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany } from "typeorm";
+import { FriendShip } from "./FriendShip";
 import { Profile } from "./Profile";
 
 @Entity()
@@ -22,9 +21,10 @@ export default class User {
   @JoinColumn()
   profile: Profile;
 
+  @OneToMany(() => FriendShip, (friendlist) => friendlist)
+  friendlist: FriendShip[];
+
   // @ManyToMany(() => ChatRoom, (room) => room.members)
   // chatRooms: ChatRoom[]
 
-  // @OneToMany(() => FriendList, (list) => list.friend)
-  // friends: FriendList[]
 }

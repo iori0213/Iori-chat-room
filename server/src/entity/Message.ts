@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import ChatRoom from "../entity/ChatRoom";
-import User from "./User";
+import { Profile } from "./Profile";
 
 @Entity()
 export default class Message {
@@ -10,31 +10,15 @@ export default class Message {
   @Column()
   msg: string;
 
-  @ManyToOne(() => User)
-  sender: User;
+  @ManyToOne(() => Profile)
+  sender: Profile;
 
-  @ManyToOne(() => ChatRoom, (room) => room.chats)
+  @ManyToOne(() => ChatRoom, (room) => room.messages)
   room: ChatRoom;
 
-  @CreateDateColumn()
-  created: Date;
+  @CreateDateColumn({
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP(6)",
+  })
+  createdAt: Date;
 }
-
-// const socket: any = undefined // ex
-
-// const func = async () => {
-
-// }
-
-// interface Socket {
-//   on: any
-// }
-
-// const biggerFuncion = async (socket: Socket, user: UserEntity, room: ChatRoom) => {
-
-//   socket.on('new-msg', (msg: string) => {
-//     const newMsg = new Chat()
-
-
-//   })
-// }
