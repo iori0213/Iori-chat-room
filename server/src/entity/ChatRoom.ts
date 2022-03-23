@@ -4,8 +4,8 @@ import { Profile } from "./Profile";
 
 @Entity()
 export default class ChatRoom {
-  @PrimaryGeneratedColumn("increment")
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column()
   roomname: string;
