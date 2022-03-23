@@ -55,17 +55,12 @@ router.post("/get", TokenAuthentication, async (req, res) => {
   const userid = req.profile.id;
   const profileRepo = getRepository(Profile);
   const userProfile = await profileRepo.findOne({ where: { id: userid }, relations: ["friendShips", "friendShips.user", "friendShips.friend"] })
-  if (!userProfile) { return res.json({ success: false, message: "user not exist", line: 68 }) }
-  // BAD Solution
-  // //  const friendShipRepo = getRepository(FriendShip);
-  // // let FriendList:Profile[];
-  // // userProfile.friendShips.map(async(friendlist)=>{
-  // //   const list = await friendShipRepo.findOne({where:{id:friendlist.id}})
-  // //   FriendList.push(list!.friend)
-  // // })
-  console.log("ALL DATA:", userProfile);
-  userProfile.friendShips.map((friend_ship) => { console.log("Friend id :", friend_ship) })
-  return res.json({ success: true, message: "Get friendship success.", profile: userProfile })
+  if (!userProfile) { return res.json({ success: false, message: "user not exist", line: 58 }) }
+  const friendArray: Profile[] = [];
+  userProfile.friendShips.map((friend_ship) => {
+    friendArray.push(friend_ship.friend)
+  })
+  return res.json({ success: true, message: "Get friendship success.", friendsArray: friendArray })
 })
 //!SECTION 
 export { router as friendShipRouter }
