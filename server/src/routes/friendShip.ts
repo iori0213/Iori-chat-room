@@ -54,7 +54,7 @@ router.post("/get", TokenAuthentication, async (req, res) => {
   console.log(req.body.test);
   const userid = req.profile.id;
   const profileRepo = getRepository(Profile);
-  const userProfile = await profileRepo.findOne({ where: { id: userid }, relations: ["friendShips"] })
+  const userProfile = await profileRepo.findOne({ where: { id: userid }, relations: ["friendShips", "friendShips.user", "friendShips.friend"] })
   if (!userProfile) { return res.json({ success: false, message: "user not exist", line: 68 }) }
   // BAD Solution
   // //  const friendShipRepo = getRepository(FriendShip);
