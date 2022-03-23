@@ -5,8 +5,8 @@ import { Profile } from "./Profile";
 @Entity()
 export default class User {
 
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
+  @PrimaryGeneratedColumn("increment")
+  id: number;
 
   @Column({ unique: true })
   email: string;
