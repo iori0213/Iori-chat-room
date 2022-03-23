@@ -6,12 +6,12 @@ export class FriendShip {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Profile, {
+  @ManyToOne(() => Profile, (profile) => profile.friendShips, {
     onDelete: "CASCADE"
   })
   user: Profile;
 
-  @ManyToOne(() => Profile, (profile) => profile.friendShips)
+  @ManyToOne(() => Profile, { onDelete: "CASCADE" })
   friend: Profile;
 
 }

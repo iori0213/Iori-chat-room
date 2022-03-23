@@ -12,6 +12,6 @@ export class Profile {
   @OneToOne(() => User, (user) => user.profile, { onDelete: "CASCADE" })
   user: User;
 
-  @OneToMany(() => FriendShip, (friendShip) => friendShip.friend)
+  @OneToMany(() => FriendShip, (friendShip) => friendShip.user)
   friendShips: FriendShip[];
 }
