@@ -69,7 +69,7 @@ router.post("/remove", TokenAuthentication, async (req, res) => {
   //check if friendship exist
   const userFriendShip = await friendShipRepo.findOne({ where: { user: userId, friend: friendId } })
   const friendFriendShip = await friendShipRepo.findOne({ where: { user: friendId, friend: userId } })
-  if (!userFriendShip || !friendFriendShip) { return res.json({ success: false, message: "Friendship not found", line: 71 }) }
+  if (!userFriendShip || !friendFriendShip) { return res.json({ success: false, message: "Friendship not found", line: 72 }) }
   //remove friendship
   await friendShipRepo.remove(userFriendShip);
   await friendShipRepo.remove(friendFriendShip);
