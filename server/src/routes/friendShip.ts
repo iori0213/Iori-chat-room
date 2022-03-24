@@ -44,7 +44,7 @@ router.post("/add", TokenAuthentication, async (req, res) => {
 //!SECTION 
 
 //SECTION Get friends
-router.post("/get", TokenAuthentication, async (req, res) => {
+router.get("/get", TokenAuthentication, async (req, res) => {
   //user id
   const userId = req.profile.id;
   //repo
