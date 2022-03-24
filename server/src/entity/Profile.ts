@@ -1,10 +1,11 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import ChatRoom from "./ChatRoom";
 import { FriendShip } from "./FriendShip";
 import User from "./User";
 @Entity()
 export class Profile {
   @PrimaryGeneratedColumn("uuid")
-  // @ManyToOne(() => User, (user) => user.friends)
+
   id: string;
   @Column({ unique: true })
   username: string;
@@ -14,4 +15,7 @@ export class Profile {
 
   @OneToMany(() => FriendShip, (friendShip) => friendShip.user)
   friendShips: FriendShip[];
+
+  @ManyToMany(() => ChatRoom, (chatroom) => chatroom.members)
+  chatRooms: ChatRoom[]
 }
