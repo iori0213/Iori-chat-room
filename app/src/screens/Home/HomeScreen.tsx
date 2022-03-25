@@ -2,20 +2,24 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { AuthAPI } from '../../constants/backendAPI';
+import { AuthAPI, FriendAPI } from '../../constants/backendAPI';
 import { bg_DarkColor, bg_LessDarkColor, font_color, windowHeight, windowWidth } from '../../constants/cssConst';
 import { ACCESS_KEY, REFRESH_KEY } from '../../constants/securestoreKey';
 import { AppNavigationProps } from '../../types/navigations';
 import { HomeScreenProps } from '../../types/screenProps';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
+import Friend from '../../components/Home/Friend';
+import { FlatList, TextInput } from 'react-native-gesture-handler';
 
 
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ }) => {
   const navigation = useNavigation<NativeStackNavigationProp<AppNavigationProps>>();
+  const [friendArray, setFriendArray] = useState<Friend[]>([]);
+  const [friend, setFriend] = useState<string>();
   //ANCHOR Logout process
   const LogoutProcess = async () => {
     const localRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY)
@@ -31,20 +35,84 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ }) => {
       navigation.dispatch(CommonActions.reset({ routes: [{ name: "AuthNavigation" }] }))
     })
   }
+  const getFriends = async () => {
+    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
+    axios({
+      method: "get",
+      url: `${FriendAPI}/get`,
+      headers: { "Authorization": `Bearer ${localAccessToken}` },
+    }).then((result) => {
+      if (!result.data.success) { return Alert.alert("Error", "get friend process failed!") }
+      setFriendArray(result.data.friendsArray)
+    })
+  }
+  const addFriend = async () => {
+    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
+    axios({
+      method: "post",
+      url: `${FriendAPI}/add`,
+      headers: { "Authorization": `Bearer ${localAccessToken}` },
+      data: { friendname: friend }
+    }).then((result) => {
+      if (!result.data.success) { return Alert.alert("Error", result.data.message) }
+      getFriends();
+    })
+  }
+  const removeFriend = async (friendId: string) => {
+    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
+    axios({
+      method: "post",
+      url: `${FriendAPI}/remove`,
+      headers: { "Authorization": `Bearer ${localAccessToken}` },
+      data: { friendId: friendId }
+    }).then((result) => {
+      if (!result.data.success) { return Alert.alert("Error", result.data.message) };
+      getFriends();
+    })
+  }
 
+  useEffect(() => {
+    getFriends();
+  }, [])
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
         <HomeHeader userName="Bryan" logoutFunc={() => LogoutProcess()} />
         <View style={styles.bodyContainer}>
-          <Text style={{ color: "white" }}>UserInfo Screen</Text>
+          <Text style={styles.friendListHeader}>Friend List</Text>
+          <View style={styles.addFriendHeader}>
+            <View style={styles.slideNavigatorContainer}></View>
+            <View style={styles.titleContainer}>
+              <TextInput
+                onChangeText={(val) => setFriend(val)}
+                style={styles.input}
+                placeholder="add friend name"
+                placeholderTextColor="#999"
+                autoCapitalize='none'
+              />
+            </View>
+            <View style={styles.slideNavigatorContainer}>
+              <TouchableOpacity onPress={() => addFriend()}>
+                <AntDesign name="adduser" size={windowWidth * 0.08} color="#FFF" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <FlatList
+            data={friendArray}
+            keyExtractor={item => item.id}
+            renderItem={({ item }) => {
+              return <Friend friend={item} deleteFunc={removeFriend} />;
+            }}
+          />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
 export default HomeScreen;
+
+
 //custom Header
 type HomeHeaderProps = {
   userName: string;
@@ -54,7 +122,9 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({ userName, logoutFunc }) => {
   return (
     <View style={styles.customHeader}>
       <View style={styles.slideNavigatorContainer}></View>
-      <View style={styles.titleContainer}><Text style={styles.titleStyle}>{userName}</Text></View>
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleStyle}>{userName}</Text>
+      </View>
       <View style={styles.slideNavigatorContainer}>
         <TouchableOpacity onPress={() => Alert.alert("Logout check", "Do you want to logout?", [
           {
@@ -97,12 +167,35 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-
   },
   bodyContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: bg_DarkColor,
-  }
+  },
+  friendListHeader: {
+    paddingTop: windowHeight * 0.03,
+    fontSize: windowWidth * 0.06,
+    color: "#FFF",
+  },
+  addFriendHeader: {
+    width: windowWidth,
+    height: windowHeight * 0.1,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row"
+  },
+  input: {
+    height: windowHeight * 0.05,
+    width: windowWidth * 0.6,
+    borderRadius: windowWidth * 0.02,
+    fontSize: windowWidth * 0.05,
+    backgroundColor: bg_LessDarkColor,
+    color: "#FFF",
+    paddingLeft: windowWidth * 0.03,
+  },
+  friendlistContainer: {
+    width: windowWidth,
+  },
 })
