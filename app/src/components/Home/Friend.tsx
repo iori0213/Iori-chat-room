@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: bg_LessDarkColor,
     borderRadius: windowHeight * 0.02,
-    paddingHorizontal: windowWidth * 0.07
+    paddingHorizontal: windowWidth * 0.07,
+    marginBottom: windowHeight * 0.01,
   },
   name: {
     flex: 8.5,
