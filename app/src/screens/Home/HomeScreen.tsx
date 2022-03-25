@@ -86,10 +86,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ }) => {
             <View style={styles.titleContainer}>
               <TextInput
                 onChangeText={(val) => setFriend(val)}
-                style={styles.input}
                 placeholder="add friend name"
                 placeholderTextColor="#999"
                 autoCapitalize='none'
+                style={styles.input}
               />
             </View>
             <View style={styles.slideNavigatorContainer}>
