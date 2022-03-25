@@ -25,7 +25,7 @@ const main = () => {
     .then(async () => {
       app.use("/api/v1/user", userRouter);
       app.use("/api/v1/auth", authRouter);
-      app.use("/api/v1/friendlist", friendShipRouter)
+      app.use("/api/v1/friendship", friendShipRouter)
       app.use("/api/v1/chatroom", chatRoomRouter)
       io.on('connection', socket => {
         console.log("socket connected")
