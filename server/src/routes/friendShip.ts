@@ -13,7 +13,7 @@ router.post("/add", TokenAuthentication, async (req, res) => {
   const { friendName } = req.body;
   //check id input
   if (!userId) { return res.json({ success: false, message: "user id input is missing!", line: 14 }) }
-  if (!friendName) { return res.json({ success: false, message: "friend id input is missing!", line: 15 }) }
+  if (!friendName) { return res.json({ success: false, message: "friend name input is missing!", line: 15 }) }
   // Repoes
   const profileRepo = getRepository(Profile);
   const friendShipRepo = getRepository(FriendShip);

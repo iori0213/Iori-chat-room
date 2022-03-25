@@ -52,7 +52,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ }) => {
       method: "post",
       url: `${FriendAPI}/add`,
       headers: { "Authorization": `Bearer ${localAccessToken}` },
-      data: { friendname: friend }
+      data: { friendName: friend }
     }).then((result) => {
       if (!result.data.success) { return Alert.alert("Error", result.data.message) }
       getFriends();
