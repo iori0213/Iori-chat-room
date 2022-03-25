@@ -10,10 +10,10 @@ const router = express();
 router.post("/add", TokenAuthentication, async (req, res) => {
   //id input
   const userId = req.profile.id;
-  const { friendid: friendId } = req.body;
+  const { friendName } = req.body;
   //check id input
   if (!userId) { return res.json({ success: false, message: "user id input is missing!", line: 14 }) }
-  if (!friendId) { return res.json({ success: false, message: "friend id input is missing!", line: 15 }) }
+  if (!friendName) { return res.json({ success: false, message: "friend id input is missing!", line: 15 }) }
   // Repoes
   const profileRepo = getRepository(Profile);
   const friendShipRepo = getRepository(FriendShip);
@@ -22,7 +22,7 @@ router.post("/add", TokenAuthentication, async (req, res) => {
   const userProfile = await profileRepo.findOne({ where: { id: userId }, relations: ["friendShips"] })
   if (!userProfile) { return res.json({ success: false, message: "User profile not exist", line: 23 }) }
   //check if friend profile exist
-  const friendProfile = await profileRepo.findOne({ where: { id: friendId }, relations: ["friendShips"] })
+  const friendProfile = await profileRepo.findOne({ where: { username: friendName }, relations: ["friendShips"] })
   if (!friendProfile) { return res.json({ success: false, message: "friend profile not exist", line: 26 }) }
   //check if friendship already exist
   const friendshipCheck = await friendShipRepo.findOne({ where: { user: userProfile, friend: friendProfile } })
