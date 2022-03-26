@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { getRepository } from "typeorm";
 import { Profile } from "../entity/Profile";
 import { jwtDecode } from "../utils/jwtController";
-import { chatController } from "./chat";
+import { roomController } from "./room";
 
 export const socketController = async (io: Server, socket: Socket) => {
   const accessToken: string = socket.handshake.auth.token;
@@ -23,6 +23,7 @@ export const socketController = async (io: Server, socket: Socket) => {
     }
     console.log("connected user is: ", user.username, "...");
     // FUNCTIONS
-    chatController(io, socket, user);
+
+    roomController(io, socket, user);
   }
 };
