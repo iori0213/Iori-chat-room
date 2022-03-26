@@ -24,12 +24,6 @@ import {
 import RootRouter from './src/routes/RootRouter';
 
 
-//socket.io
-import { io } from "socket.io-client";
-import { BackendUrl } from './src/constants/backendAPI';
-export const socket = io(`${BackendUrl}`);
-
-
 export default function App() {
   //start setting the font would use into the useFonts hook
   let [fontsLoaded] = useFonts({
