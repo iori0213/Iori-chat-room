@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react'
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View, FlatList, TextInput } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AuthAPI, FriendAPI } from '../../constants/backendAPI';
 import { bg_DarkColor, bg_LessDarkColor, font_color, windowHeight, windowWidth } from '../../constants/cssConst';
@@ -12,7 +12,7 @@ import { AppNavigationProps } from '../../types/navigations';
 import { HomeScreenProps } from '../../types/screenProps';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 import Friend from '../../components/Home/Friend';
-import { FlatList, TextInput } from 'react-native-gesture-handler';
+
 
 
 
