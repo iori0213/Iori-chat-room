@@ -31,9 +31,8 @@ const RegisterScreen: React.FC<RegisterScreenProps> = (props) => {
         password: password
       }
     }).then((result) => {
-      if (result.status == 400) return Alert.alert("Register error", result.data.message)
       return Alert.alert("Register", result.data.message, [{ text: "OK", onPress: () => navigation.pop() }])
-    })
+    }).catch((e) => { return Alert.alert("Register error", e.response.data.message) })
   }
 
   return (
