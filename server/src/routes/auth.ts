@@ -124,6 +124,7 @@ router.post("/login", async (req, res) => {
 
 // ANCHOR Access token validation
 router.post("/token/access", async (req, res) => {
+    console.log('validating accessToken')
   try {
     //check if the req.headers["authorization"] exist
     if (!req.headers["authorization"]) {
