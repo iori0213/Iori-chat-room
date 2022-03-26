@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Button, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Button, StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { socket } from '../../../App';
 import { bg_DarkColor, bg_LessDarkColor, windowHeight, windowWidth } from '../../constants/cssConst';
 import { ChatroomsScreenProps } from '../../types/screenProps';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
-import { TextInput } from 'react-native-gesture-handler';
+
+import { io } from "socket.io-client";
+import { BackendUrl } from "../../constants/backendAPI";
+export const socket = io(`${BackendUrl}`);
 
 
 const ChatroomsScreen: React.FC<ChatroomsScreenProps> = ({ }) => {
