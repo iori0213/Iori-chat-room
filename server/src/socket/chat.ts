@@ -1,13 +1,14 @@
 import { Server, Socket } from "socket.io";
+import ChatRoom from "../entity/ChatRoom";
 import { Profile } from "../entity/Profile";
 
 export const chatController = (
   _io: Server,
   socket: Socket,
-  _profile: Profile
+  profile: Profile,
+  room: ChatRoom,
 ) => {
-  socket.on("msg", () => {
-    console.log("msg-evnet");
-    // socket.emit("something", () => {});
+  socket.on("send-msg", (params: { msg: string }) => {
+
   });
 };
