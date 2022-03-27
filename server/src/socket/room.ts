@@ -23,7 +23,8 @@ export const roomController = (
       order: {
         createdAt: "DESC",
       },
-      take: 10,
+      relations: ["sender"],
+      take: 50,
     });
     if (!room) {
       console.log("room id not exist");
@@ -45,7 +46,8 @@ export const roomController = (
         chatRoomMessages: messages,
       });
       socket.to(roomId).emit("joined room", { Profile: profile });
-      chatController(io, socket, profile, room);
+      //leave chat socket off function
+      const leaveChat = chatController(io, socket, profile, room);
       //add new member to chat room
       socket.on("add-member", async (params: { id: string }) => {
         const { id } = params;
@@ -79,6 +81,7 @@ export const roomController = (
       socket.on("leave-room", () => {
         console.log("leave room process");
         socket.leave(roomId);
+        leaveChat();
       });
     }
   });
