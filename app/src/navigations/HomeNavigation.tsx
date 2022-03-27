@@ -2,21 +2,21 @@ import React from 'react'
 //navigator
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { AppNavigationProps } from '../types/navigations';
+import { HomeNavigationProps } from '../types/navigations';
 //screens
 import HomeScreen from '../screens/Home/HomeScreen';
 import { bg_LessDarkColor } from '../constants/cssConst';
-import ChatNavigation from './ChatNavigation';
+import RoomListScreen from '../screens/Home/RoomListScreen';
 
-interface HomeNavigationProps {
+type Props = {
 
 }
 
-const HomeNavigation: React.FC<HomeNavigationProps> = ({ }) => {
-  const BottomTab = createMaterialBottomTabNavigator<AppNavigationProps>();
+const HomeNavigation: React.FC<Props> = ({ }) => {
+  const BottomTab = createMaterialBottomTabNavigator<HomeNavigationProps>();
   return (
-    <BottomTab.Navigator initialRouteName='ChatNavigation' barStyle={{ backgroundColor: bg_LessDarkColor }}>
-      <BottomTab.Screen name='ChatNavigation' component={ChatNavigation}
+    <BottomTab.Navigator initialRouteName='RoomListScreen' barStyle={{ backgroundColor: bg_LessDarkColor }}>
+      <BottomTab.Screen name='RoomListScreen' component={RoomListScreen}
         options={{
           tabBarLabel: "Chat",
           tabBarIcon: ({ color }) => (<Ionicons name="ios-chatbox-ellipses-outline" size={24} color={color} />)
