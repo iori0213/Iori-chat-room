@@ -13,7 +13,7 @@ export const roomController = (
     console.log({ params });
     const { roomId } = params
     const roomRepo = getRepository(ChatRoom);
-    const room = await roomRepo.findOne({ where: { id: roomId }, relations: ["members"] });
+    const room = await roomRepo.findOne({ where: { id: roomId }, relations: ["members", "messages"] });
     if (!room) {
       console.log("room id not exist");
       socket.emit("error", {
@@ -27,8 +27,30 @@ export const roomController = (
     } else {
       console.log("joined!")
       socket.join(roomId);
+      socket.emit("join-room-initialize", {
+        chatRoomId: room.id,
+        chatRoomName: room.roomname,
+        chatRoomMembers: room.members,
+        chatRoomMessages: room.messages,
+      })
       socket.to(roomId).emit("joined room", { Profile: profile })
       chatController(io, socket, profile, room);
+      //add new member to chat room
+      socket.on("add-member", async (params: { id: string }) => {
+        const { id } = params;
+        const profileRepo = getRepository(Profile);
+        const newMember = await profileRepo.findOne({ where: { id: id } })
+        if (!newMember) {
+          socket.emit("error", {
+            message: "User not found",
+          });
+        } else {
+          room.members.push(newMember);
+          await roomRepo.save(room);
+          io.in(roomId).emit("add-member-cli", { profile: newMember })
+        }
+      })
+      //
       //leave room process
       socket.on("leave-room", () => {
         console.log("leave room process")
