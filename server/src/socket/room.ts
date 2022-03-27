@@ -27,12 +27,12 @@ export const roomController = (
     });
     if (!room) {
       console.log("room id not exist");
-      socket.emit("error", {
+      socket.emit("error-msg", {
         message: "room id not exist",
       });
     } else if (!room.members.some((member) => member.id === profile.id)) {
       console.log("user is not belong to the room");
-      socket.emit("error", {
+      socket.emit("error-msg", {
         message: "user is not belong to the room",
       });
     } else {
@@ -52,7 +52,7 @@ export const roomController = (
         const profileRepo = getRepository(Profile);
         const newMember = await profileRepo.findOne({ where: { id: id } });
         if (!newMember) {
-          socket.emit("error", {
+          socket.emit("error-msg", {
             message: "User not found",
           });
         } else {
@@ -61,7 +61,20 @@ export const roomController = (
           io.in(roomId).emit("add-member-cli", { profile: newMember });
         }
       });
-      //
+      //quite room
+      socket.on("quite-room", async (params: { id: string }) => {
+        const { id } = params;
+        const profileRepo = getRepository(Profile);
+        const userProfile = await profileRepo.findOne({ where: { id: id } });
+        if (!userProfile) {
+          socket.emit("error-msg", {
+            message: "User not found!",
+          })
+        } else {
+          room.members.filter((member) => member != userProfile)
+          roomRepo.save(room);
+        }
+      })
       //leave room process
       socket.on("leave-room", () => {
         console.log("leave room process");

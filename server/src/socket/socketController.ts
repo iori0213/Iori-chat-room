@@ -8,7 +8,7 @@ export const socketController = async (io: Server, socket: Socket) => {
   const accessToken: string = socket.handshake.auth.token;
   const decodedToken = jwtDecode<AccessToken>(accessToken);
   if (!decodedToken) {
-    return socket.emit("error", {
+    return socket.emit("error-msg", {
       message: "Token is not valid",
     });
   } else {
@@ -17,7 +17,7 @@ export const socketController = async (io: Server, socket: Socket) => {
     });
 
     if (!user) {
-      return socket.emit("error", {
+      return socket.emit("error-msg", {
         message: "User not found",
       });
     }

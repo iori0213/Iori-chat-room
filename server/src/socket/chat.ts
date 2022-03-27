@@ -27,8 +27,7 @@ export const chatController = (
     const msgRepo = getRepository(Message);
     const msg = await msgRepo.findOne({ where: { id: id } })
     if (!msg) {
-      console.log("error: massage not found!")
-      socket.emit("error", {
+      socket.emit("error-msg", {
         message: "message not found!"
       })
     } else {
