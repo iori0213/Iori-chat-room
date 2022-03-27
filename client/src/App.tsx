@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
-import Home from "./screen/Home";
-import Login from "./screen/Login";
-import SignIn from "./screen/SignIn";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import SignIn from "./pages/SignIn";
 import NavBar from "./components/NavBar";
 import axios from "axios";
 import GlobalContext from "./context/GlobalContext";
+import { SpinningCircles } from "react-loading-icons";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+import { toasti } from "./ultis/_visual";
 
 function App() {
-  const [fetch, setFetch] = useState(true);
+  const [isFetching, setIsFetching] = useState(true);
   const [logged, setLogged] = useState(false);
 
   useEffect(() => {
@@ -21,20 +25,26 @@ function App() {
         Authorization: "Bearer " + accessToken,
       },
     })
-      .then(({ status, data }) => {
+      .then(({ data }) => {
         console.log(data);
-        setFetch(true);
-        if (status === 200) {
-          setLogged(true);
+        setIsFetching(true);
+        if (data.success) {
+          // setLogged(true);
         }
       })
       .catch((e) => {
-        console.log(e);
+        // setFetch(true);
+        toasti(e?.respone?.message?.message, "error");
       });
   }, []);
 
   return (
     <GlobalContext.Provider value={{ logged }}>
+      <ToastContainer />
+      {isFetching}
+      <div className="loading-modal">
+        <SpinningCircles color="red" />
+      </div>
       <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
