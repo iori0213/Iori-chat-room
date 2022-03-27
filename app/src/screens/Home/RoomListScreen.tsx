@@ -2,16 +2,18 @@ import React, { useEffect, useState } from 'react'
 import { Button, StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { bg_DarkColor, bg_LessDarkColor, windowHeight, windowWidth } from '../../constants/cssConst';
-import { ChatroomsScreenProps } from '../../types/screenProps';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 
 import { io } from "socket.io-client";
 import { BackendUrl } from "../../constants/backendAPI";
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { ChatNavigationProps } from '../../types/navigations';
 export const socket = io(`${BackendUrl}`);
 
+type Props = NativeStackScreenProps<ChatNavigationProps, "RoomListScreen">
 
-const ChatroomsScreen: React.FC<ChatroomsScreenProps> = ({ }) => {
+const RoomListScreen: React.FC<Props> = ({ navigation }) => {
   const [chatName, setChatName] = useState<string>("");
   const [roomList, setRoomList] = useState<RoomList[]>([]);
   const [showingList, setShowingList] = useState<RoomList[]>([]);
@@ -54,7 +56,7 @@ const ChatroomsScreen: React.FC<ChatroomsScreenProps> = ({ }) => {
     </SafeAreaView>
   );
 }
-export default ChatroomsScreen;
+export default RoomListScreen;
 /**
  * socket.on('some-event', (param) => {
       param === {

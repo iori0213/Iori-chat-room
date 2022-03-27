@@ -1,5 +1,4 @@
 import { CommonActions, useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react'
@@ -9,16 +8,14 @@ import { AuthAPI, FriendAPI } from '../../constants/backendAPI';
 import { bg_DarkColor, bg_LessDarkColor, font_color, windowHeight, windowWidth } from '../../constants/cssConst';
 import { ACCESS_KEY, REFRESH_KEY } from '../../constants/securestoreKey';
 import { AppNavigationProps } from '../../types/navigations';
-import { HomeScreenProps } from '../../types/screenProps';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 import Friend from '../../components/Home/Friend';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
+type Props = BottomTabScreenProps<AppNavigationProps, "HomeScreen">
 
-
-
-const HomeScreen: React.FC<HomeScreenProps> = ({ }) => {
-  const navigation = useNavigation<NativeStackNavigationProp<AppNavigationProps>>();
-  const [friendArray, setFriendArray] = useState<Friend[]>([]);
+const HomeScreen: React.FC<Props> = ({ navigation }) => {
+  const [friendArray, setFriendArray] = useState<BasicProfile[]>([]);
   const [friend, setFriend] = useState<string>();
   //ANCHOR Logout process
   const LogoutProcess = async () => {

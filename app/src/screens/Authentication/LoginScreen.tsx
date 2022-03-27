@@ -8,21 +8,20 @@ import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthInput from "../../components/Auth/AuthInput";
 //navigation
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { CommonActions, useNavigation } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { CommonActions } from "@react-navigation/native";
 import { AuthNavigationProps } from "../../types/navigations"
 //css const
 import { bg_DarkColor, bg_LightColor, bottomIconSize, cornerRadius, windowHeight, windowWidth } from "../../constants/cssConst";
 //import vector icons
 import { Entypo, SimpleLineIcons, Fontisto } from "@expo/vector-icons/"
-import { LoginScreenProps } from "../../types/screenProps";
 import { ACCESS_KEY, REFRESH_KEY } from "../../constants/securestoreKey";
 
 
+type Props = NativeStackScreenProps<AuthNavigationProps, "LoginScreen">
 
-const LoginScreen: React.FC<LoginScreenProps> = () => {
-  //useNavigation injecting types
-  const navigation = useNavigation<NativeStackNavigationProp<AuthNavigationProps>>();
+
+const LoginScreen: React.FC<Props> = ({ navigation }) => {
   //useState
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

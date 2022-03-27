@@ -14,7 +14,14 @@ export type AuthNavigationProps = {
 export type AppNavigationProps = {
   //navigation
   AuthNavigation: undefined;
+  ChatNavigation: undefined;
   //screens
-  ChatroomsScreen: undefined;
   HomeScreen: undefined;
+}
+
+export type ChatNavigationProps = {
+  RoomListScreen: undefined;
+  ChatScreen: {
+    roomId: string;
+  }
 }

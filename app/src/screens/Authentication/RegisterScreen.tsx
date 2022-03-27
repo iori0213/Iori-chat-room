@@ -6,15 +6,12 @@ import AuthInput from "../../components/Auth/AuthInput";
 import { Fontisto, Feather } from "@expo/vector-icons"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthAPI } from "../../constants/backendAPI";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthNavigationProps } from "../../types/navigations"
-interface RegisterScreenProps {
-  navigation: any;
-}
 
-const RegisterScreen: React.FC<RegisterScreenProps> = (props) => {
-  const navigation = useNavigation<NativeStackNavigationProp<AuthNavigationProps>>();
+type Props = NativeStackScreenProps<AuthNavigationProps, "RegisterScreen">
+
+const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   //useState
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");

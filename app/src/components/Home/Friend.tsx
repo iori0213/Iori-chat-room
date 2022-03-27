@@ -4,7 +4,7 @@ import { bg_LessDarkColor, windowHeight, windowWidth } from '../../constants/css
 import { AntDesign } from '@expo/vector-icons';
 
 interface FriendProps {
-  friend: Friend;
+  friend: BasicProfile;
   deleteFunc: (friendId: string) => void;
 }
 
