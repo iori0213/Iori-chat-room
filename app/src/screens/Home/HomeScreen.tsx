@@ -7,12 +7,12 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AuthAPI, FriendAPI } from '../../constants/backendAPI';
 import { bg_DarkColor, bg_LessDarkColor, hilight_color, windowHeight, windowWidth } from '../../constants/cssConst';
 import { ACCESS_KEY, REFRESH_KEY } from '../../constants/securestoreKey';
-import { AppNavigationProps } from '../../types/navigations';
+import { HomeNavigationProps } from '../../types/navigations';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 import Friend from '../../components/Home/Friend';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
-type Props = BottomTabScreenProps<AppNavigationProps, "HomeScreen">
+type Props = BottomTabScreenProps<HomeNavigationProps, "HomeScreen">
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [friendArray, setFriendArray] = useState<BasicProfile[]>([]);

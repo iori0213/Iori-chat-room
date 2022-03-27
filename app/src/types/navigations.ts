@@ -1,27 +1,30 @@
 export type RootNavigationProps = {
   AuthNavigation: undefined;
-  HomeNavigation: undefined;
+  ChatNavigation: undefined;
 }
 
 export type AuthNavigationProps = {
   //navigation
-  HomeNavigation: undefined;
+  ChatNavigation: undefined;
   //screens
   LoginScreen: undefined;
   RegisterScreen: undefined;
 }
 
-export type AppNavigationProps = {
-  //navigation
-  AuthNavigation: undefined;
-  ChatNavigation: undefined;
+export type HomeNavigationProps = {
   //screens
   HomeScreen: undefined;
-}
-
-export type ChatNavigationProps = {
   RoomListScreen: undefined;
   ChatScreen: {
     roomId: string;
+    roomName: string;
+  }
+}
+
+export type ChatNavigationProps = {
+  HomeNavigation: undefined;
+  ChatScreen: {
+    roomId: string;
+    roomName: string;
   }
 }

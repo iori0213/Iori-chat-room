@@ -36,7 +36,7 @@ router.get("/list", TokenAuthentication, async (req, res) => {
   // Check profile
   const user = await profileRepo.findOne({
     where: { id: userId },
-    relations: ["chatRooms", "chatRooms.members"]
+    relations: ["chatRooms"]
   })
   //check if user exist
   if (!user) return res.json({ success: false, message: "User not exist!" })

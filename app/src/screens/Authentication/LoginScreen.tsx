@@ -40,7 +40,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       // const loginRefreshToken = loginResult.data.refreshToken;
       await SecureStore.setItemAsync(ACCESS_KEY, loginResult.data.accessToken);
       await SecureStore.setItemAsync(REFRESH_KEY, loginResult.data.refreshToken);
-      navigation.dispatch(CommonActions.reset({ routes: [{ name: "HomeNavigation" }] }))
+      navigation.dispatch(CommonActions.reset({ routes: [{ name: "ChatNavigation" }] }))
     })
   }
 

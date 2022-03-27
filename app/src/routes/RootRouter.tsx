@@ -11,6 +11,7 @@ import { AuthAPI } from '../constants/backendAPI';
 import { ACCESS_KEY, REFRESH_KEY } from '../constants/securestoreKey';
 import LoadingSpinner from '../components/Auth/LoadingSpinner';
 import { RootNavigationProps } from '../types/navigations';
+import ChatNavigation from '../navigations/ChatNavigation';
 
 const RootRouter: React.FC = () => {
   const Stack = createNativeStackNavigator<RootNavigationProps>()
@@ -47,9 +48,9 @@ const RootRouter: React.FC = () => {
   return (
     (fetching) ? <LoadingSpinner /> :
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={access ? "HomeNavigation" : "AuthNavigation"} screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName={access ? "ChatNavigation" : "AuthNavigation"} screenOptions={{ headerShown: false }}>
           <Stack.Screen name='AuthNavigation' component={AuthNavigation} />
-          <Stack.Screen name='HomeNavigation' component={HomeNavigation} />
+          <Stack.Screen name='ChatNavigation' component={ChatNavigation} />
         </Stack.Navigator>
       </NavigationContainer>
   );

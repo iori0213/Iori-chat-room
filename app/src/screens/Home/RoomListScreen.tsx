@@ -1,59 +1,86 @@
 import React, { useEffect, useState } from 'react'
-import { Button, StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Button, StyleSheet, Text, View, TouchableOpacity, TextInput, FlatList, Alert } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { bg_DarkColor, bg_LessDarkColor, windowHeight, windowWidth } from '../../constants/cssConst';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
+import * as SecureStore from 'expo-secure-store';
 
 import { io } from "socket.io-client";
-import { BackendUrl } from "../../constants/backendAPI";
+import { BackendUrl, ChatRoomAPI } from "../../constants/backendAPI";
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ChatNavigationProps } from '../../types/navigations';
+import { HomeNavigationProps } from '../../types/navigations';
+import { ACCESS_KEY } from '../../constants/securestoreKey';
+
 export const socket = io(`${BackendUrl}`);
 
-type Props = NativeStackScreenProps<ChatNavigationProps, "RoomListScreen">
+type Props = NativeStackScreenProps<HomeNavigationProps, "RoomListScreen">
 
 const RoomListScreen: React.FC<Props> = ({ navigation }) => {
   const [chatName, setChatName] = useState<string>("");
-  const [roomList, setRoomList] = useState<RoomList[]>([]);
-  const [showingList, setShowingList] = useState<RoomList[]>([]);
+  const [roomList, setRoomList] = useState<Room[]>([]);
+  const [showingList, setShowingList] = useState<Room[]>([]);
   const getChatRoom = async () => {
+    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
     axios({
-      method: "get"
+      method: "get",
+      url: `${ChatRoomAPI}/list`,
+      headers: { "Authorization": `Bearer ${localAccessToken}` },
+    }).then((list) => {
+      if (!list.data.success) { Alert.alert("Error", list.data.message) }
+      setRoomList(list.data.roomList)
     })
   }
   const createChatRoom = async () => {
     axios({
       method: "get",
-
     })
   }
+
+  useEffect(() => {
+    getChatRoom();
+
+    return () => {
+
+    }
+  }, [])
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <View style={styles.titleBar}>
-          <View style={styles.title}>
-            <Text style={styles.titleText}>Chat Rooms</Text>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.header}>
+          <View style={styles.titleBar}>
+            <View style={styles.title}>
+              <Text style={styles.titleText}>Chat Rooms</Text>
+            </View>
+            <TouchableOpacity style={styles.addBtn} onPress={() => createChatRoom()}>
+              <MaterialCommunityIcons name="chat-plus" size={windowWidth * 0.1} color="#FFF" />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.addBtn} onPress={() => createChatRoom()}>
-            <MaterialCommunityIcons name="chat-plus" size={windowWidth * 0.1} color="#FFF" />
-          </TouchableOpacity>
+          <View style={styles.searchBar}>
+            <TextInput
+              onChangeText={(val) => setChatName(val)}
+              placeholder="Search room name"
+              placeholderTextColor="#999"
+              autoCapitalize="none"
+              style={styles.searchInput}
+            />
+            <TouchableOpacity style={styles.goBtn} onPress={() => console.log("search room")}>
+              <Ionicons name="search" size={windowWidth * 0.07} color="#FFF" />
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.searchBar}>
-          <TextInput
-            onChangeText={(val) => setChatName(val)}
-            placeholder="Search room name"
-            placeholderTextColor="#999"
-            autoCapitalize="none"
-            style={styles.searchInput}
+        <View style={styles.body}>
+          <FlatList
+            data={roomList}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => {
+              return <TouchableOpacity onPress={() => navigation.navigate("ChatScreen", { roomId: item.id, roomName: item.roomname })} style={{ width: 50, height: 25, borderWidth: 1, borderColor: "white" }}><Text style={{ color: "white" }}>{item.roomname}</Text></TouchableOpacity>
+            }}
           />
-          <TouchableOpacity style={styles.goBtn} onPress={() => console.log("search room")}>
-            <Ionicons name="search" size={windowWidth * 0.07} color="#FFF" />
-          </TouchableOpacity>
         </View>
-      </View>
-      <TestComp />
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 export default RoomListScreen;
@@ -98,7 +125,7 @@ const TestComp: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: bg_DarkColor,
+    backgroundColor: bg_LessDarkColor,
     // alignItems: "center",
     // justifyContent: "center",
   },
@@ -118,7 +145,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     flex: 1,
-    textAlignVertical: "center",
+    paddingTop: windowHeight * 0.005,
     fontSize: windowWidth * 0.08,
     color: "#FFF",
     paddingLeft: windowWidth * 0.02,
@@ -146,6 +173,10 @@ const styles = StyleSheet.create({
   goBtn: {
     flex: 1,
     paddingLeft: windowWidth * 0.01,
+  },
+  body: {
+    flex: 1,
+    backgroundColor: bg_DarkColor,
   }
 })
 
