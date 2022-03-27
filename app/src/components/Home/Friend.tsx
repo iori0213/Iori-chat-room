@@ -1,10 +1,15 @@
-import React from 'react'
-import { Alert, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { bg_LessDarkColor, hilight_color, windowHeight, windowWidth } from '../../constants/cssConst';
-import { AntDesign } from '@expo/vector-icons';
+import React from "react";
+import { Alert, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+  bg_LessDarkColor,
+  hilight_color,
+  windowHeight,
+  windowWidth,
+} from "../../constants/cssConst";
+import { AntDesign } from "@expo/vector-icons";
 
 interface FriendProps {
-  friend: BasicProfile;
+  friend: Profile;
   deleteFunc: (friendId: string) => void;
 }
 
@@ -13,26 +18,34 @@ const Friend: React.FC<FriendProps> = ({ friend, deleteFunc }) => {
     <View style={styles.container}>
       <Text style={styles.name}>{friend.username}</Text>
       <View style={styles.btn}>
-        <TouchableOpacity onPress={() => Alert.alert(
-          "Remove Friend",
-          `Do you want to remove friend ${friend.username} ?`,
-          [
-            {
-              text: "Cancel",
-              onPress: () => { return }
-            },
-            {
-              text: "Confrim",
-              onPress: () => { deleteFunc(friend.id) }
-            }
-          ]
-        )}>
+        <TouchableOpacity
+          onPress={() =>
+            Alert.alert(
+              "Remove Friend",
+              `Do you want to remove friend ${friend.username} ?`,
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => {
+                    return;
+                  },
+                },
+                {
+                  text: "Confrim",
+                  onPress: () => {
+                    deleteFunc(friend.id);
+                  },
+                },
+              ]
+            )
+          }
+        >
           <AntDesign name="deleteuser" size={windowWidth * 0.08} color="#FFF" />
         </TouchableOpacity>
       </View>
     </View>
   );
-}
+};
 export default Friend;
 
 const styles = StyleSheet.create({
@@ -57,5 +70,5 @@ const styles = StyleSheet.create({
     flex: 1.5,
     alignItems: "center",
     justifyContent: "center",
-  }
-})
+  },
+});

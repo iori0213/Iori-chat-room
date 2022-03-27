@@ -40,10 +40,8 @@ export const roomController = (
       console.log("joined!");
       socket.join(roomId);
       socket.emit("join-room-initialize", {
-        chatRoomId: room.id,
-        chatRoomName: room.roomname,
-        chatRoomMembers: room.members,
-        chatRoomMessages: messages,
+        members: room.members,
+        msgs: messages,
       });
       socket.to(roomId).emit("joined room", { Profile: profile });
       //leave chat socket off function
@@ -71,12 +69,12 @@ export const roomController = (
         if (!userProfile) {
           socket.emit("error-msg", {
             message: "User not found!",
-          })
+          });
         } else {
-          room.members.filter((member) => member != userProfile)
+          room.members.filter((member) => member != userProfile);
           roomRepo.save(room);
         }
-      })
+      });
       //leave room process
       socket.on("leave-room", () => {
         console.log("leave room process");

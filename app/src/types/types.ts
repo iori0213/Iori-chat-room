@@ -1,17 +1,17 @@
-type BasicProfile = {
+interface Profile {
   id: string;
   username: string;
   showName: string;
 }
 
-type Room = {
+interface Room {
   id: string;
   roomname: string;
 }
 
-type Msg = {
-  id: number,
-  senderId: string,
-  msg: string,
-  createdAt: string,
+interface Msg {
+  id: number;
+  senderId: string;
+  msg: string;
+  createdAt: string;
 }

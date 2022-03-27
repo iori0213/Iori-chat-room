@@ -1,49 +1,66 @@
-import React, { useEffect, useState } from 'react'
-import { Button, StyleSheet, Text, View, TouchableOpacity, TextInput, FlatList, Alert } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { bg_DarkColor, bg_LessDarkColor, windowHeight, windowWidth } from '../../constants/cssConst';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
-
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import axios from "axios";
+import * as SecureStore from "expo-secure-store";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import {
+  Alert,
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { io } from "socket.io-client";
+import { AccessContext } from "../../components/Home/AccessContext";
+import { ChatContext } from "../../components/Home/ChatContext";
 import { BackendUrl, ChatRoomAPI } from "../../constants/backendAPI";
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { HomeNavigationProps } from '../../types/navigations';
-import { ACCESS_KEY } from '../../constants/securestoreKey';
+import {
+  bg_DarkColor,
+  bg_LessDarkColor,
+  windowHeight,
+  windowWidth,
+} from "../../constants/cssConst";
+import { ACCESS_KEY } from "../../constants/securestoreKey";
+
+import { HomeNavigationProps } from "../../types/navigations";
 
 export const socket = io(`${BackendUrl}`);
 
-type Props = NativeStackScreenProps<HomeNavigationProps, "RoomListScreen">
+type Props = NativeStackScreenProps<HomeNavigationProps, "RoomListScreen">;
 
 const RoomListScreen: React.FC<Props> = ({ navigation }) => {
   const [chatName, setChatName] = useState<string>("");
   const [roomList, setRoomList] = useState<Room[]>([]);
   const [showingList, setShowingList] = useState<Room[]>([]);
+
   const getChatRoom = async () => {
     const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
     axios({
       method: "get",
       url: `${ChatRoomAPI}/list`,
-      headers: { "Authorization": `Bearer ${localAccessToken}` },
+      headers: { Authorization: `Bearer ${localAccessToken}` },
     }).then((list) => {
-      if (!list.data.success) { Alert.alert("Error", list.data.message) }
-      setRoomList(list.data.roomList)
-    })
-  }
+      if (!list.data.success) {
+        Alert.alert("Error", list.data.message);
+      }
+      setRoomList(list.data.roomList);
+    });
+  };
   const createChatRoom = async () => {
     axios({
       method: "get",
-    })
-  }
+    });
+  };
 
   useEffect(() => {
     getChatRoom();
 
-    return () => {
-
-    }
-  }, [])
+    return () => {};
+  }, []);
 
   return (
     <SafeAreaProvider>
@@ -53,8 +70,15 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.title}>
               <Text style={styles.titleText}>Chat Rooms</Text>
             </View>
-            <TouchableOpacity style={styles.addBtn} onPress={() => createChatRoom()}>
-              <MaterialCommunityIcons name="chat-plus" size={windowWidth * 0.1} color="#FFF" />
+            <TouchableOpacity
+              style={styles.addBtn}
+              onPress={() => createChatRoom()}
+            >
+              <MaterialCommunityIcons
+                name="chat-plus"
+                size={windowWidth * 0.1}
+                color="#FFF"
+              />
             </TouchableOpacity>
           </View>
           <View style={styles.searchBar}>
@@ -65,7 +89,10 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
               autoCapitalize="none"
               style={styles.searchInput}
             />
-            <TouchableOpacity style={styles.goBtn} onPress={() => console.log("search room")}>
+            <TouchableOpacity
+              style={styles.goBtn}
+              onPress={() => console.log("search room")}
+            >
               <Ionicons name="search" size={windowWidth * 0.07} color="#FFF" />
             </TouchableOpacity>
           </View>
@@ -75,14 +102,31 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
             data={roomList}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
-              return <TouchableOpacity onPress={() => navigation.navigate("ChatScreen", { roomId: item.id, roomName: item.roomname })} style={{ width: 50, height: 25, borderWidth: 1, borderColor: "white" }}><Text style={{ color: "white" }}>{item.roomname}</Text></TouchableOpacity>
+              return (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("ChatScreen", {
+                      roomId: item.id,
+                      roomName: item.roomname,
+                    })
+                  }
+                  style={{
+                    width: 50,
+                    height: 25,
+                    borderWidth: 1,
+                    borderColor: "white",
+                  }}
+                >
+                  <Text style={{ color: "white" }}>{item.roomname}</Text>
+                </TouchableOpacity>
+              );
             }}
           />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
-}
+};
 export default RoomListScreen;
 /**
  * socket.on('some-event', (param) => {
@@ -98,29 +142,28 @@ export default RoomListScreen;
 
 const TestComp: React.FC = () => {
   useEffect(() => {
-    socket.on('server-emitted-event', (params) => {
+    socket.on("server-emitted-event", (params) => {
       // do something
-    })
+    });
 
     return () => {
-      socket.off('server-emitted-event')
-    }
-  })
+      socket.off("server-emitted-event");
+    };
+  });
 
   const testHandler = () => {
-    socket.emit('some-event', {
-      email: 'email',
-      password: 'password',
-
-    })
-  }
+    socket.emit("some-event", {
+      email: "email",
+      password: "password",
+    });
+  };
 
   return (
     <View>
-      <Button title='test' onPress={testHandler} />
+      <Button title="test" onPress={testHandler} />
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -133,7 +176,6 @@ const styles = StyleSheet.create({
     width: windowWidth,
     height: windowHeight * 0.12,
     backgroundColor: bg_LessDarkColor,
-
   },
   titleBar: {
     height: windowHeight * 0.06,
@@ -177,9 +219,9 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     backgroundColor: bg_DarkColor,
-  }
-})
+  },
+});
 
 function async() {
-  throw new Error('Function not implemented.');
+  throw new Error("Function not implemented.");
 }

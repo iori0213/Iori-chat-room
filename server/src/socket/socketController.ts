@@ -6,6 +6,7 @@ import { roomController } from "./room";
 
 export const socketController = async (io: Server, socket: Socket) => {
   const accessToken: string = socket.handshake.auth.token;
+  console.log(socket.handshake.auth);
   const decodedToken = jwtDecode<AccessToken>(accessToken);
   if (!decodedToken) {
     return socket.emit("error-msg", {
