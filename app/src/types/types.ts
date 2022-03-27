@@ -4,7 +4,7 @@ type BasicProfile = {
   showName: string;
 }
 
-type RoomList = {
+type Room = {
   id: string;
   roomname: string;
 }

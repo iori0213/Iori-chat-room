@@ -1,11 +1,11 @@
-import { CommonActions, useNavigation } from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react'
 import { Alert, StyleSheet, Text, TouchableOpacity, View, FlatList, TextInput } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AuthAPI, FriendAPI } from '../../constants/backendAPI';
-import { bg_DarkColor, bg_LessDarkColor, font_color, windowHeight, windowWidth } from '../../constants/cssConst';
+import { bg_DarkColor, bg_LessDarkColor, hilight_color, windowHeight, windowWidth } from '../../constants/cssConst';
 import { ACCESS_KEY, REFRESH_KEY } from '../../constants/securestoreKey';
 import { AppNavigationProps } from '../../types/navigations';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
@@ -133,7 +133,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({ userName, logoutFunc }) => {
             onPress: () => { logoutFunc() }
           }
         ])}>
-          <MaterialCommunityIcons name="logout" size={windowWidth * 0.09} color={font_color} />
+          <MaterialCommunityIcons name="logout" size={windowWidth * 0.09} color={hilight_color} />
         </TouchableOpacity>
       </View>
     </View>
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: windowHeight * 0.05,
-    width: windowWidth * 0.6,
+    width: windowWidth * 0.65,
     borderRadius: windowWidth * 0.02,
     fontSize: windowWidth * 0.05,
     backgroundColor: bg_LessDarkColor,
