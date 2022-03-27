@@ -14,8 +14,8 @@ const router = express.Router()
 // ANCHOR Register function
 router.post("/register", async (req, res) => {
   try {
-    const { email, name, password } = req.body;
-    console.log({ email: email, name: name, password: password })
+    const { email, name, showName, password } = req.body;
+    console.log({ email: email, name: name, showName: showName, password: password })
     //ANCHOR Register - Find is the email existed
     const userRepo = getRepository(User);
     const profileRepo = getRepository(Profile);
@@ -56,6 +56,7 @@ router.post("/register", async (req, res) => {
         newUser.password = hashedPassword;
         const newProfile = new Profile();
         newProfile.username = name;
+        newProfile.showname = showName;
         await profileRepo.save(newProfile);
         newUser.profile = newProfile;
         await userRepo.save(newUser);
@@ -113,7 +114,8 @@ router.post("/login", async (req, res) => {
       success: true,
       message: "Valid email & password.",
       accessToken: accessToken,
-      refreshToken: refreshToken
+      refreshToken: refreshToken,
+      profile: userCheck.profile,
     }))
   } catch (e) {
     console.log("Login Error : ", e)
@@ -124,7 +126,7 @@ router.post("/login", async (req, res) => {
 
 // ANCHOR Access token validation
 router.post("/token/access", async (req, res) => {
-    console.log('validating accessToken')
+  console.log('validating accessToken')
   try {
     //check if the req.headers["authorization"] exist
     if (!req.headers["authorization"]) {

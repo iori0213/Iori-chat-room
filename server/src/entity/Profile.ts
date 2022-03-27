@@ -10,6 +10,9 @@ export class Profile {
   @Column({ unique: true })
   username: string;
 
+  @Column()
+  showname: string;
+
   @OneToOne(() => User, (user) => user.profile, { onDelete: "CASCADE" })
   user: User;
 
