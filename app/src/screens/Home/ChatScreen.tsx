@@ -1,6 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, FlatList, StyleSheet, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
   bg_DarkColor,
@@ -26,12 +32,15 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   const goBack = () => {
     socket?.off("add-msg", (msg: Msg) => {});
     socket?.off("remove-msg", (id: number) => {});
+    socket?.emit("leave-room");
     navigation.pop();
   };
 
   useEffect(() => {
     socket?.emit("join-room", { roomId: roomId });
-    socket?.on("error-msg", (message: string) => Alert.alert("Error", message));
+    socket?.on("error-msg", (errorMessage) =>
+      Alert.alert("Error", errorMessage)
+    );
     socket?.on(
       "join-room-initialize",
       ({ members, msgs }: { members: Profile[]; msgs: Msg[] }) => {
@@ -40,12 +49,16 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
       }
     );
     socket?.on("add-msg", (msg: Msg) => {
-      console.log(msg);
+      setMsgInput("");
       setMessages((prev) => {
-        return [...prev, msg];
+        return [msg, ...prev];
       });
     });
-    socket?.on("remove-msg", (id: number) => {});
+    socket?.on("remove-msg", (id: string) => {
+      setMessages((prev) => {
+        return prev.filter((msg) => msg.id != id);
+      });
+    });
     return () => {
       socket?.off("join-room-initialize");
       socket?.off("add-msg");
@@ -64,32 +77,51 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
               color="#FFF"
             />
           </TouchableOpacity>
-          <Text style={{ fontSize: windowWidth * 0.1, color: "white" }}>
-            {roomName}
-          </Text>
+          <View style={styles.roomNameContainer}>
+            <Text style={styles.roomNameText}>{roomName}</Text>
+          </View>
           <TouchableOpacity style={styles.sideBtn}>
             <Ionicons name="settings" size={windowWidth * 0.08} color="#FFF" />
           </TouchableOpacity>
         </View>
         <FlatList
           data={messages}
+          keyExtractor={(item) => item.id}
+          inverted={true}
+          onEndReached={() => console.log("need to load more msg!!")}
+          extraData={messages}
           renderItem={({ item }) => {
             return (
-              <View>
-                <Text style={{ color: "#FFF" }}>{item.msg}</Text>
+              <View key={item.id} style={{ flexDirection: "row" }}>
+                <Text style={{ color: "#FFF" }}>{item.id + " "}</Text>
+                <Text style={{ color: "#FFF" }}>
+                  {item.sender.username + ": "}
+                </Text>
+                <Text style={{ color: "#FFF" }}>{item.msg + " "}</Text>
+                <Text style={{ color: "#FFF" }}>{item.createdAt + "  "}</Text>
+                <TouchableOpacity
+                  onPress={() => socket?.emit("delete-msg", { id: item.id })}
+                >
+                  <Text style={{ color: "pink" }}>DELETE</Text>
+                </TouchableOpacity>
               </View>
             );
           }}
         />
         <TextInput
           onChangeText={(msg) => setMsgInput(msg)}
+          value={msgInput}
           placeholder=""
           placeholderTextColor="#AAA"
-          autoComplete="none"
+          autoComplete="off"
+          autoCapitalize="none"
           style={{ color: "#FFF" }}
         />
         <TouchableOpacity
           onPress={() => {
+            if (!msgInput) {
+              return Alert.alert("Error", "cannot send empty message!");
+            }
             socket?.emit("send-msg", { msg: msgInput });
           }}
         >
@@ -107,12 +139,29 @@ const styles = StyleSheet.create({
     backgroundColor: bg_DarkColor,
   },
   header: {
-    height: windowHeight * 0.1,
+    height: windowHeight * 0.06,
     width: windowWidth,
     flexDirection: "row",
+    borderBottomWidth: 1.5,
+    borderBottomColor: "#111",
   },
-  roomName: {},
+  roomNameContainer: {
+    flex: 6,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  roomNameText: {
+    fontSize: windowWidth * 0.08,
+    color: "white",
+  },
   sideBtn: {
     flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: windowWidth * 0.015,
+  },
+  chatBody: {
+    flex: 1,
+    backgroundColor: bg_DarkColor,
   },
 });
