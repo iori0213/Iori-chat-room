@@ -10,8 +10,8 @@ interface Room {
 }
 
 interface Msg {
-  id: number;
-  senderId: string;
+  id: string;
+  sender: Profile;
   msg: string;
   createdAt: string;
 }
