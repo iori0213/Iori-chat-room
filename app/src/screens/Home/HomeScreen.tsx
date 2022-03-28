@@ -1,7 +1,7 @@
 import { CommonActions } from "@react-navigation/native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
   StyleSheet,
@@ -25,12 +25,15 @@ import { HomeNavigationProps } from "../../types/navigations";
 import { MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
 import Friend from "../../components/Home/Friend";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { ChatContext } from "../../components/Home/ChatContext";
 
 type Props = BottomTabScreenProps<HomeNavigationProps, "HomeScreen">;
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [friendArray, setFriendArray] = useState<Profile[]>([]);
   const [friend, setFriend] = useState<string>();
+  const { socket } = useContext(ChatContext);
+
   //ANCHOR Logout process
   const LogoutProcess = async () => {
     const localRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY);
@@ -48,6 +51,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       }
       await SecureStore.deleteItemAsync(ACCESS_KEY);
       await SecureStore.deleteItemAsync(REFRESH_KEY);
+      socket?.disconnect();
       navigation.dispatch(
         CommonActions.reset({ routes: [{ name: "AuthNavigation" }] })
       );
