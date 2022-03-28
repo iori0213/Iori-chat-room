@@ -8,14 +8,14 @@ export const chatController = (
   io: Server,
   socket: Socket,
   profile: Profile,
-  room: ChatRoom,
+  room: ChatRoom
 ) => {
   const sendMsg = async (params: { msg: string }) => {
     const { msg } = params;
     if (!msg) {
       socket.emit("error-msg", {
-        message: "no msg reveive"
-      })
+        message: "no msg reveive",
+      });
     } else {
       const msgRepo = getRepository(Message);
       const newMsg = new Message();
@@ -23,29 +23,37 @@ export const chatController = (
       newMsg.sender = profile;
       newMsg.msg = msg;
       await msgRepo.save(newMsg);
-      console.log({ newMsg });
-      io.to(room.id).emit("add-msg", { msg: msg })
+      const addMsg = new Message();
+      addMsg.id = newMsg.id;
+      addMsg.sender = newMsg.sender;
+      addMsg.msg = newMsg.msg;
+      addMsg.createdAt = newMsg.createdAt;
+      console.log(addMsg);
+      io.to(room.id).emit("add-msg", addMsg);
     }
-  }
+  };
   socket.on("send-msg", sendMsg);
 
   const deleteMsg = async (params: { id: number }) => {
     const { id } = params;
     const msgRepo = getRepository(Message);
-    const msg = await msgRepo.findOne({ where: { id: id } })
+    const msg = await msgRepo.findOne({
+      where: { id: id, sender: { id: profile.id } },
+    });
     if (!msg) {
-      socket.emit("error-msg", {
-        message: "message not found!"
-      })
+      socket.emit(
+        "error-msg",
+        "You don't own the message, or message not exist!"
+      );
     } else {
-      msgRepo.remove(msg);
-      io.in(room.id).emit("remove-msg", { id: msg.id });
+      io.in(room.id).emit("remove-msg", msg.id);
+      await msgRepo.remove(msg);
     }
-  }
+  };
   socket.on("delete-msg", deleteMsg);
 
   return () => {
     socket.off("send-msg", sendMsg);
     socket.off("delete-msg", deleteMsg);
-  }
+  };
 };
