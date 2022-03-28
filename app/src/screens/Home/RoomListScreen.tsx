@@ -2,10 +2,9 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
-  Button,
   FlatList,
   StyleSheet,
   Text,
@@ -15,8 +14,6 @@ import {
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { io } from "socket.io-client";
-import { AccessContext } from "../../components/Home/AccessContext";
-import { ChatContext } from "../../components/Home/ChatContext";
 import { BackendUrl, ChatRoomAPI } from "../../constants/backendAPI";
 import {
   bg_DarkColor,
@@ -128,42 +125,6 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 export default RoomListScreen;
-/**
- * socket.on('some-event', (param) => {
-      param === {
-        email: 'email',
-        password: 'password'
-      }
-
-      param.email, param.passord
- *                           
- * })
- */
-
-const TestComp: React.FC = () => {
-  useEffect(() => {
-    socket.on("server-emitted-event", (params) => {
-      // do something
-    });
-
-    return () => {
-      socket.off("server-emitted-event");
-    };
-  });
-
-  const testHandler = () => {
-    socket.emit("some-event", {
-      email: "email",
-      password: "password",
-    });
-  };
-
-  return (
-    <View>
-      <Button title="test" onPress={testHandler} />
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -221,7 +182,3 @@ const styles = StyleSheet.create({
     backgroundColor: bg_DarkColor,
   },
 });
-
-function async() {
-  throw new Error("Function not implemented.");
-}
