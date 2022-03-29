@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.04,
     borderRadius: windowHeight * 0.02,
     backgroundColor: "#FFF",
-    paddingLeft: windowWidth * 0.03,
+    paddingLeft: windowWidth * 0.04,
     fontSize: windowHeight * 0.025,
   },
   textSubmitBtn: {
