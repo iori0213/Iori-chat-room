@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
+  Modal,
   StyleSheet,
   Text,
   TextInput,
@@ -14,7 +15,7 @@ import {
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { io } from "socket.io-client";
-import { BackendUrl, ChatRoomAPI } from "../../constants/backendAPI";
+import { BackendUrl, ChatRoomAPI, FriendAPI } from "../../constants/backendAPI";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
@@ -33,6 +34,11 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
   const [chatName, setChatName] = useState<string>("");
   const [roomList, setRoomList] = useState<Room[]>([]);
   const [showingList, setShowingList] = useState<Room[]>([]);
+  //newRoom params
+  const [visible, setVisible] = useState<boolean>(false);
+  const [friendList, setFriendList] = useState<Profile[]>([]);
+  const [roomName, setRoomName] = useState("");
+  const [members, setMembers] = useState<Profile[]>([]);
 
   const getChatRoom = async () => {
     const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
@@ -47,21 +53,70 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
       setRoomList(list.data.roomList);
     });
   };
-  const createChatRoom = async () => {
+  const getFriendList = async () => {
+    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
     axios({
       method: "get",
+      url: `${FriendAPI}/get`,
+      headers: { Authorization: `Bearer ${localAccessToken}` },
+    }).then((result) => {
+      if (!result.data.success) {
+        return Alert.alert("Error", "get friend process failed!");
+      }
+      setFriendList(result.data.friendsArray);
     });
+  };
+  const createChatRoom = async () => {
+    // socket.emit()
+  };
+  const cancelCreate = () => {
+    setRoomName("");
+    setFriendList([]);
+    setVisible(false);
   };
 
   useEffect(() => {
     getChatRoom();
-
     return () => {};
   }, []);
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
+        <Modal
+          transparent={false}
+          visible={visible}
+          presentationStyle="fullScreen"
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity
+                onPress={() => cancelCreate()}
+                style={styles.modalGoback}
+              >
+                <Ionicons
+                  name="arrow-back"
+                  size={windowWidth * 0.08}
+                  color="#FFF"
+                />
+              </TouchableOpacity>
+              <View style={styles.modalTitleContainer}>
+                <Text style={styles.modalTitle}>Create Room</Text>
+              </View>
+              <View style={styles.modalGoback}></View>
+            </View>
+            <View style={styles.modalBody}>
+              <TextInput
+                onChangeText={(msg) => setRoomName(msg)}
+                value={roomName}
+                placeholder="enter new room name"
+                placeholderTextColor="#AAA"
+                autoCapitalize="none"
+                style={styles.modalInput}
+              />
+            </View>
+          </View>
+        </Modal>
         <View style={styles.header}>
           <View style={styles.titleBar}>
             <View style={styles.title}>
@@ -69,11 +124,11 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
             </View>
             <TouchableOpacity
               style={styles.addBtn}
-              onPress={() => createChatRoom()}
+              onPress={() => setVisible((prev) => !prev)}
             >
               <MaterialCommunityIcons
                 name="chat-plus"
-                size={windowWidth * 0.1}
+                size={windowWidth * 0.08}
                 color="#FFF"
               />
             </TouchableOpacity>
@@ -107,14 +162,9 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
                       roomName: item.roomname,
                     })
                   }
-                  style={{
-                    width: 50,
-                    height: 25,
-                    borderWidth: 1,
-                    borderColor: "white",
-                  }}
+                  style={styles.chatRoom}
                 >
-                  <Text style={{ color: "white" }}>{item.roomname}</Text>
+                  <Text style={styles.roomName}>{item.roomname}</Text>
                 </TouchableOpacity>
               );
             }}
@@ -130,8 +180,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: bg_LessDarkColor,
-    // alignItems: "center",
-    // justifyContent: "center",
   },
   header: {
     width: windowWidth,
@@ -157,7 +205,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingRight: windowWidth * 0.03,
+    marginRight: windowWidth * 0.03,
   },
   searchBar: {
     height: windowHeight * 0.04,
@@ -181,4 +229,57 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: bg_DarkColor,
   },
+  chatRoom: {
+    width: windowWidth,
+    height: windowHeight * 0.1,
+    fontSize: windowHeight * 0.1,
+    justifyContent: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: bg_LessDarkColor,
+  },
+  roomName: {
+    fontSize: windowHeight * 0.06,
+    paddingLeft: windowWidth * 0.03,
+    color: "#FFF",
+  },
+
+  //for modal
+  modalContainer: {
+    flex: 1,
+    backgroundColor: bg_LessDarkColor,
+  },
+  modalHeader: {
+    marginTop: windowHeight * 0.015,
+    flex: 1,
+    flexDirection: "row",
+  },
+  modalTitleContainer: {
+    flex: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalTitle: {
+    fontSize: windowHeight * 0.04,
+    color: "#FFF",
+  },
+  modalGoback: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalBody: {
+    flex: 9,
+    alignItems: "center",
+  },
+  modalInput: {
+    height: windowHeight * 0.06,
+    width: windowWidth * 0.8,
+    marginTop: windowHeight * 0.02,
+    backgroundColor: "#FFF",
+    borderRadius: windowHeight * 0.03,
+    paddingLeft: windowWidth * 0.05,
+    color: bg_DarkColor,
+    fontSize: windowHeight * 0.03,
+  },
+  modalSubmit: {},
 });
