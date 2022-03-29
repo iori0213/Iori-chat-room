@@ -30,8 +30,9 @@ import { ChatContext } from "../../components/Home/ChatContext";
 type Props = BottomTabScreenProps<HomeNavigationProps, "HomeScreen">;
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
+  const [name, setName] = useState("");
   const [friendArray, setFriendArray] = useState<Profile[]>([]);
-  const [friend, setFriend] = useState<string>();
+  const [friend, setFriend] = useState("");
   const { socket } = useContext(ChatContext);
 
   //ANCHOR Logout process
@@ -67,6 +68,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       if (!result.data.success) {
         return Alert.alert("Error", "get friend process failed!");
       }
+      if (name != result.data.username) {
+        setName(result.data.username);
+      }
       setFriendArray(result.data.friendsArray);
     });
   };
@@ -81,7 +85,13 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       if (!result.data.success) {
         return Alert.alert("Error", result.data.message);
       }
-      getFriends();
+      const newFriend: Profile = {
+        id: result.data.friend.id,
+        username: result.data.friend.username,
+        showName: result.data.friend.showName,
+      };
+      setFriendArray((prev) => [newFriend, ...prev]);
+      setFriend("");
     });
   };
   const removeFriend = async (friendId: string) => {
@@ -106,32 +116,34 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
-        <HomeHeader userName="Bryan" logoutFunc={() => LogoutProcess()} />
+        <HomeHeader userName={name} logoutFunc={() => LogoutProcess()} />
         <View style={styles.bodyContainer}>
           <Text style={styles.friendListHeader}>Friend List</Text>
           <View style={styles.addFriendHeader}>
-            <View style={styles.slideNavigatorContainer}></View>
-            <View style={styles.titleContainer}>
+            <View style={styles.sideBlank}></View>
+            <View style={styles.inputContainer}>
               <TextInput
                 onChangeText={(val) => setFriend(val)}
+                value={friend}
                 placeholder="add friend name"
-                placeholderTextColor="#999"
+                placeholderTextColor="#CCC"
                 autoCapitalize="none"
                 style={styles.input}
               />
             </View>
-            <View style={styles.slideNavigatorContainer}>
+            <View style={styles.sideBlank}>
               <TouchableOpacity onPress={() => addFriend()}>
                 <AntDesign
                   name="adduser"
                   size={windowWidth * 0.08}
-                  color="#FFF"
+                  color={hilight_color}
                 />
               </TouchableOpacity>
             </View>
           </View>
           <FlatList
             data={friendArray}
+            extraData={friendArray}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
               return <Friend friend={item} deleteFunc={removeFriend} />;
@@ -178,7 +190,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({ userName, logoutFunc }) => {
           <MaterialCommunityIcons
             name="logout"
             size={windowWidth * 0.09}
-            color={hilight_color}
+            color="#FFF"
           />
         </TouchableOpacity>
       </View>
@@ -197,7 +209,7 @@ const styles = StyleSheet.create({
     backgroundColor: bg_LessDarkColor,
   },
   titleContainer: {
-    flex: 3,
+    flex: 5,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -229,9 +241,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "row",
   },
+  sideBlank: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inputContainer: {
+    flex: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   input: {
     height: windowHeight * 0.05,
-    width: windowWidth * 0.65,
+    width: windowWidth * 0.75,
     borderRadius: windowWidth * 0.02,
     fontSize: windowWidth * 0.05,
     backgroundColor: bg_LessDarkColor,

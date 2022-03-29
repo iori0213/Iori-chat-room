@@ -6,18 +6,19 @@ import {
   Text,
   View,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
   bg_DarkColor,
+  bg_LessDarkColor,
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ChatNavigationProps } from "../../types/navigations";
 import { ChatContext } from "../../components/Home/ChatContext";
-import { TextInput } from "react-native-paper";
 
 type Props = NativeStackScreenProps<ChatNavigationProps, "ChatScreen">;
 
@@ -84,49 +85,57 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
             <Ionicons name="settings" size={windowWidth * 0.08} color="#FFF" />
           </TouchableOpacity>
         </View>
-        <FlatList
-          data={messages}
-          keyExtractor={(item) => item.id}
-          inverted={true}
-          onEndReached={() => console.log("need to load more msg!!")}
-          extraData={messages}
-          renderItem={({ item }) => {
-            return (
-              <View key={item.id} style={{ flexDirection: "row" }}>
-                <Text style={{ color: "#FFF" }}>{item.id + " "}</Text>
-                <Text style={{ color: "#FFF" }}>
-                  {item.sender.username + ": "}
-                </Text>
-                <Text style={{ color: "#FFF" }}>{item.msg + " "}</Text>
-                <Text style={{ color: "#FFF" }}>{item.createdAt + "  "}</Text>
-                <TouchableOpacity
-                  onPress={() => socket?.emit("delete-msg", { id: item.id })}
-                >
-                  <Text style={{ color: "pink" }}>DELETE</Text>
-                </TouchableOpacity>
-              </View>
-            );
-          }}
-        />
-        <TextInput
-          onChangeText={(msg) => setMsgInput(msg)}
-          value={msgInput}
-          placeholder=""
-          placeholderTextColor="#AAA"
-          autoComplete="off"
-          autoCapitalize="none"
-          style={{ color: "#FFF" }}
-        />
-        <TouchableOpacity
-          onPress={() => {
-            if (!msgInput) {
-              return Alert.alert("Error", "cannot send empty message!");
-            }
-            socket?.emit("send-msg", { msg: msgInput });
-          }}
-        >
-          <Text style={{ fontSize: 20, color: "#FFF" }}>push msg</Text>
-        </TouchableOpacity>
+        <View style={styles.body}>
+          <FlatList
+            data={messages}
+            keyExtractor={(item) => item.id}
+            inverted={true}
+            onEndReached={() => console.log("need to load more msg!!")}
+            extraData={messages}
+            renderItem={({ item }) => {
+              return (
+                <View key={item.id} style={{ flexDirection: "row" }}>
+                  <Text style={{ color: "#FFF" }}>{item.id + " "}</Text>
+                  <Text style={{ color: "#FFF" }}>
+                    {item.sender.username + ": "}
+                  </Text>
+                  <Text style={{ color: "#FFF" }}>{item.msg + " "}</Text>
+                  <Text style={{ color: "#FFF" }}>{item.createdAt + "  "}</Text>
+                  <TouchableOpacity
+                    onPress={() => socket?.emit("delete-msg", { id: item.id })}
+                  >
+                    <Text style={{ color: "pink" }}>DELETE</Text>
+                  </TouchableOpacity>
+                </View>
+              );
+            }}
+          />
+          <View style={styles.footer}>
+            <TextInput
+              onChangeText={(msg) => setMsgInput(msg)}
+              value={msgInput}
+              placeholder=""
+              placeholderTextColor="#AAA"
+              autoCapitalize="none"
+              style={styles.input}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                if (!msgInput) {
+                  return Alert.alert("Error", "cannot send empty message!");
+                }
+                socket?.emit("send-msg", { msg: msgInput });
+              }}
+              style={styles.textSubmitBtn}
+            >
+              <AntDesign
+                name="rightcircle"
+                size={windowHeight * 0.04}
+                color="#FFF"
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -136,7 +145,7 @@ export default ChatScreen;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: bg_DarkColor,
+    backgroundColor: bg_LessDarkColor,
   },
   header: {
     height: windowHeight * 0.06,
@@ -160,8 +169,27 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: windowWidth * 0.015,
   },
-  chatBody: {
+  body: {
     flex: 1,
     backgroundColor: bg_DarkColor,
+  },
+  footer: {
+    flexDirection: "row",
+    width: windowWidth,
+    backgroundColor: bg_LessDarkColor,
+    height: windowHeight * 0.06,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  input: {
+    width: windowWidth * 0.8,
+    height: windowHeight * 0.04,
+    borderRadius: windowHeight * 0.02,
+    backgroundColor: "#FFF",
+    paddingLeft: windowWidth * 0.03,
+    fontSize: windowHeight * 0.025,
+  },
+  textSubmitBtn: {
+    marginLeft: windowWidth * 0.03,
   },
 });
