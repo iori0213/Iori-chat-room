@@ -2,7 +2,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -13,32 +13,34 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Checkbox from "expo-checkbox";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { io } from "socket.io-client";
-import { BackendUrl, ChatRoomAPI, FriendAPI } from "../../constants/backendAPI";
+import { ChatRoomAPI, FriendAPI } from "../../constants/backendAPI";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
+  hilight_color,
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
-import { ACCESS_KEY } from "../../constants/securestoreKey";
+import { ACCESS_KEY, USERID_KEY } from "../../constants/securestoreKey";
 
 import { HomeNavigationProps } from "../../types/navigations";
-
-export const socket = io(`${BackendUrl}`);
+import { ChatContext } from "../../components/Home/ChatContext";
+import LoadingSpinner from "../../components/Auth/LoadingSpinner";
 
 type Props = NativeStackScreenProps<HomeNavigationProps, "RoomListScreen">;
 
 const RoomListScreen: React.FC<Props> = ({ navigation }) => {
+  const { socket } = useContext(ChatContext);
+  const [fetching, setFetching] = useState(false);
   const [chatName, setChatName] = useState<string>("");
   const [roomList, setRoomList] = useState<Room[]>([]);
   const [showingList, setShowingList] = useState<Room[]>([]);
   //newRoom params
   const [visible, setVisible] = useState<boolean>(false);
-  const [friendList, setFriendList] = useState<Profile[]>([]);
   const [roomName, setRoomName] = useState("");
-  const [members, setMembers] = useState<Profile[]>([]);
+  const [members, setMembers] = useState<MemberCheck[]>([]);
 
   const getChatRoom = async () => {
     const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
@@ -63,113 +65,200 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
       if (!result.data.success) {
         return Alert.alert("Error", "get friend process failed!");
       }
-      setFriendList(result.data.friendsArray);
+      const List: MemberCheck[] = result.data.friendsArray.map(
+        (member: Profile) => {
+          const memberInfo: MemberCheck = {
+            id: member.id,
+            username: member.username,
+            showName: member.showName,
+            join: false,
+          };
+          return memberInfo;
+        }
+      );
+      setMembers(List);
     });
   };
   const createChatRoom = async () => {
-    // socket.emit()
+    if (!roomName) {
+      return Alert.alert("Error", "room name is missing");
+    } else {
+      setFetching(true);
+      const temp = members.filter((member) => member.join == true);
+      const idList = temp.map((member) => member.id);
+      socket?.emit("create-room", { roomName: roomName, members: idList });
+      setMembers([]);
+      setVisible(false);
+      setFetching(false);
+    }
   };
   const cancelCreate = () => {
     setRoomName("");
-    setFriendList([]);
+    setMembers([]);
     setVisible(false);
   };
 
   useEffect(() => {
     getChatRoom();
-    return () => {};
-  }, []);
+    getFriendList();
+    socket?.on("new-room", async (data) => {
+      const chatRoomMembers: String[] = data.members;
+      const userId = await SecureStore.getItemAsync(USERID_KEY);
+      if (chatRoomMembers.includes(userId!)) {
+        getChatRoom();
+      }
+    });
+    return () => {
+      socket?.off("new-room");
+    };
+  }, [socket]);
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
-        <Modal
-          transparent={false}
-          visible={visible}
-          presentationStyle="fullScreen"
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <TouchableOpacity
-                onPress={() => cancelCreate()}
-                style={styles.modalGoback}
-              >
-                <Ionicons
-                  name="arrow-back"
-                  size={windowWidth * 0.08}
-                  color="#FFF"
-                />
-              </TouchableOpacity>
-              <View style={styles.modalTitleContainer}>
-                <Text style={styles.modalTitle}>Create Room</Text>
+        {fetching ? (
+          <LoadingSpinner />
+        ) : (
+          <>
+            <Modal
+              transparent={false}
+              visible={visible}
+              presentationStyle="fullScreen"
+              onShow={() => getFriendList()}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalHeader}>
+                  <TouchableOpacity
+                    onPress={() => cancelCreate()}
+                    style={styles.modalGoback}
+                  >
+                    <Ionicons
+                      name="arrow-back"
+                      size={windowWidth * 0.08}
+                      color="#FFF"
+                    />
+                  </TouchableOpacity>
+                  <View style={styles.modalTitleContainer}>
+                    <Text style={styles.modalTitle}>Create Room</Text>
+                  </View>
+                  <View style={styles.modalGoback}></View>
+                </View>
+                <View style={styles.modalBody}>
+                  <TextInput
+                    onChangeText={(msg) => setRoomName(msg)}
+                    value={roomName}
+                    placeholder="enter new room name"
+                    placeholderTextColor="#AAA"
+                    autoCapitalize="none"
+                    style={styles.modalInput}
+                  />
+                  <View style={styles.modalFriendList}>
+                    <View style={styles.modalFriendListTitleContainer}>
+                      <Text style={styles.modalFriendListTitle}>Members</Text>
+                    </View>
+                    <FlatList
+                      data={members}
+                      extraData={members}
+                      keyExtractor={(item) => item.id}
+                      renderItem={({ item }) => {
+                        return (
+                          <View style={styles.modalMemberContainer}>
+                            <Checkbox
+                              style={{
+                                width: windowWidth * 0.07,
+                                height: windowWidth * 0.07,
+                              }}
+                              disabled={false}
+                              color={item.join ? bg_LessDarkColor : "#FFF"}
+                              value={item.join}
+                              onValueChange={() =>
+                                setMembers((prev) =>
+                                  prev.map((friend) => {
+                                    if (friend.id == item.id) {
+                                      friend.join = !friend.join;
+                                    }
+                                    return friend;
+                                  })
+                                )
+                              }
+                            />
+                            <Text style={styles.modalMemberName}>
+                              {item.username}
+                            </Text>
+                          </View>
+                        );
+                      }}
+                    />
+                  </View>
+                  <TouchableOpacity
+                    style={styles.modalSubmitContainer}
+                    onPress={() => createChatRoom()}
+                  >
+                    <Text style={styles.modalSubmit}>CREATE</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View style={styles.modalGoback}></View>
-            </View>
-            <View style={styles.modalBody}>
-              <TextInput
-                onChangeText={(msg) => setRoomName(msg)}
-                value={roomName}
-                placeholder="enter new room name"
-                placeholderTextColor="#AAA"
-                autoCapitalize="none"
-                style={styles.modalInput}
-              />
-            </View>
-          </View>
-        </Modal>
-        <View style={styles.header}>
-          <View style={styles.titleBar}>
-            <View style={styles.title}>
-              <Text style={styles.titleText}>Chat Rooms</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.addBtn}
-              onPress={() => setVisible((prev) => !prev)}
-            >
-              <MaterialCommunityIcons
-                name="chat-plus"
-                size={windowWidth * 0.08}
-                color="#FFF"
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.searchBar}>
-            <TextInput
-              onChangeText={(val) => setChatName(val)}
-              placeholder="Search room name"
-              placeholderTextColor="#999"
-              autoCapitalize="none"
-              style={styles.searchInput}
-            />
-            <TouchableOpacity
-              style={styles.goBtn}
-              onPress={() => console.log("search room")}
-            >
-              <Ionicons name="search" size={windowWidth * 0.07} color="#FFF" />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.body}>
-          <FlatList
-            data={roomList}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => {
-              return (
+            </Modal>
+            <View style={styles.header}>
+              <View style={styles.titleBar}>
+                <View style={styles.title}>
+                  <Text style={styles.titleText}>Chat Rooms</Text>
+                </View>
                 <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("ChatScreen", {
-                      roomId: item.id,
-                      roomName: item.roomname,
-                    })
-                  }
-                  style={styles.chatRoom}
+                  style={styles.addBtn}
+                  onPress={() => setVisible((prev) => !prev)}
                 >
-                  <Text style={styles.roomName}>{item.roomname}</Text>
+                  <MaterialCommunityIcons
+                    name="chat-plus"
+                    size={windowWidth * 0.08}
+                    color="#FFF"
+                  />
                 </TouchableOpacity>
-              );
-            }}
-          />
-        </View>
+              </View>
+              <View style={styles.searchBar}>
+                <TextInput
+                  onChangeText={(val) => setChatName(val)}
+                  placeholder="Search room name"
+                  placeholderTextColor="#999"
+                  autoCapitalize="none"
+                  style={styles.searchInput}
+                />
+                <TouchableOpacity
+                  style={styles.goBtn}
+                  onPress={() => console.log("search room")}
+                >
+                  <Ionicons
+                    name="search"
+                    size={windowWidth * 0.07}
+                    color="#FFF"
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.body}>
+              <FlatList
+                data={roomList}
+                extraData={roomList}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("ChatScreen", {
+                          roomId: item.id,
+                          roomName: item.roomname,
+                        })
+                      }
+                      style={styles.chatRoom}
+                    >
+                      <Text style={styles.roomName}>{item.roomname}</Text>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+          </>
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -273,7 +362,7 @@ const styles = StyleSheet.create({
   },
   modalInput: {
     height: windowHeight * 0.06,
-    width: windowWidth * 0.8,
+    width: windowWidth * 0.75,
     marginTop: windowHeight * 0.02,
     backgroundColor: "#FFF",
     borderRadius: windowHeight * 0.03,
@@ -281,5 +370,54 @@ const styles = StyleSheet.create({
     color: bg_DarkColor,
     fontSize: windowHeight * 0.03,
   },
-  modalSubmit: {},
+  modalFriendList: {
+    height: windowHeight * 0.65,
+    width: windowWidth * 0.8,
+    marginTop: windowHeight * 0.02,
+    backgroundColor: bg_DarkColor,
+    borderTopLeftRadius: windowWidth * 0.1,
+    borderTopRightRadius: windowWidth * 0.1,
+    borderBottomRightRadius: windowWidth * 0.1,
+    borderBottomLeftRadius: windowWidth * 0.1,
+  },
+  modalFriendListTitleContainer: {
+    height: windowHeight * 0.06,
+    width: windowWidth * 0.8,
+    alignItems: "center",
+    justifyContent: "center",
+    borderTopLeftRadius: windowWidth * 0.1,
+    borderTopRightRadius: windowWidth * 0.1,
+  },
+  modalFriendListTitle: {
+    fontSize: windowHeight * 0.04,
+    color: "#FFF",
+  },
+  modalMemberContainer: {
+    height: windowHeight * 0.06,
+    width: windowWidth * 0.8,
+    alignItems: "center",
+    flexDirection: "row",
+    paddingLeft: windowWidth * 0.13,
+    borderBottomRightRadius: windowWidth * 0.1,
+    borderBottomLeftRadius: windowWidth * 0.1,
+  },
+  modalMemberName: {
+    fontSize: windowHeight * 0.04,
+    color: "#FFF",
+    marginLeft: windowWidth * 0.03,
+  },
+  modalSubmitContainer: {
+    height: windowHeight * 0.06,
+    width: windowWidth * 0.4,
+    borderRadius: windowHeight * 0.03,
+    borderWidth: 2,
+    borderColor: hilight_color,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: windowHeight * 0.02,
+  },
+  modalSubmit: {
+    fontSize: windowHeight * 0.035,
+    color: hilight_color,
+  },
 });

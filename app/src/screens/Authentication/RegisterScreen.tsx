@@ -1,61 +1,101 @@
 import React, { useState } from "react";
-import axios from "axios"
+import axios from "axios";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { bg_DarkColor, bg_LightColor, cornerRadius, inputIconSize, placeholderColor, windowHeight, windowWidth } from "../../constants/cssConst"
+import {
+  bg_DarkColor,
+  bg_LightColor,
+  cornerRadius,
+  hilight_color,
+  windowHeight,
+  windowWidth,
+} from "../../constants/cssConst";
 import AuthInput from "../../components/Auth/AuthInput";
-import { Fontisto, Feather } from "@expo/vector-icons"
+import { Fontisto, Feather, FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthAPI } from "../../constants/backendAPI";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { AuthNavigationProps } from "../../types/navigations"
+import { AuthNavigationProps } from "../../types/navigations";
 
-type Props = NativeStackScreenProps<AuthNavigationProps, "RegisterScreen">
+type Props = NativeStackScreenProps<AuthNavigationProps, "RegisterScreen">;
 
 const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   //useState
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [showName, setShowName] = useState("");
   const [password, setPassword] = useState("");
 
   const RegisterProcess = async () => {
-    if (email == "" || name == "" || password == "") return Alert.alert("Error", "Missing input value!");
+    if (email == "" || name == "" || showName == "" || password == "")
+      return Alert.alert("Error", "Missing input value!");
     axios({
       method: "post",
       url: `${AuthAPI}/register`,
       data: {
         email: email,
         name: name,
-        password: password
-      }
-    }).then((result) => {
-      return Alert.alert("Register", result.data.message, [{ text: "OK", onPress: () => navigation.pop() }])
-    }).catch((e) => { return Alert.alert("Register error", e.response.data.message) })
-  }
+        showName: showName,
+        password: password,
+      },
+    })
+      .then((result) => {
+        return Alert.alert("Register", result.data.message, [
+          { text: "OK", onPress: () => navigation.pop() },
+        ]);
+      })
+      .catch((e) => {
+        return Alert.alert("Register error", e.response.data.message);
+      });
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.topContainer}>
         <View style={styles.cuttingTopContainer}>
+          <TouchableOpacity
+            style={styles.goback}
+            onPress={() => navigation.goBack()}
+          >
+            <FontAwesome
+              name="angle-double-left"
+              size={windowWidth * 0.12}
+              color={bg_DarkColor}
+            />
+          </TouchableOpacity>
           <Text style={styles.headerTextContainer}>reGisteR</Text>
         </View>
       </View>
       {/* Body */}
       <View style={styles.mainContainer}>
         <AuthInput
-          InputIcon={<Fontisto name="email" size={windowWidth * 0.07} color="#FFF" />}
+          InputIcon={
+            <Fontisto name="email" size={windowWidth * 0.07} color="#FFF" />
+          }
           SetInputState={setEmail}
           PlaceHolder="Enter email"
           PasswordMode={false}
         />
         <AuthInput
-          InputIcon={<Feather name="user" size={windowWidth * 0.07} color="#FFF" />}
+          InputIcon={
+            <Feather name="user" size={windowWidth * 0.07} color="#FFF" />
+          }
           SetInputState={setName}
-          PlaceHolder="Enter username"
+          PlaceHolder="Enter user name"
           PasswordMode={false}
         />
         <AuthInput
-          InputIcon={<Fontisto name="locked" size={windowWidth * 0.07} color="#FFF" />}
+          InputIcon={
+            <Feather name="user" size={windowWidth * 0.07} color="#FFF" />
+          }
+          SetInputState={setShowName}
+          PlaceHolder="Enter show name"
+          PasswordMode={false}
+        />
+        <AuthInput
+          InputIcon={
+            <Fontisto name="locked" size={windowWidth * 0.07} color="#FFF" />
+          }
           SetInputState={setPassword}
           PlaceHolder="Enter password"
           PasswordMode={true}
@@ -65,21 +105,24 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.bottomContainer}>
         <View style={styles.cuttingBottomContainer}>
           {/* Auth container */}
-          <TouchableOpacity style={styles.authBtn} onPress={() => RegisterProcess()}>
+          <TouchableOpacity
+            style={styles.authBtn}
+            onPress={() => RegisterProcess()}
+          >
             <Text style={styles.btnText}>SUBMIT</Text>
           </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default RegisterScreen
+export default RegisterScreen;
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: bg_DarkColor
+    backgroundColor: bg_DarkColor,
   },
   //Header
   topContainer: {
@@ -93,19 +136,27 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: cornerRadius,
     borderTopLeftRadius: windowWidth * 0.4,
     alignItems: "center",
+    // justifyContent: "center",
+  },
+  goback: {
+    width: windowWidth * 0.12,
+    height: windowWidth * 0.12,
+    marginRight: windowWidth * 0.88,
+    alignItems: "center",
     justifyContent: "center",
   },
   headerTextContainer: {
-    color: "#FFF",
+    color: hilight_color,
     fontFamily: "MajorMonoDisplay",
-    fontSize: windowWidth * 0.085,
+    fontSize: windowWidth * 0.11,
+    paddingTop: windowHeight * 0.02,
   },
   //Body
   mainContainer: {
     width: windowWidth,
     height: windowHeight * 0.5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: bg_LightColor,
     borderTopLeftRadius: cornerRadius,
     borderBottomRightRadius: cornerRadius,
@@ -125,18 +176,17 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
   },
   authBtn: {
-    width: windowWidth * 0.6,
+    width: windowWidth * 0.5,
     height: windowHeight * 0.07,
     marginTop: cornerRadius / 1.5,
     borderWidth: 1.5,
     borderColor: bg_LightColor,
     borderRadius: windowHeight * 0.035,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   btnText: {
-    fontFamily: "Roboto_Thin",
     fontSize: windowWidth * 0.075,
-    color: "#FFF",
+    color: bg_LightColor,
   },
-})
+});

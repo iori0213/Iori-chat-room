@@ -20,17 +20,24 @@ import {
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
-import { ACCESS_KEY, REFRESH_KEY } from "../../constants/securestoreKey";
+import {
+  ACCESS_KEY,
+  REFRESH_KEY,
+  SHOWNAME_KEY,
+  USERID_KEY,
+  USERNAME_KEY,
+} from "../../constants/securestoreKey";
 import { HomeNavigationProps } from "../../types/navigations";
 import { MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
 import Friend from "../../components/Home/Friend";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { ChatContext } from "../../components/Home/ChatContext";
+import LoginScreen from "../Authentication/LoginScreen";
 
 type Props = BottomTabScreenProps<HomeNavigationProps, "HomeScreen">;
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
-  const [name, setName] = useState("");
+  const [userName, setUserName] = useState("");
   const [friendArray, setFriendArray] = useState<Profile[]>([]);
   const [friend, setFriend] = useState("");
   const { socket } = useContext(ChatContext);
@@ -52,12 +59,16 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       }
       await SecureStore.deleteItemAsync(ACCESS_KEY);
       await SecureStore.deleteItemAsync(REFRESH_KEY);
+      await SecureStore.deleteItemAsync(USERID_KEY);
+      await SecureStore.deleteItemAsync(USERNAME_KEY);
+      await SecureStore.deleteItemAsync(SHOWNAME_KEY);
       socket?.disconnect();
       navigation.dispatch(
         CommonActions.reset({ routes: [{ name: "AuthNavigation" }] })
       );
     });
   };
+
   const getFriends = async () => {
     const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
     axios({
@@ -67,9 +78,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     }).then((result) => {
       if (!result.data.success) {
         return Alert.alert("Error", "get friend process failed!");
-      }
-      if (name != result.data.username) {
-        setName(result.data.username);
       }
       setFriendArray(result.data.friendsArray);
     });
@@ -109,14 +117,23 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     });
   };
 
-  useEffect(() => {
+  const initialize = async () => {
+    const username = await SecureStore.getItemAsync(USERNAME_KEY);
+    if (!username) {
+      return Alert.alert("Error", "local username not found!");
+    }
+    setUserName(username);
     getFriends();
+  };
+
+  useEffect(() => {
+    initialize();
   }, []);
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
-        <HomeHeader userName={name} logoutFunc={() => LogoutProcess()} />
+        <HomeHeader userName={userName} logoutFunc={() => LogoutProcess()} />
         <View style={styles.bodyContainer}>
           <Text style={styles.friendListHeader}>Friend List</Text>
           <View style={styles.addFriendHeader}>

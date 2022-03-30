@@ -100,8 +100,6 @@ export const roomController = (
       await roomRepo.save(newRoom);
       io.emit("new-room", {
         members: newRoom.members.map((member: Profile) => member.id),
-        roomId: newRoom.id,
-        roomName: newRoom.roomname,
       });
     }
   );

@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
-import * as Icon from "@expo/vector-icons"
-import { Dimensions } from 'react-native';
+import React, { useState } from "react";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import * as Icon from "@expo/vector-icons";
+import { Dimensions } from "react-native";
 
 type AuthInputProps = {
   InputIcon: React.ReactNode;
@@ -9,31 +9,42 @@ type AuthInputProps = {
   PlaceHolder: string;
   //PasswordMode switch
   PasswordMode: boolean;
-}
+};
 
-const AuthInput: React.FC<AuthInputProps> = ({ InputIcon, SetInputState: SetInput, PlaceHolder, PasswordMode }) => {
+const AuthInput: React.FC<AuthInputProps> = ({
+  InputIcon,
+  SetInputState: SetInput,
+  PlaceHolder,
+  PasswordMode,
+}) => {
   //State of the TextInput secureTextEntry
   const [passInputSecure, setPassInputSecure] = useState(true);
   return (
     <View style={styles.inputContainer}>
-      <View style={styles.inputIconContainer}>
-        {InputIcon}
-      </View>
+      <View style={styles.inputIconContainer}>{InputIcon}</View>
       <TextInput
         onChangeText={(val) => SetInput(val)}
         placeholder={PlaceHolder}
         placeholderTextColor={placeholderColor}
         style={styles.input}
-        secureTextEntry={(PasswordMode) ? passInputSecure : false}
+        secureTextEntry={PasswordMode ? passInputSecure : false}
         autoCapitalize="none"
       />
-      {(PasswordMode) ?
-        <TouchableOpacity style={styles.eyeIcon} onPress={() => setPassInputSecure(!passInputSecure)}>
-          <Icon.Ionicons name={(passInputSecure) ? "eye-off-outline" : "eye-outline"} size={inputIconSize} color="#FFF" />
-        </TouchableOpacity > : null}
+      {PasswordMode ? (
+        <TouchableOpacity
+          style={styles.eyeIcon}
+          onPress={() => setPassInputSecure(!passInputSecure)}
+        >
+          <Icon.Ionicons
+            name={passInputSecure ? "eye-off-outline" : "eye-outline"}
+            size={inputIconSize}
+            color="#FFF"
+          />
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
-}
+};
 export default AuthInput;
 
 //getting the window width and height
@@ -58,7 +69,7 @@ const styles = StyleSheet.create({
     borderRadius: inputRadius,
     backgroundColor: inputBackgroundColor,
     opacity: 0.9,
-    marginVertical: inputHeight / 3,
+    marginVertical: inputHeight / 4,
     alignItems: "flex-start",
     justifyContent: "center",
     flexDirection: "row",
@@ -86,4 +97,4 @@ const styles = StyleSheet.create({
     borderTopRightRadius: inputRadius,
     borderBottomRightRadius: inputRadius,
   },
-})
+});

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 //API
-import axios from "axios"
-import * as SecureStore from 'expo-secure-store';
+import axios from "axios";
+import * as SecureStore from "expo-secure-store";
 import { AuthAPI } from "../../constants/backendAPI";
 //components
 import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
@@ -10,39 +10,63 @@ import AuthInput from "../../components/Auth/AuthInput";
 //navigation
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { CommonActions } from "@react-navigation/native";
-import { AuthNavigationProps } from "../../types/navigations"
+import { AuthNavigationProps } from "../../types/navigations";
 //css const
-import { bg_DarkColor, bg_LightColor, bottomIconSize, cornerRadius, windowHeight, windowWidth } from "../../constants/cssConst";
+import {
+  bg_DarkColor,
+  bg_LightColor,
+  bottomIconSize,
+  cornerRadius,
+  hilight_color,
+  windowHeight,
+  windowWidth,
+} from "../../constants/cssConst";
 //import vector icons
-import { Entypo, SimpleLineIcons, Fontisto } from "@expo/vector-icons/"
-import { ACCESS_KEY, REFRESH_KEY } from "../../constants/securestoreKey";
+import { Entypo, SimpleLineIcons, Fontisto } from "@expo/vector-icons/";
+import {
+  ACCESS_KEY,
+  REFRESH_KEY,
+  SHOWNAME_KEY,
+  USERID_KEY,
+  USERNAME_KEY,
+} from "../../constants/securestoreKey";
 
-
-type Props = NativeStackScreenProps<AuthNavigationProps, "LoginScreen">
-
+type Props = NativeStackScreenProps<AuthNavigationProps, "LoginScreen">;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   //useState
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const LoginProcess = async () => {
-    if (email == "" || password == "") { return Alert.alert("Error", "email or password input is missing!") }
+    if (email == "" || password == "") {
+      return Alert.alert("Error", "email or password input is missing!");
+    }
     axios({
       method: "post",
       url: `${AuthAPI}/login`,
       data: {
         email: email,
-        password: password
-      }
-    }).then(async (loginResult) => {
-      if (loginResult.status != 200) { return Alert.alert("Login Error", loginResult.data.message) }
-      // const loginAccessToken = loginResult.data.accessToken;
-      // const loginRefreshToken = loginResult.data.refreshToken;
-      await SecureStore.setItemAsync(ACCESS_KEY, loginResult.data.accessToken);
-      await SecureStore.setItemAsync(REFRESH_KEY, loginResult.data.refreshToken);
-      navigation.dispatch(CommonActions.reset({ routes: [{ name: "ChatNavigation" }] }))
+        password: password,
+      },
     })
-  }
+      .then(async (loginResult) => {
+        //ANCHOR saving basic info
+        // prettier-ignore
+        await SecureStore.setItemAsync(ACCESS_KEY, loginResult.data.accessToken);
+        // prettier-ignore
+        await SecureStore.setItemAsync(REFRESH_KEY, loginResult.data.refreshToken);
+        // prettier-ignore
+        await SecureStore.setItemAsync(USERID_KEY, loginResult.data.profile.id);
+        // prettier-ignore
+        await SecureStore.setItemAsync(USERNAME_KEY, loginResult.data.profile.username);
+        // prettier-ignore
+        await SecureStore.setItemAsync(SHOWNAME_KEY, loginResult.data.profile.showname);
+        navigation.dispatch(
+          CommonActions.reset({ routes: [{ name: "ChatNavigation" }] })
+        );
+      })
+      .catch((e) => Alert.alert("Error", e.response.data.message));
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -50,7 +74,12 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.topContainer}>
         <View style={styles.cuttingTopContainer}>
           <View style={styles.headerContainer}>
-            <Entypo name='chat' size={windowWidth * 0.25} color={bg_LightColor} style={styles.iconContainer} />
+            <Entypo
+              name="chat"
+              size={windowWidth * 0.25}
+              color={bg_LightColor}
+              style={styles.iconContainer}
+            />
             <Text style={styles.headerTextContainer}>WelcoMe bacK</Text>
           </View>
         </View>
@@ -58,13 +87,17 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       {/* Body */}
       <View style={styles.mainContainer}>
         <AuthInput
-          InputIcon={<Fontisto name="email" size={windowWidth * 0.07} color="#FFF" />}
+          InputIcon={
+            <Fontisto name="email" size={windowWidth * 0.07} color="#FFF" />
+          }
           SetInputState={setEmail}
           PlaceHolder="Enter email"
           PasswordMode={false}
         />
         <AuthInput
-          InputIcon={<Fontisto name="locked" size={windowWidth * 0.07} color="#FFF" />}
+          InputIcon={
+            <Fontisto name="locked" size={windowWidth * 0.07} color="#FFF" />
+          }
           SetInputState={setPassword}
           PlaceHolder="Enter password"
           PasswordMode={true}
@@ -75,35 +108,56 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.cuttingBottomContainer}>
           {/* Auth container */}
           <View style={styles.authBtnContainer}>
-            <TouchableOpacity style={styles.authBtn} onPress={async () => await LoginProcess()}>
+            <TouchableOpacity
+              style={styles.authBtn}
+              onPress={async () => await LoginProcess()}
+            >
               <Text style={styles.btnText}>LOGIN</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.authBtn} onPress={async () => navigation.navigate("RegisterScreen")}>
+            <TouchableOpacity
+              style={styles.authBtn}
+              onPress={async () => navigation.navigate("RegisterScreen")}
+            >
               <Text style={styles.btnText}>REGISTER</Text>
             </TouchableOpacity>
           </View>
           {/* Oauth2 container */}
           <View style={styles.Oauth2BtnContainer}>
             <TouchableOpacity>
-              <SimpleLineIcons name="social-google" size={bottomIconSize} color={bg_LightColor} style={styles.Oauth2Btn} />
+              <SimpleLineIcons
+                name="social-google"
+                size={bottomIconSize}
+                color={bg_LightColor}
+                style={styles.Oauth2Btn}
+              />
             </TouchableOpacity>
             <TouchableOpacity>
-              <SimpleLineIcons name="social-facebook" size={bottomIconSize} color={bg_LightColor} style={styles.Oauth2Btn} />
+              <SimpleLineIcons
+                name="social-facebook"
+                size={bottomIconSize}
+                color={bg_LightColor}
+                style={styles.Oauth2Btn}
+              />
             </TouchableOpacity>
             <TouchableOpacity>
-              <SimpleLineIcons name="social-twitter" size={bottomIconSize} color={bg_LightColor} style={styles.Oauth2Btn} />
+              <SimpleLineIcons
+                name="social-twitter"
+                size={bottomIconSize}
+                color={bg_LightColor}
+                style={styles.Oauth2Btn}
+              />
             </TouchableOpacity>
           </View>
         </View>
       </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: bg_DarkColor
+    backgroundColor: bg_DarkColor,
   },
   //Header
   topContainer: {
@@ -122,9 +176,7 @@ const styles = StyleSheet.create({
     paddingTop: windowHeight * 0.01,
     flexDirection: "row",
   },
-  iconContainer: {
-
-  },
+  iconContainer: {},
   headerTextContainer: {
     marginLeft: windowWidth * -0.15,
     paddingTop: windowHeight * 0.11,
@@ -136,8 +188,8 @@ const styles = StyleSheet.create({
   mainContainer: {
     width: windowWidth,
     height: windowHeight * 0.4,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: bg_LightColor,
     borderTopRightRadius: cornerRadius,
     borderBottomLeftRadius: cornerRadius,
@@ -169,12 +221,11 @@ const styles = StyleSheet.create({
     borderColor: bg_LightColor,
     borderRadius: windowHeight * 0.035,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   btnText: {
-    fontFamily: "Roboto_Thin",
     fontSize: windowWidth * 0.075,
-    color: "#FFF",
+    color: bg_LightColor,
   },
   Oauth2BtnContainer: {
     width: windowWidth,
@@ -186,7 +237,7 @@ const styles = StyleSheet.create({
   },
   Oauth2Btn: {
     marginHorizontal: windowWidth * 0.09,
-  }
-})
+  },
+});
 
-export default LoginScreen
+export default LoginScreen;

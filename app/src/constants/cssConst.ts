@@ -6,8 +6,9 @@ export const windowHeight = Dimensions.get("window").height;
 //Radius
 export const cornerRadius = windowWidth * 0.23;
 //Colors
+//origin bg_DarkColor = "#171535";
 export const bg_LightColor = "#45c1b9";
-export const bg_DarkColor = "#171535";
+export const bg_DarkColor = "#1b1936";
 export const bg_LessDarkColor = "#464285";
 export const hilight_color = "#AFF";
 export const placeholderColor = "#477";

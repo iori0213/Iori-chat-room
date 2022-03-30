@@ -15,3 +15,10 @@ interface Msg {
   msg: string;
   createdAt: string;
 }
+
+interface MemberCheck {
+  id: string;
+  username: string;
+  showName: string;
+  join: boolean;
+}
