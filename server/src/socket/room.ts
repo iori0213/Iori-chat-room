@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { getRepository } from "typeorm";
+import { getRepository, In } from "typeorm";
 import ChatRoom from "../entity/ChatRoom";
 import Message from "../entity/Message";
 import { Profile } from "../entity/Profile";
@@ -83,4 +83,26 @@ export const roomController = (
       });
     }
   });
+  socket.on(
+    "create-room",
+    async (params: { roomName: string; members: string[] }) => {
+      //input params
+      const { roomName, members } = params;
+      //repoes
+      const profileRepo = getRepository(Profile);
+      const roomRepo = getRepository(ChatRoom);
+      const roomMembers: Profile[] = await profileRepo.find({
+        where: { id: In(members) },
+      });
+      const newRoom = new ChatRoom();
+      newRoom.members = [profile, ...roomMembers];
+      newRoom.roomname = roomName;
+      await roomRepo.save(newRoom);
+      io.emit("new-room", {
+        members: newRoom.members.map((member: Profile) => member.id),
+        roomId: newRoom.id,
+        roomName: newRoom.roomname,
+      });
+    }
+  );
 };

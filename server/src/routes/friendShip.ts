@@ -105,8 +105,6 @@ router.get("/get", TokenAuthentication, async (req, res) => {
   return res.json({
     success: true,
     message: "Get friendship success.",
-    username: userProfile.username,
-    showname: userProfile.showname,
     friendsArray: friendArray,
   });
 });
