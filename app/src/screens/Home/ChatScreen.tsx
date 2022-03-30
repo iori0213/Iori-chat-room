@@ -20,6 +20,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ChatNavigationProps } from "../../types/navigations";
 import { ChatContext } from "../../components/Home/ChatContext";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
+import Message from "../../components/Home/Message";
 
 type Props = NativeStackScreenProps<ChatNavigationProps, "ChatScreen">;
 
@@ -106,23 +107,12 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                 extraData={messages}
                 renderItem={({ item }) => {
                   return (
-                    <View key={item.id} style={{ flexDirection: "row" }}>
-                      <Text style={{ color: "#FFF" }}>{item.id + " "}</Text>
-                      <Text style={{ color: "#FFF" }}>
-                        {item.sender.username + ": "}
-                      </Text>
-                      <Text style={{ color: "#FFF" }}>{item.msg + " "}</Text>
-                      <Text style={{ color: "#FFF" }}>
-                        {item.createdAt + "  "}
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() =>
-                          socket?.emit("delete-msg", { id: item.id })
-                        }
-                      >
-                        <Text style={{ color: "pink" }}>DELETE</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <Message
+                      msgId={item.id}
+                      username={item.sender.username}
+                      msg={item.msg}
+                      created={item.createdAt}
+                    />
                   );
                 }}
               />
