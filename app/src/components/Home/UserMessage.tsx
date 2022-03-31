@@ -1,5 +1,12 @@
 import React, { useContext, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Alert,
+  TextInput,
+} from "react-native";
 
 import { Feather, AntDesign } from "@expo/vector-icons";
 import {
@@ -15,8 +22,6 @@ interface UserMessageProps {
   username: string;
   msg: string;
   created: string;
-  deleteFunc?: () => void;
-  editFunc?: () => void;
 }
 
 const UserMessage: React.FC<UserMessageProps> = ({
@@ -24,12 +29,12 @@ const UserMessage: React.FC<UserMessageProps> = ({
   username,
   msg,
   created,
-  deleteFunc,
-  editFunc,
 }) => {
   const { socket } = useContext(ChatContext);
   const [modify, setModify] = useState(false);
-
+  const [edit, setEdit] = useState(false);
+  const [editMsg, setEditMsg] = useState("");
+  const time = new Date(created).toLocaleString();
   const deleteCheck = () => {
     return Alert.alert(
       "Delete message",
@@ -71,7 +76,14 @@ const UserMessage: React.FC<UserMessageProps> = ({
                 color={bg_DarkColor}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modifyEditBtn}>
+            <TouchableOpacity
+              style={styles.modifyEditBtn}
+              onPress={() => {
+                setEditMsg(msg);
+                setEdit((prev) => !prev);
+                setModify((prev) => !prev);
+              }}
+            >
               <Feather
                 name="edit"
                 size={modifyBtnSize * 0.8}
@@ -98,7 +110,7 @@ const UserMessage: React.FC<UserMessageProps> = ({
         >
           <Text style={styles.msg}>{msg}</Text>
           <View style={styles.timeContainer}>
-            <Text style={styles.time}>{created}</Text>
+            <Text style={styles.time}>{time}</Text>
           </View>
         </TouchableOpacity>
         <View style={styles.info}>
@@ -110,6 +122,43 @@ const UserMessage: React.FC<UserMessageProps> = ({
           </View>
         </View>
       </View>
+      {!edit ? (
+        <></>
+      ) : (
+        <View style={styles.editContainer}>
+          <View style={styles.editInput}>
+            <TextInput
+              value={editMsg}
+              onChangeText={(msg) => setEditMsg(msg)}
+              autoCapitalize="none"
+              style={styles.editTextInput}
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.cancelBtn}
+            onPress={() => setEdit((prev) => !prev)}
+          >
+            <AntDesign
+              name="close"
+              size={windowHeight * 0.04}
+              color={bg_DarkColor}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.submitBtn}
+            onPress={() => {
+              setEditMsg("");
+              setEdit((prev) => !prev);
+            }}
+          >
+            <AntDesign
+              name="rightcircle"
+              size={windowHeight * 0.04}
+              color="darkturquoise"
+            />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -202,5 +251,36 @@ const styles = StyleSheet.create({
     marginLeft: windowHeight * 0.005,
     alignItems: "center",
     justifyContent: "center",
+  },
+
+  editContainer: {
+    height: windowHeight * 0.04,
+    marginVertical: windowHeight * 0.005,
+    flexDirection: "row",
+  },
+  editInput: {
+    width: windowWidth * 0.6,
+    height: windowHeight * 0.04,
+    marginRight: windowWidth * 0.01,
+    borderRadius: (windowHeight * 0.04) / 2,
+    backgroundColor: "#FFF",
+  },
+  editTextInput: {
+    flex: 1,
+    paddingHorizontal: windowWidth * 0.03,
+    fontSize: windowHeight * 0.02,
+    color: bg_DarkColor,
+  },
+  cancelBtn: {
+    width: windowHeight * 0.04,
+    height: windowHeight * 0.04,
+    marginRight: windowWidth * 0.01,
+    borderRadius: windowHeight * 0.04,
+    backgroundColor: "coral",
+  },
+  submitBtn: {
+    width: windowHeight * 0.04,
+    height: windowHeight * 0.04,
+    borderRadius: windowHeight * 0.04,
   },
 });

@@ -38,8 +38,8 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   const [msgInput, setMsgInput] = useState("");
 
   const goBack = () => {
-    socket?.off("add-msg", (msg: Msg) => {});
-    socket?.off("remove-msg", (id: number) => {});
+    socket?.off("add-msg");
+    socket?.off("remove-msg");
     socket?.emit("leave-room");
     navigation.pop();
   };
@@ -111,6 +111,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                   keyExtractor={(item) => item.id}
                   inverted={true}
                   onEndReached={() => console.log("need to load more msg!!")}
+                  showsHorizontalScrollIndicator={false}
                   extraData={messages}
                   renderItem={({ item }) => {
                     return item.sender.id == userId ? (
