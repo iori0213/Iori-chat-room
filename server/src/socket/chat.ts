@@ -52,8 +52,25 @@ export const chatController = (
   };
   socket.on("delete-msg", deleteMsg);
 
+  const editMsg = async (params: { id: string; msg: string }) => {
+    const { id, msg } = params;
+    const msgRepo = getRepository(Message);
+    const msgData = await msgRepo.findOne({
+      where: { id: id },
+    });
+    if (!msgData) {
+      return socket.emit("error-msg", "message not found");
+    }
+    msgData.msg = msg;
+    return socket
+      .in(room.id)
+      .emit("update-msg", { id: msgData.id, msg: msgData.msg });
+  };
+  socket.on("edit-msg", editMsg);
+
   return () => {
     socket.off("send-msg", sendMsg);
     socket.off("delete-msg", deleteMsg);
+    socket.off("edit-msg", editMsg);
   };
 };
