@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     marginTop: windowHeight * 0.02,
     backgroundColor: "#FFF",
     borderRadius: windowHeight * 0.03,
-    paddingLeft: windowWidth * 0.05,
+    paddingHorizontal: windowWidth * 0.05,
     color: bg_DarkColor,
     fontSize: windowHeight * 0.03,
   },
@@ -387,6 +387,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderTopLeftRadius: windowWidth * 0.1,
     borderTopRightRadius: windowWidth * 0.1,
+    borderBottomWidth: 3,
+    borderBottomColor: bg_LessDarkColor,
   },
   modalFriendListTitle: {
     fontSize: windowHeight * 0.04,
