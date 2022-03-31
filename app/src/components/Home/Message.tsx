@@ -44,8 +44,7 @@ const headerSize = windowWidth * 0.1;
 
 const styles = StyleSheet.create({
   Container: {
-    // maxWidth:
-    marginLeft: windowWidth * 0.02,
+    width: windowWidth * 0.96,
     marginBottom: windowHeight * 0.01,
   },
   mainContainer: {
@@ -86,7 +85,9 @@ const styles = StyleSheet.create({
   },
   timeContainer: {
     marginTop: windowHeight * 0.007,
+    flex: 1,
     alignItems: "flex-end",
+    justifyContent: "flex-end",
   },
   time: {
     fontSize: windowHeight * 0.015,
