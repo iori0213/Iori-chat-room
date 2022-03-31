@@ -18,14 +18,18 @@ import {
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ChatNavigationProps } from "../../types/navigations";
+import * as SecureStore from "expo-secure-store";
 import { ChatContext } from "../../components/Home/ChatContext";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
 import Message from "../../components/Home/Message";
+import UserMessage from "../../components/Home/UserMessage";
+import { USERID_KEY } from "../../constants/securestoreKey";
 
 type Props = NativeStackScreenProps<ChatNavigationProps, "ChatScreen">;
 
 const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   const [fetching, serFetching] = useState(true);
+  const [userId, setUserId] = useState("");
   const { roomId, roomName } = route.params;
   const [messages, setMessages] = useState<Msg[]>([]);
   const [members, setMembers] = useState<Profile[]>([]);
@@ -47,7 +51,9 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
     });
     socket?.on(
       "join-room-initialize",
-      ({ members, msgs }: { members: Profile[]; msgs: Msg[] }) => {
+      async ({ members, msgs }: { members: Profile[]; msgs: Msg[] }) => {
+        const localUserId = await SecureStore.getItemAsync(USERID_KEY);
+        setUserId(localUserId!);
         setMembers(members);
         setMessages(msgs);
         serFetching(false);
@@ -99,23 +105,32 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
               </TouchableOpacity>
             </View>
             <View style={styles.body}>
-              <FlatList
-                data={messages}
-                keyExtractor={(item) => item.id}
-                inverted={true}
-                onEndReached={() => console.log("need to load more msg!!")}
-                extraData={messages}
-                renderItem={({ item }) => {
-                  return (
-                    <Message
-                      msgId={item.id}
-                      username={item.sender.username}
-                      msg={item.msg}
-                      created={item.createdAt}
-                    />
-                  );
-                }}
-              />
+              <View style={styles.msgList}>
+                <FlatList
+                  data={messages}
+                  keyExtractor={(item) => item.id}
+                  inverted={true}
+                  onEndReached={() => console.log("need to load more msg!!")}
+                  extraData={messages}
+                  renderItem={({ item }) => {
+                    return item.sender.id == userId ? (
+                      <UserMessage
+                        msgId={item.id}
+                        username={item.sender.username}
+                        msg={item.msg}
+                        created={item.createdAt}
+                      />
+                    ) : (
+                      <Message
+                        msgId={item.id}
+                        username={item.sender.username}
+                        msg={item.msg}
+                        created={item.createdAt}
+                      />
+                    );
+                  }}
+                />
+              </View>
               <View style={styles.footer}>
                 <TextInput
                   onChangeText={(msg) => setMsgInput(msg)}
@@ -181,6 +196,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: bg_DarkColor,
   },
+  msgList: {
+    flex: 1,
+    alignItems: "center",
+  },
   footer: {
     flexDirection: "row",
     width: windowWidth,
@@ -194,7 +213,7 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.04,
     borderRadius: windowHeight * 0.02,
     backgroundColor: "#FFF",
-    paddingLeft: windowWidth * 0.04,
+    paddingHorizontal: windowWidth * 0.04,
     fontSize: windowHeight * 0.025,
   },
   textSubmitBtn: {
