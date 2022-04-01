@@ -62,8 +62,6 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
       }
     );
     socket?.on("add-msg", (msg: Msg) => {
-      console.log("user:", userId);
-      console.log(msg.sender);
       if (userid == msg.sender.id) {
         setMsgInput("");
       }

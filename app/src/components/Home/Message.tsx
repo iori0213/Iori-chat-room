@@ -16,6 +16,7 @@ interface MessageProps {
 }
 
 const Message: React.FC<MessageProps> = ({ msgId, username, msg, created }) => {
+  const time = new Date(created).toLocaleString();
   return (
     <View style={styles.Container}>
       <View style={styles.mainContainer}>
@@ -30,7 +31,7 @@ const Message: React.FC<MessageProps> = ({ msgId, username, msg, created }) => {
         <View style={styles.msgContainer}>
           <Text style={styles.msg}>{msg}</Text>
           <View style={styles.timeContainer}>
-            <Text style={styles.time}>{created}</Text>
+            <Text style={styles.time}>{time}</Text>
           </View>
         </View>
       </View>
