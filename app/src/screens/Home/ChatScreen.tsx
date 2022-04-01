@@ -70,10 +70,21 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
         return prev.filter((msg) => msg.id != id);
       });
     });
+    socket?.on("update-msg", (updateMsg: UpdateMsg) => {
+      setMessages((Prev) =>
+        Prev.map((msg) => {
+          if (msg.id == updateMsg.id) {
+            msg.msg = updateMsg.msg;
+          }
+          return msg;
+        })
+      );
+    });
     return () => {
       socket?.off("join-room-initialize");
       socket?.off("add-msg");
       socket?.off("remove-msg");
+      socket?.off("update-msg");
       socket?.off("error-msg");
     };
   }, [socket]);
@@ -176,7 +187,7 @@ const styles = StyleSheet.create({
     width: windowWidth,
     flexDirection: "row",
     borderBottomWidth: 1.5,
-    borderBottomColor: "#111",
+    borderBottomColor: bg_DarkColor,
   },
   roomNameContainer: {
     flex: 6,

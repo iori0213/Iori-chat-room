@@ -13,6 +13,7 @@ export const bg_LessDarkColor = "#464285";
 export const hilight_color = "#AFF";
 export const placeholderColor = "#477";
 export const tabBarIconColor = "#FFF";
+export const bg_userMsg = "#6761a1";
 //Size
 export const inputIconSize = windowWidth * 0.07;
 export const bottomIconSize = windowWidth * 0.07;

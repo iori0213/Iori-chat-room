@@ -22,3 +22,8 @@ interface MemberCheck {
   showName: string;
   join: boolean;
 }
+
+interface UpdateMsg {
+  id: string;
+  msg: string;
+}

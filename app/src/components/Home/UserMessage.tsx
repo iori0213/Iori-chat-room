@@ -12,6 +12,7 @@ import { Feather, AntDesign } from "@expo/vector-icons";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
+  bg_userMsg,
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
@@ -147,6 +148,7 @@ const UserMessage: React.FC<UserMessageProps> = ({
           <TouchableOpacity
             style={styles.submitBtn}
             onPress={() => {
+              socket?.emit("edit-msg", { id: msgId, msg: editMsg });
               setEditMsg("");
               setEdit((prev) => !prev);
             }}
@@ -187,6 +189,8 @@ const styles = StyleSheet.create({
     height: headerSize,
     width: headerSize,
     borderRadius: headerSize / 2,
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#FFF",
   },
   nameContainer: {
@@ -201,7 +205,7 @@ const styles = StyleSheet.create({
   },
   msgContainer: {
     maxWidth: windowWidth * 0.6,
-    backgroundColor: bg_LessDarkColor,
+    backgroundColor: bg_userMsg,
     marginRight: windowWidth * 0.01,
     paddingVertical: windowWidth * 0.01,
     paddingHorizontal: windowWidth * 0.02,
