@@ -30,6 +30,7 @@ type Props = NativeStackScreenProps<ChatNavigationProps, "ChatScreen">;
 const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   const [fetching, serFetching] = useState(true);
   const [userId, setUserId] = useState("");
+  let userid = "";
   const { roomId, roomName } = route.params;
   const [messages, setMessages] = useState<Msg[]>([]);
   const [members, setMembers] = useState<Profile[]>([]);
@@ -53,6 +54,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
       "join-room-initialize",
       async ({ members, msgs }: { members: Profile[]; msgs: Msg[] }) => {
         const localUserId = await SecureStore.getItemAsync(USERID_KEY);
+        userid = localUserId!;
         setUserId(localUserId!);
         setMembers(members);
         setMessages(msgs);
@@ -60,7 +62,11 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
       }
     );
     socket?.on("add-msg", (msg: Msg) => {
-      setMsgInput("");
+      console.log("user:", userId);
+      console.log(msg.sender);
+      if (userid == msg.sender.id) {
+        setMsgInput("");
+      }
       setMessages((prev) => {
         return [msg, ...prev];
       });
