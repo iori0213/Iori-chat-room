@@ -62,7 +62,8 @@ export const chatController = (
       return socket.emit("error-msg", "message not found");
     }
     msgData.msg = msg;
-    return socket
+    await msgRepo.save(msgData);
+    return io
       .in(room.id)
       .emit("update-msg", { id: msgData.id, msg: msgData.msg });
   };
