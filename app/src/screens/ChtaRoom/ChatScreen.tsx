@@ -24,11 +24,13 @@ import LoadingSpinner from "../../components/Auth/LoadingSpinner";
 import Message from "../../components/Home/Message";
 import UserMessage from "../../components/Home/UserMessage";
 import { USERID_KEY } from "../../constants/securestoreKey";
+import { ActivityIndicator } from "react-native-paper";
 
 type Props = NativeStackScreenProps<ChatNavigationProps, "ChatScreen">;
 
 const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   const [fetching, serFetching] = useState(true);
+  const [loadingMsg, setLoadingMsg] = useState(false);
   const [userId, setUserId] = useState("");
   let userid = "";
   const { roomId, roomName } = route.params;
@@ -43,6 +45,12 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
     socket?.off("remove-msg");
     socket?.emit("leave-room");
     navigation.pop();
+  };
+
+  const getMoreMsg = () => {
+    setLoadingMsg((Prev) => !Prev);
+    const lastMsg = messages[messages.length - 1];
+    socket?.emit("get-more-msg", { msg: lastMsg });
   };
 
   useEffect(() => {
@@ -84,11 +92,22 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
         })
       );
     });
+    socket?.on(
+      "add-more-msg",
+      ({ newMsgs, notify }: { newMsgs: Msg[]; notify?: string }) => {
+        setMessages((Prev) => [...Prev, ...newMsgs]);
+        setLoadingMsg((Prev) => !Prev);
+        if (notify) {
+          return Alert.alert("oops", notify);
+        }
+      }
+    );
     return () => {
       socket?.off("join-room-initialize");
       socket?.off("add-msg");
       socket?.off("remove-msg");
       socket?.off("update-msg");
+      socket?.off("add-more-msg");
       socket?.off("error-msg");
     };
   }, [socket]);
@@ -125,7 +144,8 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                   data={messages}
                   keyExtractor={(item) => item.id}
                   inverted={true}
-                  onEndReached={() => console.log("need to load more msg!!")}
+                  onEndReached={() => getMoreMsg()}
+                  onEndReachedThreshold={0}
                   showsHorizontalScrollIndicator={false}
                   extraData={messages}
                   renderItem={({ item }) => {
@@ -175,6 +195,13 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
             </View>
           </>
         )}
+        {!loadingMsg ? (
+          <></>
+        ) : (
+          <View style={styles.loadingSpinner}>
+            <ActivityIndicator color="#FFF" size="large" />
+          </View>
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -223,6 +250,8 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.06,
     alignItems: "center",
     justifyContent: "center",
+    borderTopWidth: 1.5,
+    borderTopColor: bg_DarkColor,
   },
   input: {
     width: windowWidth * 0.8,
@@ -234,5 +263,14 @@ const styles = StyleSheet.create({
   },
   textSubmitBtn: {
     marginLeft: windowWidth * 0.03,
+  },
+  loadingSpinner: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

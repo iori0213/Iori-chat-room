@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { getRepository } from "typeorm";
+import { getRepository, LessThanOrEqual, Not } from "typeorm";
 import ChatRoom from "../entity/ChatRoom";
 import Message from "../entity/Message";
 import { Profile } from "../entity/Profile";
@@ -69,9 +69,35 @@ export const chatController = (
   };
   socket.on("edit-msg", editMsg);
 
+  const getMoreMsg = async (params: { msg: Message }) => {
+    const { msg } = params;
+    const msgRepo = getRepository(Message);
+    const newMsgs = await msgRepo.find({
+      where: {
+        room: room,
+        id: Not(msg.id),
+        createdAt: LessThanOrEqual(msg.createdAt),
+      },
+      relations: ["sender"],
+      order: {
+        createdAt: "DESC",
+      },
+      take: 5,
+    });
+    if (newMsgs.length < 5) {
+      return socket.emit("add-more-msg", {
+        newMsgs: newMsgs,
+        notify: "This is the begin of this chat room",
+      });
+    }
+    return socket.emit("add-more-msg", { newMsgs: newMsgs });
+  };
+  socket.on("get-more-msg", getMoreMsg);
+
   return () => {
     socket.off("send-msg", sendMsg);
     socket.off("delete-msg", deleteMsg);
     socket.off("edit-msg", editMsg);
+    socket.off("get-more-msg", getMoreMsg);
   };
 };

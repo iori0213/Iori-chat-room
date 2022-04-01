@@ -24,7 +24,7 @@ export const roomController = (
         createdAt: "DESC",
       },
       relations: ["sender"],
-      take: 50,
+      take: 15,
     });
     if (!room) {
       console.log("room id not exist");
