@@ -53,6 +53,7 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
         Alert.alert("Error", list.data.message);
       }
       setRoomList(list.data.roomList);
+      setShowingList(list.data.roomList);
     });
   };
   const getFriendList = async () => {
@@ -96,6 +97,15 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
     setRoomName("");
     setMembers([]);
     setVisible(false);
+  };
+  const searchRoom = () => {
+    const newRoomList = showingList.filter((room) => {
+      if (room.roomname.includes(chatName)) {
+        return room;
+      }
+      return;
+    });
+    setShowingList(newRoomList);
   };
 
   useEffect(() => {
@@ -217,7 +227,11 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
               </View>
               <View style={styles.searchBar}>
                 <TextInput
-                  onChangeText={(val) => setChatName(val)}
+                  onChangeText={(val) => {
+                    setChatName(val);
+                    setShowingList(roomList);
+                  }}
+                  value={chatName}
                   placeholder="Search room name"
                   placeholderTextColor="#999"
                   autoCapitalize="none"
@@ -225,7 +239,7 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
                 />
                 <TouchableOpacity
                   style={styles.goBtn}
-                  onPress={() => console.log("search room")}
+                  onPress={() => searchRoom()}
                 >
                   <Ionicons
                     name="search"
@@ -237,8 +251,8 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
             </View>
             <View style={styles.body}>
               <FlatList
-                data={roomList}
-                extraData={roomList}
+                data={showingList}
+                extraData={showingList}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => {
                   return (
