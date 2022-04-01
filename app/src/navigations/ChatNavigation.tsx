@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import { AccessContext } from "../components/Home/AccessContext";
 import { ChatContext } from "../components/Home/ChatContext";
 import { BackendUrl } from "../constants/backendAPI";
-import ChatScreen from "../screens/Home/ChatScreen";
+import ChatScreen from "../screens/ChtaRoom/ChatScreen";
 //import screens
 import { ChatNavigationProps } from "../types/navigations";
 import HomeNavigation from "./HomeNavigation";
