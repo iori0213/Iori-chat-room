@@ -33,6 +33,7 @@ type Props = NativeStackScreenProps<ChatNavigationProps, "ChatScreen">;
 const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   const [fetching, serFetching] = useState(true);
   const [loadingMsg, setLoadingMsg] = useState(false);
+  const [isEnd, setIsEnd] = useState(false);
   const [userId, setUserId] = useState("");
   let userid = "";
   const { roomId, roomName } = route.params;
@@ -99,7 +100,8 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
       ({ newMsgs, notify }: { newMsgs: Msg[]; notify?: string }) => {
         setMessages((Prev) => [...Prev, ...newMsgs]);
         setLoadingMsg((Prev) => !Prev);
-        if (messages.length > 15 && notify) {
+        if (notify) {
+          setIsEnd(true);
           return Alert.alert("oops", notify);
         }
       }
@@ -149,7 +151,11 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                   data={messages}
                   keyExtractor={(item) => item.id}
                   inverted={true}
-                  onEndReached={() => getMoreMsg()}
+                  onEndReached={() => {
+                    if (messages.length >= 15 && !isEnd) {
+                      getMoreMsg();
+                    }
+                  }}
                   onEndReachedThreshold={0}
                   showsHorizontalScrollIndicator={false}
                   extraData={messages}
