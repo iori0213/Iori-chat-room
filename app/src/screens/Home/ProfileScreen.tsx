@@ -1,4 +1,11 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import {
   bg_DarkColor,
@@ -22,7 +29,7 @@ import { CommonActions } from "@react-navigation/native";
 import axios from "axios";
 import { AuthAPI } from "../../constants/backendAPI";
 import { ChatContext } from "../../components/Home/ChatContext";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, FontAwesome5 } from "@expo/vector-icons";
 
 type Props = MaterialTopTabScreenProps<HomeNavigationProps, "ProfileScreen">;
 
@@ -58,10 +65,16 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   //initialize process
-  const initialize = async () => {};
+  const initialize = async () => {
+    // axios({
+    //   method: "post",
+    //   url:`${}`
+    // });
+    setFetching(false);
+  };
 
   useEffect(() => {
-    setFetching((prev) => !prev);
+    initialize();
 
     return () => {};
   }, []);
@@ -69,13 +82,22 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
-        {fetching ? (
-          <LoadingSpinner />
-        ) : (
-          <View style={styles.background}>
-            <ProfileHeader logoutFunc={LogoutProcess} />
-          </View>
-        )}
+        <View style={styles.background}>
+          <ProfileHeader logoutFunc={LogoutProcess} />
+          {fetching ? (
+            <LoadingSpinner />
+          ) : (
+            <>
+              <TouchableOpacity style={styles.AvatarContainer}>
+                <Image
+                  source={require("./350px-Minato_Aqua.png")}
+                  style={styles.avatarImg}
+                />
+              </TouchableOpacity>
+              <InfoBox infoType="Email" info="1111@gmail.com" />
+            </>
+          )}
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -88,7 +110,15 @@ type ProfileHeaderProps = {
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ logoutFunc }) => {
   return (
     <View style={styles.customHeader}>
-      <View style={styles.slideNavigatorContainer}></View>
+      <View style={styles.slideNavigatorContainer}>
+        <TouchableOpacity onPress={() => console.log("edit profile function")}>
+          <FontAwesome5
+            name="user-edit"
+            size={windowWidth * 0.08}
+            color="#FFF"
+          />
+        </TouchableOpacity>
+      </View>
       <View style={styles.titleContainer}>
         <Text style={styles.titleStyle}>Profile</Text>
       </View>
@@ -122,6 +152,23 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ logoutFunc }) => {
   );
 };
 
+type InfoContainerProps = {
+  infoType: string;
+  info: string;
+};
+const InfoBox: React.FC<InfoContainerProps> = ({ infoType, info }) => {
+  return (
+    <View style={styles.infoBoxContainer}>
+      <View style={styles.infoTypeContainer}>
+        <Text style={styles.infoTypeText}>type</Text>
+      </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoText}>ok?</Text>
+      </View>
+    </View>
+  );
+};
+
 export default ProfileScreen;
 
 const styles = StyleSheet.create({
@@ -132,8 +179,9 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     backgroundColor: bg_DarkColor,
+    alignItems: "center",
   },
-  //header==========================
+  //ProfileHeader===================
   customHeader: {
     flexDirection: "row",
     height: windowHeight * 0.08,
@@ -149,15 +197,51 @@ const styles = StyleSheet.create({
     color: "#FFF",
   },
   slideNavigatorContainer: {
-    flex: 1,
+    flex: 1.5,
     alignItems: "center",
     justifyContent: "center",
   },
   //================================
-  AvatarContainer: {
-    marginTop: windowHeight * 0.03,
 
+  //InfoBox=========================
+  infoBoxContainer: {
+    marginTop: windowHeight * 0.02,
+    width: windowWidth * 0.8,
+    height: windowHeight * 0.06,
+    flexDirection: "row",
     borderWidth: 1,
     borderColor: "yellow",
+  },
+  infoTypeContainer: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "red",
+  },
+  infoTypeText: {
+    color: "#FFF",
+  },
+  infoContainer: {
+    flex: 3,
+    borderWidth: 1,
+    borderColor: "green",
+  },
+  infoText: {
+    color: "#FFF",
+  },
+  //================================
+
+  AvatarContainer: {
+    marginTop: windowHeight * 0.05,
+    height: windowWidth * 0.4,
+    width: windowWidth * 0.4,
+    borderRadius: windowWidth * 0.2,
+    borderWidth: 1,
+    borderColor: "yellow",
+  },
+  avatarImg: {
+    height: windowWidth * 0.4,
+    width: windowWidth * 0.4,
+    borderRadius: windowWidth * 0.2,
+    resizeMode: "contain",
   },
 });
