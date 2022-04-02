@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Alert, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import {
+  bg_DarkColor,
   bg_LessDarkColor,
   hilight_color,
   windowHeight,
@@ -14,36 +15,59 @@ interface FriendProps {
 }
 
 const Friend: React.FC<FriendProps> = ({ friend, deleteFunc }) => {
+  const [focus, setFocus] = useState(false);
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onLongPress={() => setFocus((prev) => !prev)}
+    >
       <Text style={styles.name}>{friend.username}</Text>
-      <View style={styles.btn}>
-        <TouchableOpacity
-          onPress={() =>
-            Alert.alert(
-              "Remove Friend",
-              `Do you want to remove friend ${friend.username} ?`,
-              [
-                {
-                  text: "Cancel",
-                  onPress: () => {
-                    return;
-                  },
-                },
-                {
-                  text: "Confrim",
-                  onPress: () => {
-                    deleteFunc(friend.id);
-                  },
-                },
-              ]
-            )
-          }
-        >
-          <AntDesign name="deleteuser" size={windowWidth * 0.08} color="#FFF" />
-        </TouchableOpacity>
-      </View>
-    </View>
+      {!focus ? (
+        <></>
+      ) : (
+        <View style={styles.btnContainer}>
+          <View style={styles.cancelBtn}>
+            <TouchableOpacity onPress={() => setFocus((prev) => !prev)}>
+              <AntDesign
+                name="close"
+                size={windowWidth * 0.08}
+                color={bg_DarkColor}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.deleteBtn}>
+            <TouchableOpacity
+              onPress={() =>
+                Alert.alert(
+                  "Remove Friend",
+                  `Do you want to remove friend ${friend.username} ?`,
+                  [
+                    {
+                      text: "Cancel",
+                      onPress: () => {
+                        return;
+                      },
+                    },
+                    {
+                      text: "Confrim",
+                      onPress: () => {
+                        deleteFunc(friend.id);
+                      },
+                    },
+                  ]
+                )
+              }
+            >
+              <AntDesign
+                name="deleteuser"
+                size={windowWidth * 0.08}
+                color={bg_DarkColor}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+    </TouchableOpacity>
   );
 };
 export default Friend;
@@ -57,18 +81,36 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: bg_LessDarkColor,
     borderRadius: windowHeight * 0.02,
-    paddingHorizontal: windowWidth * 0.07,
+    paddingLeft: windowWidth * 0.07,
+    paddingRight: windowWidth * 0.03,
     marginBottom: windowHeight * 0.01,
   },
   name: {
-    flex: 8.5,
+    flex: 7,
     fontSize: windowWidth * 0.06,
     color: "#FFF",
     paddingTop: windowHeight * 0.01,
   },
-  btn: {
-    flex: 1.5,
+  btnContainer: {
+    flex: 4,
+    flexDirection: "row",
+  },
+  deleteBtn: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    borderRadius: windowWidth * 0.02,
+    backgroundColor: "coral",
+    marginLeft: windowWidth * 0.02,
+    marginVertical: windowHeight * 0.003,
+  },
+  cancelBtn: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: windowWidth * 0.02,
+    backgroundColor: "lightblue",
+    marginLeft: windowWidth * 0.01,
+    marginVertical: windowHeight * 0.002,
   },
 });
