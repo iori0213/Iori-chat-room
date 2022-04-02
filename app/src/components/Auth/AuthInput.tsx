@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     borderRadius: inputRadius,
     backgroundColor: inputBackgroundColor,
     opacity: 0.9,
-    marginVertical: inputHeight / 4,
+    marginVertical: inputHeight / 3,
     alignItems: "flex-start",
     justifyContent: "center",
     flexDirection: "row",

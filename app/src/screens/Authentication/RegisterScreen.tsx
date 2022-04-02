@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Platform,
+} from "react-native";
 import {
   bg_DarkColor,
   bg_LightColor,
@@ -9,12 +17,12 @@ import {
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
-import AuthInput from "../../components/Auth/AuthInput";
 import { Fontisto, Feather, FontAwesome } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthAPI } from "../../constants/backendAPI";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthNavigationProps } from "../../types/navigations";
+import AuthInput from "../../components/Auth/AuthInput";
 
 type Props = NativeStackScreenProps<AuthNavigationProps, "RegisterScreen">;
 
@@ -49,71 +57,79 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      {/* Header */}
-      <View style={styles.topContainer}>
-        <View style={styles.cuttingTopContainer}>
-          <TouchableOpacity
-            style={styles.goback}
-            onPress={() => navigation.goBack()}
-          >
-            <FontAwesome
-              name="angle-double-left"
-              size={windowWidth * 0.12}
-              color={bg_DarkColor}
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView behavior="position">
+          {/* Header */}
+          <View style={styles.topContainer}>
+            <View style={styles.cuttingTopContainer}>
+              <TouchableOpacity
+                style={styles.goback}
+                onPress={() => navigation.goBack()}
+              >
+                <FontAwesome
+                  name="angle-double-left"
+                  size={windowWidth * 0.12}
+                  color={bg_DarkColor}
+                />
+              </TouchableOpacity>
+              <Text style={styles.headerTextContainer}>reGisteR</Text>
+            </View>
+          </View>
+          {/* Body */}
+          <View style={styles.mainContainer}>
+            <AuthInput
+              InputIcon={
+                <Fontisto name="email" size={windowWidth * 0.07} color="#FFF" />
+              }
+              SetInputState={setEmail}
+              PlaceHolder="Enter email"
+              PasswordMode={false}
             />
-          </TouchableOpacity>
-          <Text style={styles.headerTextContainer}>reGisteR</Text>
+            <AuthInput
+              InputIcon={
+                <Feather name="user" size={windowWidth * 0.07} color="#FFF" />
+              }
+              SetInputState={setName}
+              PlaceHolder="Enter user name"
+              PasswordMode={false}
+            />
+            <AuthInput
+              InputIcon={
+                <Feather name="user" size={windowWidth * 0.07} color="#FFF" />
+              }
+              SetInputState={setShowName}
+              PlaceHolder="Enter show name"
+              PasswordMode={false}
+            />
+            <AuthInput
+              InputIcon={
+                <Fontisto
+                  name="locked"
+                  size={windowWidth * 0.07}
+                  color="#FFF"
+                />
+              }
+              SetInputState={setPassword}
+              PlaceHolder="Enter password"
+              PasswordMode={true}
+            />
+          </View>
+        </KeyboardAvoidingView>
+        {/* Footer */}
+        <View style={styles.bottomContainer}>
+          <View style={styles.cuttingBottomContainer}>
+            {/* Auth container */}
+            <TouchableOpacity
+              style={styles.authBtn}
+              onPress={() => RegisterProcess()}
+            >
+              <Text style={styles.btnText}>SUBMIT</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      {/* Body */}
-      <View style={styles.mainContainer}>
-        <AuthInput
-          InputIcon={
-            <Fontisto name="email" size={windowWidth * 0.07} color="#FFF" />
-          }
-          SetInputState={setEmail}
-          PlaceHolder="Enter email"
-          PasswordMode={false}
-        />
-        <AuthInput
-          InputIcon={
-            <Feather name="user" size={windowWidth * 0.07} color="#FFF" />
-          }
-          SetInputState={setName}
-          PlaceHolder="Enter user name"
-          PasswordMode={false}
-        />
-        <AuthInput
-          InputIcon={
-            <Feather name="user" size={windowWidth * 0.07} color="#FFF" />
-          }
-          SetInputState={setShowName}
-          PlaceHolder="Enter show name"
-          PasswordMode={false}
-        />
-        <AuthInput
-          InputIcon={
-            <Fontisto name="locked" size={windowWidth * 0.07} color="#FFF" />
-          }
-          SetInputState={setPassword}
-          PlaceHolder="Enter password"
-          PasswordMode={true}
-        />
-      </View>
-      {/* Footer */}
-      <View style={styles.bottomContainer}>
-        <View style={styles.cuttingBottomContainer}>
-          {/* Auth container */}
-          <TouchableOpacity
-            style={styles.authBtn}
-            onPress={() => RegisterProcess()}
-          >
-            <Text style={styles.btnText}>SUBMIT</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 

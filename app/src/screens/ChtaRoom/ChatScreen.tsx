@@ -7,6 +7,8 @@ import {
   View,
   TouchableOpacity,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -97,7 +99,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
       ({ newMsgs, notify }: { newMsgs: Msg[]; notify?: string }) => {
         setMessages((Prev) => [...Prev, ...newMsgs]);
         setLoadingMsg((Prev) => !Prev);
-        if (notify) {
+        if (messages.length > 15 && notify) {
           return Alert.alert("oops", notify);
         }
       }
@@ -138,7 +140,10 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                 />
               </TouchableOpacity>
             </View>
-            <View style={styles.body}>
+            <KeyboardAvoidingView
+              style={styles.body}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
               <View style={styles.msgList}>
                 <FlatList
                   data={messages}
@@ -192,7 +197,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                   />
                 </TouchableOpacity>
               </View>
-            </View>
+            </KeyboardAvoidingView>
           </>
         )}
         {!loadingMsg ? (
@@ -250,7 +255,7 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.06,
     alignItems: "center",
     justifyContent: "center",
-    borderTopWidth: 1.5,
+    borderTopWidth: 0.5,
     borderTopColor: bg_DarkColor,
   },
   input: {
