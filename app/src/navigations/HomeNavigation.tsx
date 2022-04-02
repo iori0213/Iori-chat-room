@@ -1,12 +1,13 @@
 import React from "react";
 //navigator
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { HomeNavigationProps } from "../types/navigations";
 //screens
-import HomeScreen from "../screens/Home/HomeScreen";
+import HomeScreen from "../screens/Home/FriendListScreen";
 import { bg_LessDarkColor } from "../constants/cssConst";
 import RoomListScreen from "../screens/Home/RoomListScreen";
+import ProfileScreen from "../screens/Home/ProfileScreen";
 
 type Props = {};
 
@@ -41,12 +42,22 @@ const HomeNavigation: React.FC<Props> = ({}) => {
         }}
       />
       <BottomTab.Screen
-        name="HomeScreen"
+        name="FriendListScreen"
         component={HomeScreen}
         options={{
-          tabBarLabel: "Home",
+          tabBarLabel: "Friends",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="home" size={24} color={color} />
+            <FontAwesome name="users" size={22} color={color} />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: "Profile",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="md-person-sharp" size={24} color={color} />
           ),
         }}
       />

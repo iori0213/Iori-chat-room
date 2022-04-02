@@ -30,13 +30,12 @@ import {
 import { HomeNavigationProps } from "../../types/navigations";
 import { MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
 import Friend from "../../components/Home/Friend";
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { ChatContext } from "../../components/Home/ChatContext";
-import LoginScreen from "../Authentication/LoginScreen";
+import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 
-type Props = BottomTabScreenProps<HomeNavigationProps, "HomeScreen">;
+type Props = MaterialTopTabScreenProps<HomeNavigationProps, "FriendListScreen">;
 
-const HomeScreen: React.FC<Props> = ({ navigation }) => {
+const FriendListScreen: React.FC<Props> = ({ navigation }) => {
   const [userName, setUserName] = useState("");
   const [friendArray, setFriendArray] = useState<Profile[]>([]);
   const [friend, setFriend] = useState("");
@@ -133,9 +132,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
-        <HomeHeader userName={userName} logoutFunc={() => LogoutProcess()} />
+        <HomeHeader logoutFunc={() => LogoutProcess()} />
         <View style={styles.bodyContainer}>
-          <Text style={styles.friendListHeader}>Friend List</Text>
           <View style={styles.addFriendHeader}>
             <View style={styles.sideBlank}></View>
             <View style={styles.inputContainer}>
@@ -171,46 +169,20 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     </SafeAreaProvider>
   );
 };
-export default HomeScreen;
+export default FriendListScreen;
 
 //custom Header
 type HomeHeaderProps = {
-  userName: string;
   logoutFunc: () => void;
 };
-const HomeHeader: React.FC<HomeHeaderProps> = ({ userName, logoutFunc }) => {
+const HomeHeader: React.FC<HomeHeaderProps> = ({ logoutFunc }) => {
   return (
     <View style={styles.customHeader}>
       <View style={styles.slideNavigatorContainer}></View>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleStyle}>{userName}</Text>
+        <Text style={styles.titleStyle}>Friends</Text>
       </View>
-      <View style={styles.slideNavigatorContainer}>
-        <TouchableOpacity
-          onPress={() =>
-            Alert.alert("Logout check", "Do you want to logout?", [
-              {
-                text: "No",
-                onPress: () => {
-                  return;
-                },
-              },
-              {
-                text: "Yes",
-                onPress: () => {
-                  logoutFunc();
-                },
-              },
-            ])
-          }
-        >
-          <MaterialCommunityIcons
-            name="logout"
-            size={windowWidth * 0.09}
-            color="#FFF"
-          />
-        </TouchableOpacity>
-      </View>
+      <View style={styles.slideNavigatorContainer}></View>
     </View>
   );
 };
@@ -233,7 +205,6 @@ const styles = StyleSheet.create({
   titleStyle: {
     fontSize: windowWidth * 0.08,
     color: "#FFF",
-    fontFamily: "Roboto_Bold",
   },
   slideNavigatorContainer: {
     flex: 1,
@@ -246,17 +217,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: bg_DarkColor,
   },
-  friendListHeader: {
-    paddingTop: windowHeight * 0.03,
-    fontSize: windowWidth * 0.06,
-    color: "#FFF",
-  },
   addFriendHeader: {
     width: windowWidth,
     height: windowHeight * 0.1,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
+    marginTop: windowHeight * 0.01,
   },
   sideBlank: {
     flex: 1,
