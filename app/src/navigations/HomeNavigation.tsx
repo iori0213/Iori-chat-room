@@ -7,7 +7,7 @@ import { HomeNavigationProps } from "../types/navigations";
 import HomeScreen from "../screens/Home/FriendListScreen";
 import { bg_LessDarkColor } from "../constants/cssConst";
 import RoomListScreen from "../screens/Home/RoomListScreen";
-import ProfileScreen from "../screens/Home/ProfileScreen";
+import ProfileNavigation from "./ProfileNavigation";
 
 type Props = {};
 
@@ -52,8 +52,8 @@ const HomeNavigation: React.FC<Props> = ({}) => {
         }}
       />
       <BottomTab.Screen
-        name="ProfileScreen"
-        component={ProfileScreen}
+        name="ProfileNavigation"
+        component={ProfileNavigation}
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ color }) => (

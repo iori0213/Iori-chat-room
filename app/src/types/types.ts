@@ -1,3 +1,8 @@
+interface userInfo {
+  email: string;
+  username: string;
+  showname: string;
+}
 interface Profile {
   id: string;
   username: string;

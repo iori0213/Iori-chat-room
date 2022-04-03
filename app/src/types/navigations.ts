@@ -19,7 +19,7 @@ export type HomeNavigationProps = {
     roomId: string;
     roomName: string;
   };
-  ProfileScreen: undefined;
+  ProfileNavigation: undefined;
 };
 
 export type ChatNavigationProps = {
@@ -27,5 +27,15 @@ export type ChatNavigationProps = {
   ChatScreen: {
     roomId: string;
     roomName: string;
+  };
+};
+
+export type ProfileNavigationProps = {
+  ProfileScreen: undefined;
+  EditProfileScreen: {
+    img: string;
+    showname: string;
+    username: string;
+    email: string;
   };
 };
