@@ -27,4 +27,25 @@ router.get("/userinfo", TokenAuthentication, async (req, res) => {
   return res.status(200).json({ success: true, userInfo: returnData });
 });
 
+router.post("/update", TokenAuthentication, async (req, res) => {
+  const userId = req.profile.id;
+  const { showname } = req.body;
+  const profileRepo = getRepository(Profile);
+  const userProfile = await profileRepo.findOne({
+    where: { id: userId },
+    relations: ["user"],
+  });
+  if (!userProfile) {
+    return res
+      .status(404)
+      .json({ success: false, message: "User profile not found!" });
+  }
+  userProfile.showname = showname;
+  await profileRepo.save(userProfile);
+  const userData = {
+    showname: userProfile.showname,
+  };
+  return res.json({ success: true, user: userData });
+});
+
 export { router as userRouter };

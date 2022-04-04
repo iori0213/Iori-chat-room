@@ -5,6 +5,7 @@ import {
   Platform,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -31,10 +32,7 @@ import { AuthAPI, UserAPI } from "../../../constants/backendAPI";
 import { ChatContext } from "../../../components/Home/ChatContext";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import { ProfileNavigationProps } from "../../../types/navigations";
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 type Props = NativeStackScreenProps<
   ProfileNavigationProps,
@@ -52,6 +50,29 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   const [editUniquename, setEditUniquename] = useState(username);
   const [editShowname, setEditShowname] = useState(showname);
   const [editAvatarImg, setEditAvatarImg] = useState(img);
+
+  const update = async () => {
+    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
+    if (editShowname == "") {
+      return Alert.alert("Error", "Show Name can not be empty!");
+    }
+    // if (editAvatarImg != img) {
+    // }
+    // if (editShowname != showname) {
+    // }
+    axios({
+      method: "post",
+      url: `${UserAPI}/update`,
+      headers: { Authorization: `Bearer ${localAccessToken}` },
+      data: { showname: editShowname },
+    })
+      .then((res) => {
+        navigation.goBack();
+      })
+      .catch((e) => {
+        return Alert.alert("Error", e.response.data.message);
+      });
+  };
 
   //loading process
   const loading = async () => {
@@ -80,10 +101,10 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
               </TouchableOpacity>
             </View>
             <View style={styles.titleContainer}>
-              <Text style={styles.titleStyle}>Edit</Text>
+              <Text style={styles.titleStyle}>Edit Profile</Text>
             </View>
             <View style={styles.slideNavigatorContainer}>
-              <TouchableOpacity style={{ alignItems: "center" }}>
+              <TouchableOpacity onPress={() => update()}>
                 <Entypo name="save" size={windowWidth * 0.09} color="#FFF" />
               </TouchableOpacity>
             </View>
@@ -103,10 +124,21 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
                 />
               </TouchableOpacity>
               <View style={styles.infoList}>
-                <InfoBox
-                  infoType="Show Name"
-                  info={editShowname != "" ? showname : "Not set yet"}
-                />
+                {/* show name ========================================================================================== */}
+                <View style={styles.infoBoxContainer}>
+                  <View style={styles.infoTypeContainer}>
+                    <Text style={styles.infoTypeText}>Show Name</Text>
+                  </View>
+                  <View style={styles.infoContainer}>
+                    <TextInput
+                      onChangeText={(val) => setEditShowname(val)}
+                      value={editShowname}
+                      autoCapitalize="none"
+                      style={styles.showNameInput}
+                    />
+                  </View>
+                </View>
+                {/* show name ========================================================================================== */}
                 <InfoBox infoType="Unique Name" info={editUniquename} />
                 <InfoBox infoType="Email" info={email} />
               </View>
@@ -173,6 +205,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   //================================
+  showNameInput: {
+    width: windowWidth * 0.35,
+    borderBottomWidth: 1.5,
+    borderBottomColor: "#FFF",
+    backgroundColor: bg_DarkColor,
+    color: "#FFF",
+    fontSize: windowHeight * 0.02,
+    marginLeft: windowWidth * 0.05,
+  },
 
   //InfoBox=========================
   infoBoxContainer: {

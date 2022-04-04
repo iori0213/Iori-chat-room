@@ -24,7 +24,7 @@ import {
   USERID_KEY,
   USERNAME_KEY,
 } from "../../../constants/securestoreKey";
-import { CommonActions } from "@react-navigation/native";
+import { CommonActions, useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import { AuthAPI, UserAPI } from "../../../constants/backendAPI";
 import { ChatContext } from "../../../components/Home/ChatContext";
@@ -92,11 +92,16 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     setFetching(false);
   };
 
-  useEffect(() => {
-    initialize();
+  // useEffect(() => {
+  //   initialize();
+  //   return () => {};
+  // }, []);
 
-    return () => {};
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      initialize();
+    }, [])
+  );
 
   return (
     <SafeAreaProvider>
@@ -146,7 +151,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
               >
                 <MaterialCommunityIcons
                   name="logout"
-                  size={windowWidth * 0.095}
+                  size={windowWidth * 0.09}
                   color="#FFF"
                 />
               </TouchableOpacity>
