@@ -1,6 +1,7 @@
 import {
   Alert,
   Image,
+  ImageBackground,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -30,7 +31,7 @@ import { CommonActions } from "@react-navigation/native";
 import axios from "axios";
 import { AuthAPI, UserAPI } from "../../../constants/backendAPI";
 import { ChatContext } from "../../../components/Home/ChatContext";
-import { Entypo, Ionicons } from "@expo/vector-icons";
+import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { ProfileNavigationProps } from "../../../types/navigations";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
@@ -118,10 +119,20 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
               style={styles.avoidingView}
             >
               <TouchableOpacity style={styles.AvatarContainer}>
-                <Image
+                <ImageBackground
                   source={require("./350px-Minato_Aqua.png")}
                   style={styles.avatarImg}
-                />
+                  imageStyle={styles.avatarImg}
+                >
+                  <View style={styles.cameraIconContainer}>
+                    <MaterialCommunityIcons
+                      name="camera"
+                      size={windowHeight * 0.05}
+                      color="#FFF"
+                      style={styles.cameraIcon}
+                    />
+                  </View>
+                </ImageBackground>
               </TouchableOpacity>
               <View style={styles.infoList}>
                 {/* show name ========================================================================================== */}
@@ -259,6 +270,19 @@ const styles = StyleSheet.create({
     width: windowWidth * 0.4,
     borderRadius: windowWidth * 0.2,
     resizeMode: "contain",
+  },
+  cameraIconContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cameraIcon: {
+    opacity: 0.95,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#FFF",
+    borderRadius: windowWidth * 0.02,
   },
   infoList: {
     width: windowWidth,
