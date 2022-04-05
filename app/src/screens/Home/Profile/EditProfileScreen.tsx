@@ -1,22 +1,13 @@
 import {
   Alert,
-  Image,
   ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, {
-  createRef,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { createRef, useContext, useEffect, useState } from "react";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
@@ -26,16 +17,10 @@ import {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import LoadingSpinner from "../../../components/Auth/LoadingSpinner";
 import * as SecureStore from "expo-secure-store";
-import {
-  ACCESS_KEY,
-  REFRESH_KEY,
-  SHOWNAME_KEY,
-  USERID_KEY,
-  USERNAME_KEY,
-} from "../../../constants/securestoreKey";
-import { CommonActions } from "@react-navigation/native";
+import { ACCESS_KEY } from "../../../constants/securestoreKey";
+import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
-import { AuthAPI, UserAPI } from "../../../constants/backendAPI";
+import { UserAPI } from "../../../constants/backendAPI";
 import { ChatContext } from "../../../components/Home/ChatContext";
 import {
   Entypo,
@@ -48,7 +33,6 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
-import * as gesture from "react-native-gesture-handler";
 
 type Props = NativeStackScreenProps<
   ProfileNavigationProps,
@@ -68,7 +52,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   const shownameInput = createRef<TextInput>();
   const [editAvatarImg, setEditAvatarImg] = useState(img);
 
-  //Bottom Sheet
+  //Bottom
   const ImgBottomSheet = createRef<BottomSheet>();
   const fall = new Animated.Value(1);
 
@@ -102,9 +86,15 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
 
   useEffect(() => {
     loading();
-
     return () => {};
   }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        navigation.pop();
+      };
+    }, [])
+  );
 
   //Bottom Sheet Component
   const renderContent = () => (
