@@ -10,7 +10,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  createRef,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
@@ -31,9 +37,17 @@ import { CommonActions } from "@react-navigation/native";
 import axios from "axios";
 import { AuthAPI, UserAPI } from "../../../constants/backendAPI";
 import { ChatContext } from "../../../components/Home/ChatContext";
-import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  Entypo,
+  Ionicons,
+  MaterialCommunityIcons,
+  Feather,
+} from "@expo/vector-icons";
 import { ProfileNavigationProps } from "../../../types/navigations";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+
+import Animated from "react-native-reanimated";
+import BottomSheet from "reanimated-bottom-sheet";
 
 type Props = NativeStackScreenProps<
   ProfileNavigationProps,
@@ -50,7 +64,12 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   const [editEmail, setEditEmail] = useState(email);
   const [editUniquename, setEditUniquename] = useState(username);
   const [editShowname, setEditShowname] = useState(showname);
+  const shownameInput = createRef<TextInput>();
   const [editAvatarImg, setEditAvatarImg] = useState(img);
+
+  //Bottom Sheet
+  const ImgBottomSheet = createRef<BottomSheet>();
+  const fall = new Animated.Value(1);
 
   const update = async () => {
     const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
@@ -86,6 +105,10 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
     return () => {};
   }, []);
 
+  //Bottom Sheet Component
+  const renderHeader = () => <View style={styles.bsHeader}></View>;
+  const renderContent = () => <View style={styles.bsBody}></View>;
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
@@ -118,7 +141,10 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
               behavior={Platform.OS === "ios" ? "padding" : "height"}
               style={styles.avoidingView}
             >
-              <TouchableOpacity style={styles.AvatarContainer}>
+              <TouchableOpacity
+                style={styles.AvatarContainer}
+                onPress={() => ImgBottomSheet.current?.snapTo(0)}
+              >
                 <ImageBackground
                   source={require("./350px-Minato_Aqua.png")}
                   style={styles.avatarImg}
@@ -140,8 +166,19 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
                   <View style={styles.infoTypeContainer}>
                     <Text style={styles.infoTypeText}>Show Name</Text>
                   </View>
-                  <View style={styles.infoContainer}>
+                  <View style={styles.inputContainer}>
+                    <TouchableOpacity
+                      style={styles.editPenIcon}
+                      onPress={() => shownameInput.current?.focus()}
+                    >
+                      <Feather
+                        name="edit"
+                        size={windowHeight * 0.032}
+                        color="#FFF"
+                      />
+                    </TouchableOpacity>
                     <TextInput
+                      ref={shownameInput}
                       onChangeText={(val) => setEditShowname(val)}
                       value={editShowname}
                       autoCapitalize="none"
@@ -153,7 +190,14 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
                 <InfoBox infoType="Unique Name" info={editUniquename} />
                 <InfoBox infoType="Email" info={email} />
               </View>
-              <TouchableOpacity></TouchableOpacity>
+              <BottomSheet
+                ref={ImgBottomSheet}
+                snapPoints={[330, 0]}
+                initialSnap={1}
+                callbackNode={fall}
+                renderHeader={renderHeader}
+                renderContent={renderContent}
+              />
             </KeyboardAvoidingView>
           )}
         </View>
@@ -216,14 +260,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   //================================
+  inputContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  editPenIcon: {
+    marginLeft: windowWidth * 0.05,
+  },
   showNameInput: {
     width: windowWidth * 0.35,
-    borderBottomWidth: 1.5,
-    borderBottomColor: "#FFF",
-    backgroundColor: bg_DarkColor,
+    height: windowHeight * 0.032,
+    borderRadius: (windowHeight * 0.032) / 2,
+    backgroundColor: bg_LessDarkColor,
     color: "#FFF",
     fontSize: windowHeight * 0.02,
-    marginLeft: windowWidth * 0.05,
+    marginLeft: windowWidth * 0.01,
+    paddingHorizontal: windowWidth * 0.025,
   },
 
   //InfoBox=========================
@@ -288,5 +341,18 @@ const styles = StyleSheet.create({
     width: windowWidth,
     borderTopWidth: 2,
     borderTopColor: bg_LessDarkColor,
+  },
+
+  //Bottom Sheet
+  bsHeader: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "black",
+  },
+  bsBody: {
+    flex: 1,
+    alignItems: "center",
   },
 });
