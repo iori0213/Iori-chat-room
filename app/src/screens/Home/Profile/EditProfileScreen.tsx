@@ -48,6 +48,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
+import * as gesture from "react-native-gesture-handler";
 
 type Props = NativeStackScreenProps<
   ProfileNavigationProps,
@@ -106,8 +107,31 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   }, []);
 
   //Bottom Sheet Component
-  const renderHeader = () => <View style={styles.bsHeader}></View>;
-  const renderContent = () => <View style={styles.bsBody}></View>;
+  const renderContent = () => (
+    <>
+      <View style={styles.bsBody}>
+        <View style={styles.headerHandler}></View>
+        <Text style={styles.bsTitle}>Upload Photo</Text>
+        <Text style={styles.bsSubTitle}>Choose Your Profile Photo</Text>
+        <TouchableOpacity
+          style={[styles.bsBtn, { backgroundColor: bg_LessDarkColor }]}
+        >
+          <Text style={styles.bgBtnText}>Take Photo</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.bsBtn, { backgroundColor: bg_LessDarkColor }]}
+        >
+          <Text style={styles.bgBtnText}>Choose From Library</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => ImgBottomSheet.current?.snapTo(1)}
+          style={[styles.bsBtn, { backgroundColor: "lightcoral" }]}
+        >
+          <Text style={styles.bgBtnText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
 
   return (
     <SafeAreaProvider>
@@ -137,9 +161,11 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
           {fetching ? (
             <LoadingSpinner />
           ) : (
-            <KeyboardAvoidingView
-              behavior={Platform.OS === "ios" ? "padding" : "height"}
-              style={styles.avoidingView}
+            <Animated.View
+              style={[
+                styles.avoidingView,
+                { opacity: Animated.add(0.3, Animated.multiply(fall, 1.0)) },
+              ]}
             >
               <TouchableOpacity
                 style={styles.AvatarContainer}
@@ -190,16 +216,17 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
                 <InfoBox infoType="Unique Name" info={editUniquename} />
                 <InfoBox infoType="Email" info={email} />
               </View>
-              <BottomSheet
-                ref={ImgBottomSheet}
-                snapPoints={[330, 0]}
-                initialSnap={1}
-                callbackNode={fall}
-                renderHeader={renderHeader}
-                renderContent={renderContent}
-              />
-            </KeyboardAvoidingView>
+            </Animated.View>
           )}
+          <BottomSheet
+            ref={ImgBottomSheet}
+            snapPoints={[windowHeight * 0.4, 0]}
+            initialSnap={1}
+            callbackNode={fall}
+            renderContent={renderContent}
+            borderRadius={20}
+            enabledContentTapInteraction={false}
+          />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -344,15 +371,39 @@ const styles = StyleSheet.create({
   },
 
   //Bottom Sheet
-  bsHeader: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "black",
+  headerHandler: {
+    width: windowWidth * 0.3,
+    height: windowHeight * 0.015,
+    borderRadius: windowHeight * 0.0075,
+    backgroundColor: "#AAA",
   },
   bsBody: {
-    flex: 1,
+    width: windowWidth,
+    height: windowHeight * 0.4,
     alignItems: "center",
+    backgroundColor: "#FFF",
+    paddingTop: windowHeight * 0.01,
+  },
+  bsTitle: {
+    fontSize: windowHeight * 0.03,
+    color: bg_DarkColor,
+    marginTop: windowHeight * 0.02,
+  },
+  bsSubTitle: {
+    fontSize: windowHeight * 0.015,
+    color: "#999",
+    marginBottom: windowHeight * 0.01,
+  },
+  bsBtn: {
+    width: windowWidth * 0.9,
+    height: windowHeight * 0.065,
+    borderRadius: windowHeight * 0.02,
+    marginTop: windowHeight * 0.017,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bgBtnText: {
+    color: "#FFF",
+    fontSize: windowWidth * 0.06,
   },
 });
