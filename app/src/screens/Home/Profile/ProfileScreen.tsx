@@ -162,12 +162,12 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             <LoadingSpinner />
           ) : (
             <>
-              <TouchableOpacity style={styles.AvatarContainer}>
+              <View style={styles.AvatarContainer}>
                 <Image
                   source={require("./350px-Minato_Aqua.png")}
                   style={styles.avatarImg}
                 />
-              </TouchableOpacity>
+              </View>
               <View style={styles.infoList}>
                 <InfoBox
                   infoType="Show Name"

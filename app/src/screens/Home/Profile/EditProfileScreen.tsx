@@ -52,7 +52,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   const shownameInput = createRef<TextInput>();
   const [editAvatarImg, setEditAvatarImg] = useState(img);
 
-  //Bottom
+  //Bottom Sheet
   const ImgBottomSheet = createRef<BottomSheet>();
   const fall = new Animated.Value(1);
 
@@ -91,7 +91,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       return () => {
-        navigation.pop();
+        ImgBottomSheet.current?.snapTo(1);
       };
     }, [])
   );
