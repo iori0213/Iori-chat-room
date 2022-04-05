@@ -13,7 +13,7 @@ type AuthInputProps = {
 
 const AuthInput: React.FC<AuthInputProps> = ({
   InputIcon,
-  SetInputState: SetInput,
+  SetInputState,
   PlaceHolder,
   PasswordMode,
 }) => {
@@ -23,7 +23,7 @@ const AuthInput: React.FC<AuthInputProps> = ({
     <View style={styles.inputContainer}>
       <View style={styles.inputIconContainer}>{InputIcon}</View>
       <TextInput
-        onChangeText={(val) => SetInput(val)}
+        onChangeText={(val) => SetInputState(val)}
         placeholder={PlaceHolder}
         placeholderTextColor={placeholderColor}
         style={styles.input}
