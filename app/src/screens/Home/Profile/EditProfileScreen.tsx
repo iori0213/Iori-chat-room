@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  SafeAreaView,
 } from "react-native";
 import React, { createRef, useContext, useEffect, useState } from "react";
 import {
@@ -14,7 +15,7 @@ import {
   windowHeight,
   windowWidth,
 } from "../../../constants/cssConst";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import LoadingSpinner from "../../../components/Auth/LoadingSpinner";
 import * as SecureStore from "expo-secure-store";
 import { ACCESS_KEY } from "../../../constants/securestoreKey";
@@ -79,18 +80,23 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
       return;
     }
     //if selected
-    const formData = new FormData();
-    formData.append("image", {
+    // const formData = new FormData();
+    // formData.append("image", {
+    //   uri: pickerResult.uri,
+    //   type: pickerResult.type,
+    //   name: pickerResult.uri.substring(pickerResult.uri.lastIndexOf("/") + 1),
+    // });
+
+    const formData = {
       uri: pickerResult.uri,
       type: pickerResult.type,
       name: pickerResult.uri.substring(pickerResult.uri.lastIndexOf("/") + 1),
-    });
-
+    };
     const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
     axios({
       method: "post",
-      url: "",
-      data: formData,
+      url: `${UserAPI}/img`,
+      data: { image: formData },
       headers: {
         Authorization: `Bearer ${localAccessToken}`,
         "Content-Type": "multipart/form-data",
@@ -165,6 +171,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
 
   return (
     <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 0, backgroundColor: bg_LessDarkColor }} />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.background}>
           {/* header =====================================================================================================*/}
@@ -305,7 +312,7 @@ export default EditProfileScreen;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: bg_LessDarkColor,
+    backgroundColor: bg_DarkColor,
   },
   background: {
     flex: 1,
