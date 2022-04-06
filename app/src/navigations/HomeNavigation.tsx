@@ -2,17 +2,17 @@ import React from "react";
 //navigator
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
-import { HomeNavigationProps } from "../types/navigations";
+import { HomeTabNavigationProps } from "../types/navigations";
 //screens
 import HomeScreen from "../screens/Home/FriendListScreen";
 import { bg_LessDarkColor } from "../constants/cssConst";
 import RoomListScreen from "../screens/Home/RoomListScreen";
-import ProfileNavigation from "./ProfileNavigation";
+import ProfileScreen from "../screens/Home/Profile/ProfileScreen";
 
 type Props = {};
 
 const HomeNavigation: React.FC<Props> = ({}) => {
-  const BottomTab = createMaterialTopTabNavigator<HomeNavigationProps>();
+  const BottomTab = createMaterialTopTabNavigator<HomeTabNavigationProps>();
   return (
     <BottomTab.Navigator
       initialRouteName="RoomListScreen"
@@ -52,8 +52,8 @@ const HomeNavigation: React.FC<Props> = ({}) => {
         }}
       />
       <BottomTab.Screen
-        name="ProfileNavigation"
-        component={ProfileNavigation}
+        name="ProfileScreen"
+        component={ProfileScreen}
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ color }) => (

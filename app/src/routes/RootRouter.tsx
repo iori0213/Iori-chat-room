@@ -10,7 +10,7 @@ import { AuthAPI } from "../constants/backendAPI";
 import { ACCESS_KEY, REFRESH_KEY } from "../constants/securestoreKey";
 import LoadingSpinner from "../components/Auth/LoadingSpinner";
 import { RootNavigationProps } from "../types/navigations";
-import ChatNavigation from "../navigations/ChatNavigation";
+import HomeStackNavigation from "../navigations/HomeStackNavigation";
 import { AccessContext } from "../components/Home/AccessContext";
 
 const RootRouter: React.FC = () => {
@@ -72,7 +72,7 @@ const RootRouter: React.FC = () => {
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="AuthNavigation" component={AuthNavigation} />
-          <Stack.Screen name="ChatNavigation" component={ChatNavigation} />
+          <Stack.Screen name="ChatNavigation" component={HomeStackNavigation} />
         </Stack.Navigator>
       </NavigationContainer>
     </AccessContext.Provider>

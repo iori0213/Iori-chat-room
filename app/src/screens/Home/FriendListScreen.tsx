@@ -27,13 +27,16 @@ import {
   USERID_KEY,
   USERNAME_KEY,
 } from "../../constants/securestoreKey";
-import { HomeNavigationProps } from "../../types/navigations";
+import { HomeTabNavigationProps } from "../../types/navigations";
 import { MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
 import Friend from "../../components/Home/Friend";
 import { ChatContext } from "../../components/Home/ChatContext";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 
-type Props = MaterialTopTabScreenProps<HomeNavigationProps, "FriendListScreen">;
+type Props = MaterialTopTabScreenProps<
+  HomeTabNavigationProps,
+  "FriendListScreen"
+>;
 
 const FriendListScreen: React.FC<Props> = ({ navigation }) => {
   const [userName, setUserName] = useState("");

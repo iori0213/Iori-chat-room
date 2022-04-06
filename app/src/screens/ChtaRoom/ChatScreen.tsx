@@ -19,7 +19,7 @@ import {
 } from "../../constants/cssConst";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ChatNavigationProps } from "../../types/navigations";
+import { HomeStackNavigationProps } from "../../types/navigations";
 import * as SecureStore from "expo-secure-store";
 import { ChatContext } from "../../components/Home/ChatContext";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
@@ -28,7 +28,7 @@ import UserMessage from "../../components/Home/UserMessage";
 import { USERID_KEY } from "../../constants/securestoreKey";
 import { ActivityIndicator } from "react-native-paper";
 
-type Props = NativeStackScreenProps<ChatNavigationProps, "ChatScreen">;
+type Props = NativeStackScreenProps<HomeStackNavigationProps, "ChatScreen">;
 
 const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   const [fetching, serFetching] = useState(true);

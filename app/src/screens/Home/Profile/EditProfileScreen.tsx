@@ -18,7 +18,6 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import LoadingSpinner from "../../../components/Auth/LoadingSpinner";
 import * as SecureStore from "expo-secure-store";
 import { ACCESS_KEY } from "../../../constants/securestoreKey";
-import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import { UserAPI } from "../../../constants/backendAPI";
 import { ChatContext } from "../../../components/Home/ChatContext";
@@ -28,14 +27,16 @@ import {
   MaterialCommunityIcons,
   Feather,
 } from "@expo/vector-icons";
-import { ProfileNavigationProps } from "../../../types/navigations";
+import { HomeStackNavigationProps } from "../../../types/navigations";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 
+import * as ImagePicker from "expo-image-picker";
+
 type Props = NativeStackScreenProps<
-  ProfileNavigationProps,
+  HomeStackNavigationProps,
   "EditProfileScreen"
 >;
 
@@ -55,16 +56,61 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   //Bottom Sheet
   const ImgBottomSheet = createRef<BottomSheet>();
   const fall = new Animated.Value(1);
+  //Avatar Image
+  const [selectedImage, setSelectedImage] =
+    useState<ImagePicker.ImagePickerResult>();
 
+  const selectImage = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      return Alert.alert("Error", "Permission to access library is required!");
+    }
+    ImgBottomSheet.current?.snapTo(1);
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    console.log(pickerResult);
+    //if canceled
+    if (pickerResult.cancelled === true) {
+      return;
+    }
+    //if selected
+    const formData = new FormData();
+    formData.append("image", {
+      uri: pickerResult.uri,
+      type: pickerResult.type,
+      name: pickerResult.uri.substring(pickerResult.uri.lastIndexOf("/") + 1),
+    });
+
+    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
+    axios({
+      method: "post",
+      url: "",
+      data: formData,
+      headers: {
+        Authorization: `Bearer ${localAccessToken}`,
+        "Content-Type": "multipart/form-data",
+      },
+    }).then((res) => {
+      console.log(res.data);
+    });
+
+    setSelectedImage(pickerResult);
+    setEditAvatarImg(pickerResult.uri);
+  };
+
+  //update function
   const update = async () => {
     const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
     if (editShowname == "") {
       return Alert.alert("Error", "Show Name can not be empty!");
     }
-    // if (editAvatarImg != img) {
-    // }
-    // if (editShowname != showname) {
-    // }
+    if (editAvatarImg != img) {
+    }
     axios({
       method: "post",
       url: `${UserAPI}/update`,
@@ -88,13 +134,6 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
     loading();
     return () => {};
   }, []);
-  useFocusEffect(
-    React.useCallback(() => {
-      return () => {
-        ImgBottomSheet.current?.snapTo(1);
-      };
-    }, [])
-  );
 
   //Bottom Sheet Component
   const renderContent = () => (
@@ -109,6 +148,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
           <Text style={styles.bgBtnText}>Take Photo</Text>
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={() => selectImage()}
           style={[styles.bsBtn, { backgroundColor: bg_LessDarkColor }]}
         >
           <Text style={styles.bgBtnText}>Choose From Library</Text>
@@ -161,20 +201,40 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
                 style={styles.AvatarContainer}
                 onPress={() => ImgBottomSheet.current?.snapTo(0)}
               >
-                <ImageBackground
-                  source={require("./350px-Minato_Aqua.png")}
-                  style={styles.avatarImg}
-                  imageStyle={styles.avatarImg}
-                >
-                  <View style={styles.cameraIconContainer}>
-                    <MaterialCommunityIcons
-                      name="camera"
-                      size={windowHeight * 0.05}
-                      color="#FFF"
-                      style={styles.cameraIcon}
-                    />
+                {editAvatarImg == "" ? (
+                  <View
+                    style={[
+                      styles.avatarImg,
+                      { backgroundColor: bg_LessDarkColor },
+                    ]}
+                  >
+                    <View style={styles.cameraIconContainer}>
+                      <View style={styles.cameraIconBorder}>
+                        <Entypo
+                          name="camera"
+                          size={windowHeight * 0.05}
+                          color="#FFF"
+                          style={styles.cameraIcon}
+                        />
+                      </View>
+                    </View>
                   </View>
-                </ImageBackground>
+                ) : (
+                  <ImageBackground
+                    source={{ uri: editAvatarImg }}
+                    style={styles.avatarImg}
+                    imageStyle={styles.avatarImg}
+                  >
+                    <View style={styles.cameraIconContainer}>
+                      <MaterialCommunityIcons
+                        name="camera"
+                        size={windowHeight * 0.05}
+                        color="#FFF"
+                        style={styles.cameraIcon}
+                      />
+                    </View>
+                  </ImageBackground>
+                )}
               </TouchableOpacity>
               <View style={styles.infoList}>
                 {/* show name ========================================================================================== */}
@@ -208,17 +268,17 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </Animated.View>
           )}
-          <BottomSheet
-            ref={ImgBottomSheet}
-            snapPoints={[windowHeight * 0.4, 0]}
-            initialSnap={1}
-            callbackNode={fall}
-            renderContent={renderContent}
-            borderRadius={20}
-            enabledContentTapInteraction={false}
-          />
         </View>
       </SafeAreaView>
+      <BottomSheet
+        ref={ImgBottomSheet}
+        snapPoints={[windowHeight * 0.4, 0]}
+        initialSnap={1}
+        callbackNode={fall}
+        renderContent={renderContent}
+        borderRadius={20}
+        enabledContentTapInteraction={false}
+      />
     </SafeAreaProvider>
   );
 };
@@ -346,13 +406,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  cameraIcon: {
-    opacity: 0.95,
+  cameraIconBorder: {
     alignItems: "center",
     justifyContent: "center",
+    height: windowHeight * 0.07,
+    width: windowHeight * 0.07,
     borderWidth: 2,
     borderColor: "#FFF",
-    borderRadius: windowWidth * 0.02,
+    borderRadius: (windowHeight * 0.07) / 6,
+  },
+  cameraIcon: {
+    opacity: 0.9,
   },
   infoList: {
     width: windowWidth,

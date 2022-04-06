@@ -25,11 +25,11 @@ import {
 } from "../../constants/cssConst";
 import { ACCESS_KEY, USERID_KEY } from "../../constants/securestoreKey";
 
-import { HomeNavigationProps } from "../../types/navigations";
+import { HomeTabNavigationProps } from "../../types/navigations";
 import { ChatContext } from "../../components/Home/ChatContext";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
 
-type Props = NativeStackScreenProps<HomeNavigationProps, "RoomListScreen">;
+type Props = NativeStackScreenProps<HomeTabNavigationProps, "RoomListScreen">;
 
 const RoomListScreen: React.FC<Props> = ({ navigation }) => {
   const { socket } = useContext(ChatContext);

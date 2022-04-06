@@ -5,12 +5,13 @@ import { AccessContext } from "../components/Home/AccessContext";
 import { ChatContext } from "../components/Home/ChatContext";
 import { BackendUrl } from "../constants/backendAPI";
 import ChatScreen from "../screens/ChtaRoom/ChatScreen";
+import EditProfileScreen from "../screens/Home/Profile/EditProfileScreen";
 //import screens
-import { ChatNavigationProps } from "../types/navigations";
+import { HomeStackNavigationProps } from "../types/navigations";
 import HomeNavigation from "./HomeNavigation";
 
-const ChatStack = createNativeStackNavigator<ChatNavigationProps>();
-const ChatNavigation: React.FC = () => {
+const HomeStack = createNativeStackNavigator<HomeStackNavigationProps>();
+const HomeStackNavigation: React.FC = () => {
   const accessContext = useContext(AccessContext);
   const socket = useMemo(() => {
     const accessToken = accessContext.accessToken;
@@ -26,14 +27,18 @@ const ChatNavigation: React.FC = () => {
   }, [accessContext.accessToken]);
   return (
     <ChatContext.Provider value={{ socket }}>
-      <ChatStack.Navigator
+      <HomeStack.Navigator
         initialRouteName="HomeNavigation"
         screenOptions={{ headerShown: false }}
       >
-        <ChatStack.Screen name="HomeNavigation" component={HomeNavigation} />
-        <ChatStack.Screen name="ChatScreen" component={ChatScreen} />
-      </ChatStack.Navigator>
+        <HomeStack.Screen name="HomeNavigation" component={HomeNavigation} />
+        <HomeStack.Screen name="ChatScreen" component={ChatScreen} />
+        <HomeStack.Screen
+          name="EditProfileScreen"
+          component={EditProfileScreen}
+        />
+      </HomeStack.Navigator>
     </ChatContext.Provider>
   );
 };
-export default ChatNavigation;
+export default HomeStackNavigation;
