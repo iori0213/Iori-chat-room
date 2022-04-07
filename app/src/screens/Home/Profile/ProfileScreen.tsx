@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
@@ -15,7 +15,6 @@ import {
 } from "../../../constants/cssConst";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import LoadingSpinner from "../../../components/Auth/LoadingSpinner";
-import { ProfileNavigationProps } from "../../../types/navigations";
 import * as SecureStore from "expo-secure-store";
 import {
   ACCESS_KEY,
@@ -28,13 +27,15 @@ import { CommonActions, useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import { AuthAPI, UserAPI } from "../../../constants/backendAPI";
 import { ChatContext } from "../../../components/Home/ChatContext";
-import { MaterialCommunityIcons, FontAwesome5 } from "@expo/vector-icons";
 import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
+  MaterialCommunityIcons,
+  FontAwesome5,
+  FontAwesome,
+} from "@expo/vector-icons";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { HomeTabNavigationProps } from "../../../types/navigations";
 
-type Props = NativeStackScreenProps<ProfileNavigationProps, "ProfileScreen">;
+type Props = NativeStackScreenProps<HomeTabNavigationProps, "ProfileScreen">;
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const { socket } = useContext(ChatContext);
@@ -163,10 +164,19 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           ) : (
             <>
               <View style={styles.AvatarContainer}>
-                <Image
-                  source={require("./350px-Minato_Aqua.png")}
-                  style={styles.avatarImg}
-                />
+                {avatarImg == "" ? (
+                  <FontAwesome
+                    name="user-circle"
+                    size={windowWidth * 0.4}
+                    color={bg_LessDarkColor}
+                    style={{ borderRadius: windowWidth * 0.2 }}
+                  />
+                ) : (
+                  <Image
+                    source={{ uri: "data:image/jpeg;base64," + avatarImg }}
+                    style={styles.avatarImg}
+                  />
+                )}
               </View>
               <View style={styles.infoList}>
                 <InfoBox

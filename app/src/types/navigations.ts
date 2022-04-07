@@ -16,6 +16,12 @@ export type HomeTabNavigationProps = {
   FriendListScreen: undefined;
   RoomListScreen: undefined;
   ProfileScreen: undefined;
+  EditProfileScreen: {
+    img: string;
+    showname: string;
+    username: string;
+    email: string;
+  };
 };
 
 export type HomeStackNavigationProps = {

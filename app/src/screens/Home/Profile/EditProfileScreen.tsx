@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import React, { createRef, useContext, useEffect, useState } from "react";
 import {
@@ -57,9 +58,6 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   //Bottom Sheet
   const ImgBottomSheet = createRef<BottomSheet>();
   const fall = new Animated.Value(1);
-  //Avatar Image
-  const [selectedImage, setSelectedImage] =
-    useState<ImagePicker.ImagePickerResult>();
 
   const selectImage = async () => {
     const permissionResult =
@@ -70,43 +68,17 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
     ImgBottomSheet.current?.snapTo(1);
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      base64: true,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 1,
+      quality: 0.1,
     });
-    console.log(pickerResult);
+
     //if canceled
     if (pickerResult.cancelled === true) {
       return;
     }
-    //if selected
-    // const formData = new FormData();
-    // formData.append("image", {
-    //   uri: pickerResult.uri,
-    //   type: pickerResult.type,
-    //   name: pickerResult.uri.substring(pickerResult.uri.lastIndexOf("/") + 1),
-    // });
-
-    const formData = {
-      uri: pickerResult.uri,
-      type: pickerResult.type,
-      name: pickerResult.uri.substring(pickerResult.uri.lastIndexOf("/") + 1),
-    };
-    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
-    axios({
-      method: "post",
-      url: `${UserAPI}/img`,
-      data: { image: formData },
-      headers: {
-        Authorization: `Bearer ${localAccessToken}`,
-        "Content-Type": "multipart/form-data",
-      },
-    }).then((res) => {
-      console.log(res.data);
-    });
-
-    setSelectedImage(pickerResult);
-    setEditAvatarImg(pickerResult.uri);
+    setEditAvatarImg(pickerResult.base64 ? pickerResult.base64 : "");
   };
 
   //update function
@@ -121,7 +93,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
       method: "post",
       url: `${UserAPI}/update`,
       headers: { Authorization: `Bearer ${localAccessToken}` },
-      data: { showname: editShowname },
+      data: { showname: editShowname, profileImg: editAvatarImg },
     })
       .then((res) => {
         navigation.goBack();
@@ -171,7 +143,9 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 0, backgroundColor: bg_LessDarkColor }} />
+      {Platform.OS === "ios" ? (
+        <SafeAreaView style={{ flex: 0, backgroundColor: bg_LessDarkColor }} />
+      ) : null}
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.background}>
           {/* header =====================================================================================================*/}
@@ -228,7 +202,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
                   </View>
                 ) : (
                   <ImageBackground
-                    source={{ uri: editAvatarImg }}
+                    source={{ uri: "data:image/jpeg;base64," + editAvatarImg }}
                     style={styles.avatarImg}
                     imageStyle={styles.avatarImg}
                   >
@@ -277,15 +251,6 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
           )}
         </View>
       </SafeAreaView>
-      <BottomSheet
-        ref={ImgBottomSheet}
-        snapPoints={[windowHeight * 0.4, 0]}
-        initialSnap={1}
-        callbackNode={fall}
-        renderContent={renderContent}
-        borderRadius={20}
-        enabledContentTapInteraction={false}
-      />
     </SafeAreaProvider>
   );
 };
@@ -326,7 +291,9 @@ const styles = StyleSheet.create({
   //ProfileHeader===================
   customHeader: {
     flexDirection: "row",
-    height: windowHeight * 0.08,
+    height:
+      Platform.OS === "android" ? windowHeight * 0.105 : windowHeight * 0.08,
+    paddingTop: Platform.OS === "android" ? windowHeight * 0.02 : 0,
     backgroundColor: bg_LessDarkColor,
   },
   titleContainer: {
