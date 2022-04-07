@@ -24,5 +24,6 @@ export const socketController = async (io: Server, socket: Socket) => {
     console.log("connected user is: ", user.username, "...");
     // FUNCTIONS
     roomController(io, socket, user);
+    return;
   }
 };

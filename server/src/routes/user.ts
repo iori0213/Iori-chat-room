@@ -6,6 +6,8 @@ import { TokenAuthentication } from "../middlewares/TokenAuthentication.middlewa
 
 const router = express.Router();
 
+// const profileImagePath = "../image/profile";
+
 //ANCHOR get Home page user info
 router.get("/userinfo", TokenAuthentication, async (req, res) => {
   const userId = req.profile.id;
@@ -29,11 +31,10 @@ router.get("/userinfo", TokenAuthentication, async (req, res) => {
 
 router.post("/update", TokenAuthentication, async (req, res) => {
   const userId = req.profile.id;
-  const { showname } = req.body;
+  const { showname, profileImg } = req.body;
   const profileRepo = getRepository(Profile);
   const userProfile = await profileRepo.findOne({
     where: { id: userId },
-    relations: ["user"],
   });
   if (!userProfile) {
     return res
@@ -41,6 +42,10 @@ router.post("/update", TokenAuthentication, async (req, res) => {
       .json({ success: false, message: "User profile not found!" });
   }
   userProfile.showname = showname;
+
+  //img dealing ========================================================================
+  // const bufferString =
+
   await profileRepo.save(userProfile);
   const userData = {
     showname: userProfile.showname,
