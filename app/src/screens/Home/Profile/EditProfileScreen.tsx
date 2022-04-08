@@ -78,11 +78,13 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
     if (pickerResult.cancelled === true) {
       return;
     }
+    console.log(pickerResult.type);
     setEditAvatarImg(pickerResult.base64 ? pickerResult.base64 : "");
   };
 
   //update function
   const update = async () => {
+    setFetching(true);
     const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
     if (editShowname == "") {
       return Alert.alert("Error", "Show Name can not be empty!");
@@ -96,7 +98,10 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
       data: { showname: editShowname, profileImg: editAvatarImg },
     })
       .then((res) => {
-        navigation.goBack();
+        setFetching(false);
+        return Alert.alert("Success", "Update process complete.", [
+          { text: "OK", onPress: () => navigation.pop() },
+        ]);
       })
       .catch((e) => {
         return Alert.alert("Error", e.response.data.message);
@@ -151,7 +156,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
           {/* header =====================================================================================================*/}
           <View style={styles.customHeader}>
             <View style={styles.slideNavigatorContainer}>
-              <TouchableOpacity onPress={() => navigation.goBack()}>
+              <TouchableOpacity onPress={() => navigation.pop()}>
                 <Ionicons
                   name="arrow-back"
                   size={windowWidth * 0.08}
@@ -164,7 +169,11 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
             </View>
             <View style={styles.slideNavigatorContainer}>
               <TouchableOpacity onPress={() => update()}>
-                <Entypo name="save" size={windowWidth * 0.09} color="#FFF" />
+                <Ionicons
+                  name="md-save-sharp"
+                  size={windowWidth * 0.09}
+                  color="#FFF"
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -251,6 +260,13 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
           )}
         </View>
       </SafeAreaView>
+      <BottomSheet
+        ref={ImgBottomSheet}
+        snapPoints={[windowHeight * 0.4, 0]}
+        initialSnap={1}
+        callbackNode={fall}
+        renderContent={renderContent}
+      />
     </SafeAreaProvider>
   );
 };

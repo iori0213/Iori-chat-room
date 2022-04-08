@@ -77,7 +77,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   //initialize process
   const initialize = async () => {
     const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
-    axios({
+    await axios({
       method: "get",
       url: `${UserAPI}/userinfo`,
       headers: { Authorization: `Bearer ${localAccessToken}` },
@@ -86,17 +86,13 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         setEmail(res.data.userInfo.email);
         setUniquename(res.data.userInfo.username);
         setShowname(res.data.userInfo.showname);
+        setAvatarImg(res.data.userInfo.profileImg);
       })
       .catch((e) => {
         return Alert.alert("Error", e.response.data.message);
       });
     setFetching(false);
   };
-
-  // useEffect(() => {
-  //   initialize();
-  //   return () => {};
-  // }, []);
 
   useFocusEffect(
     React.useCallback(() => {
