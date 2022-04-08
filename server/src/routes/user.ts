@@ -3,6 +3,7 @@ import express from "express";
 import { getRepository } from "typeorm";
 import { Profile } from "../entity/Profile";
 import { TokenAuthentication } from "../middlewares/TokenAuthentication.middleware";
+import { Buffer } from "buffer";
 
 const router = express.Router();
 
@@ -21,10 +22,14 @@ router.get("/userinfo", TokenAuthentication, async (req, res) => {
       .status(404)
       .json({ success: false, message: "User profile not found!" });
   }
+  const avatar = userProfile.profileImg
+    ? userProfile.profileImg.toString("base64")
+    : "";
   const returnData = {
     showname: userProfile.showname,
     username: userProfile.username,
     email: userProfile.user.email,
+    profileImg: avatar,
   };
   return res.status(200).json({ success: true, userInfo: returnData });
 });
@@ -41,16 +46,17 @@ router.post("/update", TokenAuthentication, async (req, res) => {
       .status(404)
       .json({ success: false, message: "User profile not found!" });
   }
-  userProfile.showname = showname;
 
   //img dealing ========================================================================
-  // const bufferString =
+  const imgBuffer = Buffer.from(profileImg, "base64");
+  userProfile.showname = showname;
+  if (profileImg != "") {
+    console.log();
+    userProfile.profileImg = imgBuffer;
+  }
 
   await profileRepo.save(userProfile);
-  const userData = {
-    showname: userProfile.showname,
-  };
-  return res.json({ success: true, user: userData });
+  return res.json({ success: true });
 });
 
 export { router as userRouter };

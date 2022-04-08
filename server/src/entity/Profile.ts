@@ -1,4 +1,3 @@
-import { Blob } from "buffer";
 import {
   Column,
   Entity,
@@ -20,8 +19,8 @@ export class Profile {
   @Column()
   showname: string;
 
-  @Column("blob", { nullable: true })
-  profileImg: Blob;
+  @Column("longblob", { nullable: true })
+  profileImg: Buffer;
 
   @OneToOne(() => User, (user) => user.profile, { onDelete: "CASCADE" })
   user: User;
