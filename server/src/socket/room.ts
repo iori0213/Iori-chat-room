@@ -39,9 +39,26 @@ export const roomController = (
     } else {
       console.log("joined!");
       socket.join(roomId);
+      const msgs = messages.map((msg) => {
+        const profileImgString = !msg.sender.profileImg
+          ? ""
+          : msg.sender.profileImg.toString("base64");
+        return {
+          id: msg.id,
+          room: msg.room,
+          msg: msg.msg,
+          createdAt: msg.createdAt,
+          sender: {
+            id: msg.sender.id,
+            username: msg.sender.username,
+            showname: msg.sender.showname,
+            profileImg: profileImgString,
+          },
+        };
+      });
       socket.emit("join-room-initialize", {
         members: room.members,
-        msgs: messages,
+        msgs: msgs,
       });
       socket.to(roomId).emit("joined room", { Profile: profile });
       //leave chat socket off function
