@@ -209,6 +209,7 @@ const styles = StyleSheet.create({
     width: headerSize,
     borderRadius: headerSize / 2,
     backgroundColor: "#FFF",
+    overflow: "hidden",
   },
   avatarImg: {
     height: headerSize,
