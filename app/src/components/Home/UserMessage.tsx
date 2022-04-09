@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   TextInput,
+  Image,
 } from "react-native";
 
 import { Feather, AntDesign } from "@expo/vector-icons";
@@ -19,6 +20,7 @@ import {
 import { ChatContext } from "./ChatContext";
 
 interface UserMessageProps {
+  avatar: string;
   msgId: string;
   username: string;
   msg: string;
@@ -26,12 +28,14 @@ interface UserMessageProps {
 }
 
 const UserMessage: React.FC<UserMessageProps> = ({
+  avatar,
   msgId,
   username,
   msg,
   created,
 }) => {
   const { socket } = useContext(ChatContext);
+  const [avatarBase64, setAvatarBase64] = useState("");
   const [modify, setModify] = useState(false);
   const [edit, setEdit] = useState(false);
   const [editMsg, setEditMsg] = useState("");
@@ -59,6 +63,14 @@ const UserMessage: React.FC<UserMessageProps> = ({
       ]
     );
   };
+  useEffect(() => {
+    if (avatar == "") {
+      return;
+    }
+    setAvatarBase64(avatar);
+
+    return () => {};
+  }, []);
 
   return (
     <View style={styles.Container}>
@@ -116,7 +128,14 @@ const UserMessage: React.FC<UserMessageProps> = ({
         </TouchableOpacity>
         <View style={styles.info}>
           <View style={styles.headerContainer}>
-            <Feather name="user" size={headerSize} color={bg_LessDarkColor} />
+            {avatar == "" ? (
+              <Feather name="user" size={headerSize} color={bg_LessDarkColor} />
+            ) : (
+              <Image
+                source={{ uri: "data:image/jpeg;base64," + avatarBase64 }}
+                style={styles.avatarImg}
+              />
+            )}
           </View>
           <View style={styles.nameContainer}>
             <Text style={styles.name}>{username}</Text>
@@ -189,9 +208,13 @@ const styles = StyleSheet.create({
     height: headerSize,
     width: headerSize,
     borderRadius: headerSize / 2,
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: "#FFF",
+  },
+  avatarImg: {
+    height: headerSize,
+    width: headerSize,
+    borderRadius: headerSize / 2,
+    resizeMode: "contain",
   },
   nameContainer: {
     width: headerSize,
