@@ -28,6 +28,7 @@ import { ACCESS_KEY, USERID_KEY } from "../../constants/securestoreKey";
 import { HomeTabNavigationProps } from "../../types/navigations";
 import { ChatContext } from "../../components/Home/ChatContext";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
+import { Platform } from "react-native";
 
 type Props = NativeStackScreenProps<HomeTabNavigationProps, "RoomListScreen">;
 
@@ -352,7 +353,8 @@ const styles = StyleSheet.create({
     backgroundColor: bg_LessDarkColor,
   },
   modalHeader: {
-    marginTop: windowHeight * 0.015,
+    marginTop:
+      Platform.OS === "ios" ? windowHeight * 0.025 : windowHeight * 0.01,
     flex: 1,
     flexDirection: "row",
   },
@@ -382,7 +384,7 @@ const styles = StyleSheet.create({
     borderRadius: windowHeight * 0.03,
     paddingHorizontal: windowWidth * 0.05,
     color: bg_DarkColor,
-    fontSize: windowHeight * 0.03,
+    fontSize: windowHeight * 0.025,
   },
   modalFriendList: {
     height: windowHeight * 0.65,
