@@ -1,4 +1,4 @@
-import { CommonActions } from "@react-navigation/native";
+import { CommonActions, useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import React, { useContext, useEffect, useState } from "react";
@@ -128,9 +128,11 @@ const FriendListScreen: React.FC<Props> = ({ navigation }) => {
     getFriends();
   };
 
-  useEffect(() => {
-    initialize();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      initialize();
+    }, [])
+  );
 
   return (
     <SafeAreaProvider>

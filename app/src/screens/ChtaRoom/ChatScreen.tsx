@@ -38,7 +38,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   let userid = "";
   const { roomId, roomName } = route.params;
   const [messages, setMessages] = useState<Msg[]>([]);
-  const [members, setMembers] = useState<RoomProfile[]>([]);
+  const [members, setMembers] = useState<RoomMember[]>([]);
   const { socket } = useContext(ChatContext);
 
   const [msgInput, setMsgInput] = useState("");
@@ -63,7 +63,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
     });
     socket?.on(
       "join-room-initialize",
-      async ({ members, msgs }: { members: RoomProfile[]; msgs: Msg[] }) => {
+      async ({ members, msgs }: { members: RoomMember[]; msgs: Msg[] }) => {
         const localUserId = await SecureStore.getItemAsync(USERID_KEY);
         userid = localUserId!;
         setUserId(localUserId!);
@@ -160,9 +160,12 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                   showsHorizontalScrollIndicator={false}
                   extraData={messages}
                   renderItem={({ item }) => {
+                    const tempMember = members.filter(
+                      (member) => member.id == item.sender.id
+                    );
                     return item.sender.id == userId ? (
                       <UserMessage
-                        avatar={item.sender.profileImg}
+                        avatar={tempMember[0].profileImg}
                         msgId={item.id}
                         username={item.sender.username}
                         msg={item.msg}
@@ -170,7 +173,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                       />
                     ) : (
                       <Message
-                        avatar={item.sender.profileImg}
+                        avatar={tempMember[0].profileImg}
                         msgId={item.id}
                         username={item.sender.username}
                         msg={item.msg}
@@ -227,7 +230,7 @@ const styles = StyleSheet.create({
     backgroundColor: bg_LessDarkColor,
   },
   header: {
-    height: windowHeight * 0.06,
+    height: windowHeight * 0.08,
     width: windowWidth,
     flexDirection: "row",
     borderBottomWidth: 1.5,

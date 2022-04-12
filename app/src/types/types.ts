@@ -9,7 +9,7 @@ interface Profile {
   showName: string;
 }
 
-interface RoomProfile {
+interface RoomMember {
   id: string;
   username: string;
   showname: string;
@@ -23,7 +23,7 @@ interface Room {
 
 interface Msg {
   id: string;
-  sender: RoomProfile;
+  sender: Profile;
   msg: string;
   createdAt: string;
 }
