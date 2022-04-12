@@ -279,6 +279,7 @@ const styles = StyleSheet.create({
     height: windowWidth * 0.4,
     width: windowWidth * 0.4,
     borderRadius: windowWidth * 0.2,
+    overflow: "hidden",
   },
   avatarImg: {
     height: windowWidth * 0.4,
