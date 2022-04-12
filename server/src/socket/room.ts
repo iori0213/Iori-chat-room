@@ -16,7 +16,7 @@ export const roomController = (
     const roomRepo = getRepository(ChatRoom);
     const room = await roomRepo.findOne({
       where: { id: roomId },
-      relations: ["members", "messages"],
+      relations: ["members", "members.avatar", "messages"],
     });
     const messages = await getRepository(Message).find({
       where: { room },
@@ -37,28 +37,25 @@ export const roomController = (
         message: "user is not belong to the room",
       });
     } else {
+      //join the room success
       console.log("joined!");
       socket.join(roomId);
-      const msgs = messages.map((msg) => {
-        const profileImgString = !msg.sender.profileImg
-          ? ""
-          : msg.sender.profileImg.toString("base64");
+
+      //initialize process
+      const roomMembers = room.members.map((member) => {
+        const avatar = member.avatar
+          ? member.avatar.profileImg.toString("base64")
+          : "";
         return {
-          id: msg.id,
-          room: msg.room,
-          msg: msg.msg,
-          createdAt: msg.createdAt,
-          sender: {
-            id: msg.sender.id,
-            username: msg.sender.username,
-            showname: msg.sender.showname,
-            profileImg: profileImgString,
-          },
+          id: member.id,
+          username: member.username,
+          showname: member.showname,
+          profileImg: avatar,
         };
       });
       socket.emit("join-room-initialize", {
-        members: room.members,
-        msgs: msgs,
+        members: roomMembers,
+        msgs: messages,
       });
       socket.to(roomId).emit("joined room", { Profile: profile });
       //leave chat socket off function

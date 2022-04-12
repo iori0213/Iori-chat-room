@@ -4,10 +4,9 @@ import { getRepository } from "typeorm";
 import { Profile } from "../entity/Profile";
 import { TokenAuthentication } from "../middlewares/TokenAuthentication.middleware";
 import { Buffer } from "buffer";
+import Avatar from "../entity/Avatar";
 
 const router = express.Router();
-
-// const profileImagePath = "../image/profile";
 
 //ANCHOR get Home page user info
 router.get("/userinfo", TokenAuthentication, async (req, res) => {
@@ -15,15 +14,15 @@ router.get("/userinfo", TokenAuthentication, async (req, res) => {
   const profileRepo = getRepository(Profile);
   const userProfile = await profileRepo.findOne({
     where: { id: userId },
-    relations: ["user"],
+    relations: ["user", "avatar"],
   });
   if (!userProfile) {
     return res
       .status(404)
       .json({ success: false, message: "User profile not found!" });
   }
-  const avatar = userProfile.profileImg
-    ? userProfile.profileImg.toString("base64")
+  const avatar = userProfile.avatar
+    ? userProfile.avatar.profileImg.toString("base64")
     : "";
   const returnData = {
     showname: userProfile.showname,
@@ -38,8 +37,10 @@ router.post("/update", TokenAuthentication, async (req, res) => {
   const userId = req.profile.id;
   const { showname, profileImg } = req.body;
   const profileRepo = getRepository(Profile);
+  const avatarRepo = getRepository(Avatar);
   const userProfile = await profileRepo.findOne({
     where: { id: userId },
+    relations: ["avatar"],
   });
   if (!userProfile) {
     return res
@@ -50,12 +51,16 @@ router.post("/update", TokenAuthentication, async (req, res) => {
   //img dealing ========================================================================
   const imgBuffer = Buffer.from(profileImg, "base64");
   userProfile.showname = showname;
-  if (profileImg != "") {
-    console.log();
-    userProfile.profileImg = imgBuffer;
+  if (userProfile.avatar) {
+    userProfile.avatar.profileImg = imgBuffer;
+    await profileRepo.save(userProfile);
+  } else {
+    const newAvatar = new Avatar();
+    newAvatar.profileImg = imgBuffer;
+    await avatarRepo.save(newAvatar);
+    userProfile.avatar = newAvatar;
+    await profileRepo.save(userProfile);
   }
-
-  await profileRepo.save(userProfile);
   return res.json({ success: true });
 });
 

@@ -23,22 +23,7 @@ export const chatController = (
       newMsg.sender = profile;
       newMsg.msg = msg;
       await msgRepo.save(newMsg);
-      const profileImgString = !newMsg.sender.profileImg
-        ? ""
-        : newMsg.sender.profileImg.toString("base64");
-      const addMsg = {
-        id: newMsg.id,
-        room: newMsg.room,
-        msg: newMsg.msg,
-        createdAt: newMsg.createdAt,
-        sender: {
-          id: newMsg.sender.id,
-          username: newMsg.sender.username,
-          showname: newMsg.sender.showname,
-          profileImg: profileImgString,
-        },
-      };
-      io.to(room.id).emit("add-msg", addMsg);
+      io.to(room.id).emit("add-msg", newMsg);
     }
   };
   socket.on("send-msg", sendMsg);
@@ -93,30 +78,13 @@ export const chatController = (
       },
       take: 5,
     });
-    const returnMsgs = newMsgs.map((msg) => {
-      const profileImgString = !msg.sender.profileImg
-        ? ""
-        : msg.sender.profileImg.toString("base64");
-      return {
-        id: msg.id,
-        room: msg.room,
-        msg: msg.msg,
-        createdAt: msg.createdAt,
-        sender: {
-          id: msg.sender.id,
-          username: msg.sender.username,
-          showname: msg.sender.showname,
-          profileImg: profileImgString,
-        },
-      };
-    });
     if (newMsgs.length < 5) {
       return socket.emit("add-more-msg", {
         newMsgs: newMsgs,
         notify: "This is the begin of this chat room",
       });
     }
-    return socket.emit("add-more-msg", { newMsgs: returnMsgs });
+    return socket.emit("add-more-msg", { newMsgs: newMsgs });
   };
   socket.on("get-more-msg", getMoreMsg);
 
