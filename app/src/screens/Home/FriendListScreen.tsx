@@ -137,10 +137,9 @@ const FriendListScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
-        <HomeHeader logoutFunc={() => LogoutProcess()} />
+        <HomeHeader />
         <View style={styles.bodyContainer}>
           <View style={styles.addFriendHeader}>
-            <View style={styles.sideBlank}></View>
             <View style={styles.inputContainer}>
               <TextInput
                 onChangeText={(val) => setFriend(val)}
@@ -155,8 +154,8 @@ const FriendListScreen: React.FC<Props> = ({ navigation }) => {
               <TouchableOpacity onPress={() => addFriend()}>
                 <AntDesign
                   name="adduser"
-                  size={windowWidth * 0.08}
-                  color={hilight_color}
+                  size={windowWidth * 0.1}
+                  color="#FFF"
                 />
               </TouchableOpacity>
             </View>
@@ -176,11 +175,7 @@ const FriendListScreen: React.FC<Props> = ({ navigation }) => {
 };
 export default FriendListScreen;
 
-//custom Header
-type HomeHeaderProps = {
-  logoutFunc: () => void;
-};
-const HomeHeader: React.FC<HomeHeaderProps> = ({ logoutFunc }) => {
+const HomeHeader: React.FC = () => {
   return (
     <View style={styles.customHeader}>
       <View style={styles.slideNavigatorContainer}></View>
@@ -224,30 +219,31 @@ const styles = StyleSheet.create({
   },
   addFriendHeader: {
     width: windowWidth,
-    height: windowHeight * 0.1,
+    height: windowWidth * 0.15,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
-    marginTop: windowHeight * 0.01,
+    backgroundColor: bg_LessDarkColor,
+    marginBottom: windowHeight * 0.02,
   },
   sideBlank: {
-    flex: 1,
+    width: windowWidth * 0.1,
     alignItems: "center",
     justifyContent: "center",
   },
   inputContainer: {
-    flex: 5,
-    alignItems: "center",
+    width: windowWidth * 0.88,
+    alignItems: "flex-end",
     justifyContent: "center",
   },
   input: {
     height: windowHeight * 0.05,
-    width: windowWidth * 0.75,
-    borderRadius: windowWidth * 0.02,
-    fontSize: windowWidth * 0.05,
-    backgroundColor: bg_LessDarkColor,
+    width: windowWidth * 0.87,
+    borderRadius: (windowHeight * 0.05) / 2,
+    fontSize: windowHeight * 0.02,
+    backgroundColor: bg_DarkColor,
     color: "#FFF",
-    paddingLeft: windowWidth * 0.03,
+    paddingLeft: windowWidth * 0.04,
   },
   friendlistContainer: {
     width: windowWidth,
