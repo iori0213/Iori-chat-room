@@ -59,11 +59,32 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   const ImgBottomSheet = createRef<BottomSheet>();
   const fall = new Animated.Value(1);
 
+  const takePhoto = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (permissionResult.granted === false) {
+      return Alert.alert("Error", "Permission to access Camera is required!");
+    }
+    ImgBottomSheet.current?.snapTo(1);
+    const pickerResult = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      base64: true,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.1,
+    });
+
+    //if canceled
+    if (pickerResult.cancelled === true) {
+      return;
+    }
+    setEditAvatarImg(pickerResult.base64 ? pickerResult.base64 : "");
+  };
+
   const selectImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted === false) {
-      return Alert.alert("Error", "Permission to access library is required!");
+      return Alert.alert("Error", "Permission to access Library is required!");
     }
     ImgBottomSheet.current?.snapTo(1);
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
@@ -78,7 +99,6 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
     if (pickerResult.cancelled === true) {
       return;
     }
-    console.log(pickerResult.type);
     setEditAvatarImg(pickerResult.base64 ? pickerResult.base64 : "");
   };
 
@@ -126,6 +146,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
         <Text style={styles.bsTitle}>Upload Photo</Text>
         <Text style={styles.bsSubTitle}>Choose Your Profile Photo</Text>
         <TouchableOpacity
+          onPress={() => takePhoto()}
           style={[styles.bsBtn, { backgroundColor: bg_LessDarkColor }]}
         >
           <Text style={styles.bgBtnText}>Take Photo</Text>
