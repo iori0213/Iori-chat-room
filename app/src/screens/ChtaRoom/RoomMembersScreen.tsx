@@ -5,7 +5,6 @@ import {
   View,
   SafeAreaView,
   FlatList,
-  Image,
   Platform,
 } from "react-native";
 import React from "react";
@@ -19,38 +18,12 @@ import {
   windowWidth,
 } from "../../constants/cssConst";
 import { Ionicons } from "@expo/vector-icons";
+import InfoBox from "../../components/Home/InfoBox";
 
 type Props = NativeStackScreenProps<
   HomeStackNavigationProps,
   "RoomMembersScreen"
 >;
-
-const memberContainer = (
-  username: string,
-  showname: string,
-  profileImg: string
-) => {
-  return (
-    <View style={styles.memberContainer}>
-      <View style={styles.avatarContainer}>
-        <View style={styles.imgView}>
-          <Image
-            source={{ uri: "data:image/jpeg;base64," + profileImg }}
-            style={styles.imgStyle}
-          />
-        </View>
-      </View>
-      <View style={styles.infoContainer}>
-        <View style={styles.detailInfoContainer}>
-          <Text style={styles.info}>User Name {username}</Text>
-        </View>
-        <View style={styles.detailInfoContainer}>
-          <Text style={styles.info}>Show Name {showname}</Text>
-        </View>
-      </View>
-    </View>
-  );
-};
 
 const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
   const { roomMembers } = route.params;
@@ -78,10 +51,12 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
             data={roomMembers}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
-              return memberContainer(
-                item.username,
-                item.showname,
-                item.profileImg
+              return (
+                <InfoBox
+                  username={item.username}
+                  showname={item.showname}
+                  profileImg={item.profileImg}
+                />
               );
             }}
           />
@@ -131,46 +106,5 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     backgroundColor: bg_DarkColor,
-  },
-
-  //memberContainer
-  memberContainer: {
-    width: windowWidth,
-    height: memberContainerHeight,
-    flexDirection: "row",
-    borderBottomWidth: 2,
-    borderBottomColor: bg_LessDarkColor,
-  },
-  avatarContainer: {
-    width: memberContainerHeight,
-    height: memberContainerHeight,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  imgView: {
-    width: avatarSize,
-    height: avatarSize,
-    borderRadius: avatarSize / 2,
-    overflow: "hidden",
-  },
-  imgStyle: {
-    width: avatarSize,
-    height: avatarSize,
-    borderRadius: avatarSize / 2,
-    resizeMode: "contain",
-  },
-
-  infoContainer: {
-    flex: 1,
-    paddingLeft: windowHeight * 0.01,
-  },
-  detailInfoContainer: {
-    height: memberContainerHeight / 2,
-    // paddingVertical: windowHeight * 0.01,
-    justifyContent: "center",
-  },
-  info: {
-    fontSize: avatarSize / 3.5,
-    color: "#FFF",
   },
 });
