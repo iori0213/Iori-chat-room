@@ -9,7 +9,7 @@ import {
   SafeAreaView,
   Platform,
 } from "react-native";
-import React, { createRef, useContext, useEffect, useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
@@ -45,7 +45,6 @@ type Props = NativeStackScreenProps<
 const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   const { img, username, showname, email } = route.params;
 
-  const { socket } = useContext(ChatContext);
   const [fetching, setFetching] = useState(true);
 
   //edit state
