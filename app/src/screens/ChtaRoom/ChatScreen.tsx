@@ -134,7 +134,14 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
               <View style={styles.roomNameContainer}>
                 <Text style={styles.roomNameText}>{roomName}</Text>
               </View>
-              <TouchableOpacity style={styles.sideBtn}>
+              <TouchableOpacity
+                style={styles.sideBtn}
+                onPress={() =>
+                  navigation.navigate("RoomMembersScreen", {
+                    roomMembers: members,
+                  })
+                }
+              >
                 <Ionicons
                   name="settings"
                   size={windowWidth * 0.08}

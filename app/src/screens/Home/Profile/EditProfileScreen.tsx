@@ -22,7 +22,6 @@ import * as SecureStore from "expo-secure-store";
 import { ACCESS_KEY } from "../../../constants/securestoreKey";
 import axios from "axios";
 import { UserAPI } from "../../../constants/backendAPI";
-import { ChatContext } from "../../../components/Home/ChatContext";
 import {
   Entypo,
   Ionicons,

@@ -5,6 +5,7 @@ import { AccessContext } from "../components/Home/AccessContext";
 import { ChatContext } from "../components/Home/ChatContext";
 import { BackendUrl } from "../constants/backendAPI";
 import ChatScreen from "../screens/ChtaRoom/ChatScreen";
+import RoomMembersScreen from "../screens/ChtaRoom/RoomMembersScreen";
 import EditProfileScreen from "../screens/Home/Profile/EditProfileScreen";
 //import screens
 import { HomeStackNavigationProps } from "../types/navigations";
@@ -33,6 +34,10 @@ const HomeStackNavigation: React.FC = () => {
       >
         <HomeStack.Screen name="HomeNavigation" component={HomeNavigation} />
         <HomeStack.Screen name="ChatScreen" component={ChatScreen} />
+        <HomeStack.Screen
+          name="RoomMembersScreen"
+          component={RoomMembersScreen}
+        />
         <HomeStack.Screen
           name="EditProfileScreen"
           component={EditProfileScreen}
