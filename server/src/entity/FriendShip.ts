@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Profile } from "./Profile";
 
 @Entity()
@@ -7,11 +7,13 @@ export class FriendShip {
   id: number;
 
   @ManyToOne(() => Profile, (profile) => profile.friendShips, {
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
   })
   user: Profile;
 
   @ManyToOne(() => Profile, { onDelete: "CASCADE" })
   friend: Profile;
 
+  @Column({ nullable: false })
+  active: boolean;
 }

@@ -1,4 +1,4 @@
-export { }
+export {};
 declare global {
   namespace Express {
     interface Request {
@@ -6,3 +6,10 @@ declare global {
     }
   }
 }
+
+export type ProfileWithImg = {
+  id: string;
+  username: string;
+  showname: string;
+  profileImg: string;
+};
