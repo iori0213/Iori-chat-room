@@ -62,7 +62,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         // prettier-ignore
         await SecureStore.setItemAsync(SHOWNAME_KEY, loginResult.data.profile.showname);
         navigation.dispatch(
-          CommonActions.reset({ routes: [{ name: "ChatNavigation" }] })
+          CommonActions.reset({ routes: [{ name: "HomeStackNavigation" }] })
         );
       })
       .catch((e) => Alert.alert("Error", e.response.data.message));

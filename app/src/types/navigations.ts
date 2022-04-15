@@ -1,6 +1,6 @@
 export type RootNavigationProps = {
   AuthNavigation: undefined;
-  ChatNavigation: undefined;
+  HomeStackNavigation: undefined;
 };
 
 export type AuthNavigationProps = {

@@ -294,6 +294,7 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.06,
     width: windowWidth,
     flexDirection: "row",
+    paddingHorizontal: windowWidth * 0.02,
   },
   title: {
     flex: 9,
@@ -303,13 +304,11 @@ const styles = StyleSheet.create({
     paddingTop: windowHeight * 0.005,
     fontSize: windowWidth * 0.08,
     color: "#FFF",
-    paddingLeft: windowWidth * 0.02,
   },
   addBtn: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: windowWidth * 0.03,
   },
   searchBar: {
     height: windowHeight * 0.04,
@@ -327,7 +326,8 @@ const styles = StyleSheet.create({
   },
   goBtn: {
     flex: 1,
-    paddingLeft: windowWidth * 0.01,
+    alignItems: "center",
+    justifyContent: "center",
   },
   body: {
     flex: 1,

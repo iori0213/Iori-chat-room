@@ -67,6 +67,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       await SecureStore.deleteItemAsync(USERID_KEY);
       await SecureStore.deleteItemAsync(USERNAME_KEY);
       await SecureStore.deleteItemAsync(SHOWNAME_KEY);
+      // socket?.emit("logout");
       socket?.disconnect();
       navigation.dispatch(
         CommonActions.reset({ routes: [{ name: "AuthNavigation" }] })

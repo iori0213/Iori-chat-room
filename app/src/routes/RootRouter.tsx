@@ -11,7 +11,6 @@ import { ACCESS_KEY, REFRESH_KEY } from "../constants/securestoreKey";
 import LoadingSpinner from "../components/Auth/LoadingSpinner";
 import { RootNavigationProps } from "../types/navigations";
 import HomeStackNavigation from "../navigations/HomeStackNavigation";
-import { AccessContext } from "../components/Home/AccessContext";
 
 const RootRouter: React.FC = () => {
   const Stack = createNativeStackNavigator<RootNavigationProps>();
@@ -22,6 +21,7 @@ const RootRouter: React.FC = () => {
   const [accessToken, setAccessToken] = useState<string>("");
   const tokenValidation = async () => {
     const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
+    console.log("accessToken:", localAccessToken);
     const localRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY);
     if (!localAccessToken || !localRefreshToken) {
       return false;
@@ -65,17 +65,18 @@ const RootRouter: React.FC = () => {
   return fetching ? (
     <LoadingSpinner />
   ) : (
-    <AccessContext.Provider value={{ accessToken }}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName={access ? "ChatNavigation" : "AuthNavigation"}
-          screenOptions={{ headerShown: false }}
-        >
-          <Stack.Screen name="AuthNavigation" component={AuthNavigation} />
-          <Stack.Screen name="ChatNavigation" component={HomeStackNavigation} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AccessContext.Provider>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName={access ? "HomeStackNavigation" : "AuthNavigation"}
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen name="AuthNavigation" component={AuthNavigation} />
+        <Stack.Screen
+          name="HomeStackNavigation"
+          component={HomeStackNavigation}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 export default RootRouter;
