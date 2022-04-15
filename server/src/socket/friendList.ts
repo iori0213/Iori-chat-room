@@ -24,9 +24,9 @@ export const friendListController = (
   };
   const profileRepo = getRepository(Profile);
   const friendShipRepo = getRepository(FriendShip);
-  socket.on("get-friend", async () => {
+  const getFriend = async () => {
     const friendShips = await friendShipRepo.find({
-      where: [{ user: user }, { friend: user }],
+      where: [{ user: user.id }, { friend: user.id }],
       relations: ["user", "user.avatar", "friend", "friend.avatar"],
     });
     const friendList: ProfileWithImg[] = [];
@@ -50,15 +50,18 @@ export const friendListController = (
         }
       }
     });
+    console.log("userId:", user.id);
+    console.log("friend ships:", friendShips);
     socket.emit("get-friend-cli", {
       friendList: friendList,
       userRequestList: userRequestList,
       friendRequestList: friendRequestList,
     });
-  });
+  };
+  socket.on("get-friend", getFriend);
 
   //ANCHOR ADD FRIEND
-  socket.on("add-friend", async (params: { friendName: string }) => {
+  const addFriend = async (params: { friendName: string }) => {
     const { friendName } = params;
     const userProfile = await profileRepo.findOne({
       where: { id: user.id },
@@ -79,8 +82,8 @@ export const friendListController = (
     }
     const friendShip = await friendShipRepo.findOne({
       where: [
-        { user: user, friend: friendProfile },
-        { user: friendProfile, friend: user },
+        { user: user.id, friend: friendProfile.id },
+        { user: friendProfile.id, friend: user.id },
       ],
     });
     if (friendShip) {
@@ -116,7 +119,8 @@ export const friendListController = (
       });
     }
     return;
-  });
+  };
+  socket.on("add-friend", addFriend);
 
   socket.on("remove-friend", async (params: { friendId: string }) => {
     const { friendId } = params;
@@ -151,4 +155,9 @@ export const friendListController = (
       friend: friendProfile.id,
     });
   });
+
+  return () => {
+    socket.off("get-friend", getFriend);
+    socket.off("add-friend", addFriend);
+  };
 };
