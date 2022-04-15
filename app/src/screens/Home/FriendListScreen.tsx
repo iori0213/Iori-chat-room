@@ -12,133 +12,130 @@ import {
   TextInput,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { AuthAPI, FriendAPI } from "../../constants/backendAPI";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
-  hilight_color,
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
-import {
-  ACCESS_KEY,
-  REFRESH_KEY,
-  SHOWNAME_KEY,
-  USERID_KEY,
-  USERNAME_KEY,
-} from "../../constants/securestoreKey";
+import { USERNAME_KEY } from "../../constants/securestoreKey";
 import { HomeTabNavigationProps } from "../../types/navigations";
-import { MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
-import Friend from "../../components/Home/Friend";
+import { AntDesign } from "@expo/vector-icons";
 import { ChatContext } from "../../components/Home/ChatContext";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
+import InfoBox from "../../components/Home/InfoBox";
 
 type Props = MaterialTopTabScreenProps<
   HomeTabNavigationProps,
   "FriendListScreen"
 >;
 
-const FriendListScreen: React.FC<Props> = ({ navigation }) => {
+const FriendListScreen: React.FC<Props> = () => {
   const [userName, setUserName] = useState("");
-  const [friendArray, setFriendArray] = useState<Profile[]>([]);
   const [friend, setFriend] = useState("");
   const { socket } = useContext(ChatContext);
+  const [friendList, setFriendList] = useState<ProfileWithImg[]>([]);
+  const [userRequestList, setUserRequestList] = useState<ProfileWithImg[]>([]);
+  const [friendRequestList, setFriendRequestList] = useState<ProfileWithImg[]>(
+    []
+  );
 
-  //ANCHOR Logout process
-  const LogoutProcess = async () => {
-    const localRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY);
-    if (!localRefreshToken) {
-      console.log("No local refresh token");
-      return Alert.alert("Error");
-    }
-    axios({
-      method: "post",
-      url: `${AuthAPI}/token/logout`,
-      headers: { Authorization: `Bearer ${localRefreshToken}` },
-    }).then(async (result) => {
-      if (result.status != 200) {
-        return Alert.alert("Error", result.data.message);
-      }
-      await SecureStore.deleteItemAsync(ACCESS_KEY);
-      await SecureStore.deleteItemAsync(REFRESH_KEY);
-      await SecureStore.deleteItemAsync(USERID_KEY);
-      await SecureStore.deleteItemAsync(USERNAME_KEY);
-      await SecureStore.deleteItemAsync(SHOWNAME_KEY);
-      socket?.disconnect();
-      navigation.dispatch(
-        CommonActions.reset({ routes: [{ name: "AuthNavigation" }] })
-      );
-    });
-  };
-
-  const getFriends = async () => {
-    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
-    axios({
-      method: "get",
-      url: `${FriendAPI}/get`,
-      headers: { Authorization: `Bearer ${localAccessToken}` },
-    }).then((result) => {
-      if (!result.data.success) {
-        return Alert.alert("Error", "get friend process failed!");
-      }
-      setFriendArray(result.data.friendsArray);
-    });
-  };
   const addFriend = async () => {
-    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
-    axios({
-      method: "post",
-      url: `${FriendAPI}/add`,
-      headers: { Authorization: `Bearer ${localAccessToken}` },
-      data: { friendName: friend },
-    }).then((result) => {
-      if (!result.data.success) {
-        return Alert.alert("Error", result.data.message);
-      }
-      const newFriend: Profile = {
-        id: result.data.friend.id,
-        username: result.data.friend.username,
-        showName: result.data.friend.showName,
-      };
-      setFriendArray((prev) => [newFriend, ...prev]);
-      setFriend("");
-    });
-  };
-  const removeFriend = async (friendId: string) => {
-    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
-    axios({
-      method: "post",
-      url: `${FriendAPI}/remove`,
-      headers: { Authorization: `Bearer ${localAccessToken}` },
-      data: { friendId: friendId },
-    }).then((result) => {
-      if (!result.data.success) {
-        return Alert.alert("Error", result.data.message);
-      }
-      getFriends();
-    });
+    if (friend == "") {
+      return Alert.alert("Error", "Friend name field cannot be empty!");
+    }
+    socket?.emit("add-friend", { friendName: friend });
   };
 
   const initialize = async () => {
-    const username = await SecureStore.getItemAsync(USERNAME_KEY);
-    if (!username) {
-      return Alert.alert("Error", "local username not found!");
-    }
-    setUserName(username);
-    getFriends();
+    const localUserName = await SecureStore.getItemAsync(USERNAME_KEY);
+    setUserName(localUserName!);
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      initialize();
-    }, [])
-  );
+  useEffect(() => {
+    initialize();
+    socket?.emit("get-friend");
+    socket?.on(
+      "get-friend-cli",
+      async ({
+        friendList,
+        userRequestList,
+        friendRequestList,
+      }: {
+        friendList: ProfileWithImg[];
+        userRequestList: ProfileWithImg[];
+        friendRequestList: ProfileWithImg[];
+      }) => {
+        console.log("get friend started");
+        console.log(friendList);
+        if (friendList.length !== 0) {
+          setFriendList(friendList);
+        } else {
+          console.log("no friends");
+        }
+        if (userRequestList.length !== 0) {
+          setUserRequestList(userRequestList);
+        } else {
+          console.log("no user request");
+        }
+        if (friendRequestList.length !== 0) {
+          setFriendRequestList(friendRequestList);
+        } else {
+          console.log("no friend request");
+        }
+      }
+    );
+    socket?.on(
+      "add-friend-cli",
+      ({
+        user,
+        friend,
+        active,
+      }: {
+        user: ProfileWithImg;
+        friend: ProfileWithImg;
+        active: boolean;
+      }) => {
+        if (user.username == userName || friend.username == userName) {
+          if (active) {
+            if (user.username == userName) {
+              setFriendRequestList((prev) =>
+                prev.filter((request) => {
+                  request.id != friend.id;
+                })
+              );
+              setFriendList((prev) => [friend, ...prev]);
+              return;
+            } else if (friend.username == userName) {
+              setUserRequestList((prev) =>
+                prev.filter((request) => request.id != user.id)
+              );
+              return;
+            }
+          } else {
+            if (user.username == userName) {
+              setUserRequestList((prev) => [friend, ...prev]);
+              return;
+            } else if (friend.username == userName) {
+              setFriendRequestList((prev) => [user, ...prev]);
+            }
+          }
+        }
+      }
+    );
+
+    return () => {
+      socket?.off("get-friend-cli");
+      socket?.off("add-friend-cli");
+    };
+  }, []);
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
         <HomeHeader />
         <View style={styles.bodyContainer}>
+          {/* add friend zone */}
           <View style={styles.addFriendHeader}>
             <View style={styles.inputContainer}>
               <TextInput
@@ -160,14 +157,89 @@ const FriendListScreen: React.FC<Props> = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
-          <FlatList
-            data={friendArray}
-            extraData={friendArray}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => {
-              return <Friend friend={item} deleteFunc={removeFriend} />;
-            }}
-          />
+          {/* add friend zone */}
+          {/* other pending list */}
+          <View>
+            {friendRequestList.length === 0 ? (
+              <></>
+            ) : (
+              <View>
+                <View style={styles.pendingHeader}>
+                  <Text style={styles.pendingHeaderText}>Friend Request</Text>
+                </View>
+                <View style={styles.pendingBody}>
+                  {friendRequestList.map((profile) => {
+                    return (
+                      <InfoBox
+                        key={profile.id}
+                        username={profile.username}
+                        showname={profile.showname}
+                        profileImg={profile.profileImg}
+                      />
+                    );
+                  })}
+                </View>
+              </View>
+            )}
+            {/* your pending list */}
+            {userRequestList.length === 0 ? (
+              <></>
+            ) : (
+              <View>
+                <View style={styles.pendingHeader}>
+                  <Text style={styles.pendingHeaderText}>Your Request</Text>
+                </View>
+                <View style={styles.pendingBody}>
+                  {userRequestList.map((profile) => {
+                    return (
+                      <InfoBox
+                        key={profile.id}
+                        username={profile.username}
+                        showname={profile.showname}
+                        profileImg={profile.profileImg}
+                      />
+                    );
+                  })}
+                </View>
+              </View>
+            )}
+            {/* friendList */}
+            {friendList.length === 0 ? (
+              // <View
+              //   style={{
+              //     flex: 1,
+              //     alignItems: "center",
+              //     justifyContent: "center",
+              //   }}
+              // >
+              //   <Text style={{ color: "#FFF", fontSize: windowWidth * 0.05 }}>
+              //     no friend
+              //   </Text>
+              // </View>
+              <></>
+            ) : (
+              <View>
+                <View style={styles.pendingHeader}>
+                  <Text style={styles.pendingHeaderText}>Friend List</Text>
+                </View>
+
+                <FlatList
+                  data={friendList}
+                  extraData={friendList}
+                  keyExtractor={(item) => item.id}
+                  renderItem={({ item }) => {
+                    return (
+                      <InfoBox
+                        username={item.username}
+                        showname={item.showname}
+                        profileImg={item.profileImg}
+                      />
+                    );
+                  }}
+                />
+              </View>
+            )}
+          </View>
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -214,7 +286,6 @@ const styles = StyleSheet.create({
   bodyContainer: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
     backgroundColor: bg_DarkColor,
   },
   addFriendHeader: {
@@ -224,7 +295,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "row",
     backgroundColor: bg_LessDarkColor,
-    marginBottom: windowHeight * 0.02,
+    borderBottomWidth: 3,
+    borderBottomColor: bg_DarkColor,
   },
   sideBlank: {
     width: windowWidth * 0.1,
@@ -245,7 +317,18 @@ const styles = StyleSheet.create({
     color: "#FFF",
     paddingLeft: windowWidth * 0.04,
   },
-  friendlistContainer: {
+  pendingHeader: {
     width: windowWidth,
+    height: windowHeight * 0.03,
+    backgroundColor: bg_LessDarkColor,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pendingHeaderText: {
+    fontSize: windowHeight * 0.02,
+    color: "#FFF",
+  },
+  pendingBody: {
+    maxHeight: windowHeight * 0.2,
   },
 });

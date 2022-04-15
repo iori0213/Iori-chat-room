@@ -38,7 +38,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   let userid = "";
   const { roomId, roomName } = route.params;
   const [messages, setMessages] = useState<Msg[]>([]);
-  const [members, setMembers] = useState<RoomMember[]>([]);
+  const [members, setMembers] = useState<ProfileWithImg[]>([]);
   const { socket } = useContext(ChatContext);
 
   const [msgInput, setMsgInput] = useState("");
@@ -63,7 +63,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
     });
     socket?.on(
       "join-room-initialize",
-      async ({ members, msgs }: { members: RoomMember[]; msgs: Msg[] }) => {
+      async ({ members, msgs }: { members: ProfileWithImg[]; msgs: Msg[] }) => {
         const localUserId = await SecureStore.getItemAsync(USERID_KEY);
         userid = localUserId!;
         setUserId(localUserId!);

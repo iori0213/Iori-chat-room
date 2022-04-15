@@ -9,7 +9,7 @@ interface Profile {
   showName: string;
 }
 
-interface RoomMember {
+interface ProfileWithImg {
   id: string;
   username: string;
   showname: string;
