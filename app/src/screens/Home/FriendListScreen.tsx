@@ -18,7 +18,7 @@ import {
 } from "../../constants/cssConst";
 import { USERNAME_KEY } from "../../constants/securestoreKey";
 import { HomeTabNavigationProps } from "../../types/navigations";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { ChatContext } from "../../components/Home/ChatContext";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 import InfoBox from "../../components/Home/InfoBox";
@@ -34,10 +34,13 @@ const FriendListScreen: React.FC<Props> = () => {
   const [friend, setFriend] = useState("");
   const { socket } = useContext(ChatContext);
   const [friendList, setFriendList] = useState<ProfileWithImg[]>([]);
+  const [friendListShow, setFriendListShow] = useState(true);
   const [userRequestList, setUserRequestList] = useState<ProfileWithImg[]>([]);
+  const [userRequestListShow, setUserRequestListShow] = useState(true);
   const [friendRequestList, setFriendRequestList] = useState<ProfileWithImg[]>(
     []
   );
+  const [friendRequestListShow, setFriendRequestListShow] = useState(true);
   const [fetching, setFetching] = useState(true);
 
   const addFriend = async () => {
@@ -131,6 +134,44 @@ const FriendListScreen: React.FC<Props> = () => {
     };
   }, []);
 
+  type pendingProps = {
+    sectionTitle: string;
+    show: boolean;
+    setShow: (value: React.SetStateAction<boolean>) => void;
+  };
+  const PendingHeaderBox: React.FC<pendingProps> = ({
+    sectionTitle,
+    show,
+    setShow,
+  }) => {
+    return (
+      <View style={styles.pendingHeader}>
+        <View style={styles.sideFolderHolder}></View>
+        <View style={styles.pendingHeaderTextContainer}>
+          <Text style={styles.pendingHeaderText}>{sectionTitle}</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.sideFolderHolder}
+          onPress={() => setShow((prev) => !prev)}
+        >
+          {show ? (
+            <MaterialIcons
+              name="unfold-more"
+              size={windowHeight * 0.03}
+              color="#FFF"
+            />
+          ) : (
+            <MaterialIcons
+              name="unfold-less"
+              size={windowHeight * 0.03}
+              color="#FFF"
+            />
+          )}
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
@@ -158,8 +199,8 @@ const FriendListScreen: React.FC<Props> = () => {
               </TouchableOpacity>
             </View>
           </View>
-          {/* add friend zone */}
-          {/* other pending list */}
+          {/* add friend zone============================================================= */}
+          {/* other pending list============================================================= */}
           {fetching ? (
             <LoadingSpinner />
           ) : (
@@ -167,53 +208,77 @@ const FriendListScreen: React.FC<Props> = () => {
               {friendRequestList.length === 0 ? (
                 <></>
               ) : (
-                <View>
-                  <View style={styles.pendingHeader}>
-                    <Text style={styles.pendingHeaderText}>Friend Request</Text>
-                  </View>
-                  <View style={styles.pendingBody}>
-                    {friendRequestList.map((profile) => {
-                      return (
-                        <InfoBox
-                          key={profile.id}
-                          username={profile.username}
-                          showname={profile.showname}
-                          profileImg={profile.profileImg}
-                        />
-                      );
-                    })}
-                  </View>
+                <View
+                  style={[
+                    styles.pendingContainer,
+                    { borderBottomWidth: friendRequestListShow ? 0 : 2 },
+                  ]}
+                >
+                  <PendingHeaderBox
+                    sectionTitle="Friend Request"
+                    show={friendRequestListShow}
+                    setShow={setFriendRequestListShow}
+                  />
+                  {!friendRequestListShow ? (
+                    <></>
+                  ) : (
+                    <View style={styles.pendingBody}>
+                      {friendRequestList.map((profile) => {
+                        return (
+                          <InfoBox
+                            key={profile.id}
+                            username={profile.username}
+                            showname={profile.showname}
+                            profileImg={profile.profileImg}
+                          />
+                        );
+                      })}
+                    </View>
+                  )}
                 </View>
               )}
-              {/* your pending list */}
+              {/* your pending list============================================================= */}
               {userRequestList.length === 0 ? (
                 <></>
               ) : (
-                <View>
-                  <View style={styles.pendingHeader}>
-                    <Text style={styles.pendingHeaderText}>Your Request</Text>
-                  </View>
-                  <View style={styles.pendingBody}>
-                    {userRequestList.map((profile) => {
-                      return (
-                        <InfoBox
-                          key={profile.id}
-                          username={profile.username}
-                          showname={profile.showname}
-                          profileImg={profile.profileImg}
-                        />
-                      );
-                    })}
-                  </View>
+                <View
+                  style={[
+                    styles.pendingContainer,
+                    { borderBottomWidth: userRequestListShow ? 0 : 2 },
+                  ]}
+                >
+                  <PendingHeaderBox
+                    sectionTitle="Waiting For Reply"
+                    show={userRequestListShow}
+                    setShow={setUserRequestListShow}
+                  />
+                  {!userRequestListShow ? (
+                    <></>
+                  ) : (
+                    <View style={styles.pendingBody}>
+                      {userRequestList.map((profile) => {
+                        return (
+                          <InfoBox
+                            key={profile.id}
+                            username={profile.username}
+                            showname={profile.showname}
+                            profileImg={profile.profileImg}
+                          />
+                        );
+                      })}
+                    </View>
+                  )}
                 </View>
               )}
-              {/* friendList */}
+              {/* friendList============================================================= */}
               {friendList.length === 0 ? (
                 <></>
               ) : (
                 <View>
                   <View style={styles.pendingHeader}>
-                    <Text style={styles.pendingHeaderText}>Friend List</Text>
+                    <Text style={styles.pendingHeaderTextContainer}>
+                      Friend List
+                    </Text>
                   </View>
                   <FlatList
                     data={friendList}
@@ -310,10 +375,24 @@ const styles = StyleSheet.create({
     color: "#FFF",
     paddingLeft: windowWidth * 0.04,
   },
+  pendingContainer: {
+    borderBottomColor: bg_DarkColor,
+  },
   pendingHeader: {
     width: windowWidth,
     height: windowHeight * 0.03,
     backgroundColor: bg_LessDarkColor,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  sideFolderHolder: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pendingHeaderTextContainer: {
+    flex: 10,
     alignItems: "center",
     justifyContent: "center",
   },

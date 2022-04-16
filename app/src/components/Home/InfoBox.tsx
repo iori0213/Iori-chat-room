@@ -5,6 +5,7 @@ import {
   windowWidth,
   bg_LessDarkColor,
 } from "../../constants/cssConst";
+import { Feather } from "@expo/vector-icons";
 
 type Props = {
   username: string;
@@ -17,10 +18,19 @@ const InfoBox: React.FC<Props> = ({ username, showname, profileImg }) => {
     <View style={styles.memberContainer}>
       <View style={styles.avatarContainer}>
         <View style={styles.imgView}>
-          <Image
-            source={{ uri: "data:image/jpeg;base64," + profileImg }}
-            style={styles.imgStyle}
-          />
+          {profileImg == "" ? (
+            <Feather
+              name="user"
+              size={avatarSize}
+              color={bg_LessDarkColor}
+              style={{ backgroundColor: "#FFF" }}
+            />
+          ) : (
+            <Image
+              source={{ uri: "data:image/jpeg;base64," + profileImg }}
+              style={styles.imgStyle}
+            />
+          )}
         </View>
       </View>
       <View style={styles.infoContainer}>
