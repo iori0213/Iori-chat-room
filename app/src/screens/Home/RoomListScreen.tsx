@@ -322,6 +322,7 @@ const styles = StyleSheet.create({
     borderRadius: windowHeight * 0.02,
     paddingLeft: windowWidth * 0.04,
     backgroundColor: bg_DarkColor,
+    fontSize: windowWidth * 0.04,
     color: "#FFF",
   },
   goBtn: {

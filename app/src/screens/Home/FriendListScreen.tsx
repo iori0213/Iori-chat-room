@@ -1,5 +1,3 @@
-import { CommonActions, useFocusEffect } from "@react-navigation/native";
-import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import React, { useContext, useEffect, useState } from "react";
 import {
@@ -24,6 +22,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { ChatContext } from "../../components/Home/ChatContext";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 import InfoBox from "../../components/Home/InfoBox";
+import LoadingSpinner from "../../components/Auth/LoadingSpinner";
 
 type Props = MaterialTopTabScreenProps<
   HomeTabNavigationProps,
@@ -39,6 +38,7 @@ const FriendListScreen: React.FC<Props> = () => {
   const [friendRequestList, setFriendRequestList] = useState<ProfileWithImg[]>(
     []
   );
+  const [fetching, setFetching] = useState(true);
 
   const addFriend = async () => {
     if (friend == "") {
@@ -50,10 +50,10 @@ const FriendListScreen: React.FC<Props> = () => {
   const initialize = async () => {
     const localUserName = await SecureStore.getItemAsync(USERNAME_KEY);
     setUserName(localUserName!);
+    setFetching(false);
   };
 
   useEffect(() => {
-    initialize();
     socket?.emit("get-friend");
     socket?.on(
       "get-friend-cli",
@@ -85,6 +85,7 @@ const FriendListScreen: React.FC<Props> = () => {
         }
       }
     );
+    initialize();
     socket?.on(
       "add-friend-cli",
       ({
@@ -151,7 +152,7 @@ const FriendListScreen: React.FC<Props> = () => {
               <TouchableOpacity onPress={() => addFriend()}>
                 <AntDesign
                   name="adduser"
-                  size={windowWidth * 0.1}
+                  size={windowHeight * 0.04}
                   color="#FFF"
                 />
               </TouchableOpacity>
@@ -159,87 +160,79 @@ const FriendListScreen: React.FC<Props> = () => {
           </View>
           {/* add friend zone */}
           {/* other pending list */}
-          <View>
-            {friendRequestList.length === 0 ? (
-              <></>
-            ) : (
-              <View>
-                <View style={styles.pendingHeader}>
-                  <Text style={styles.pendingHeaderText}>Friend Request</Text>
+          {fetching ? (
+            <LoadingSpinner />
+          ) : (
+            <View>
+              {friendRequestList.length === 0 ? (
+                <></>
+              ) : (
+                <View>
+                  <View style={styles.pendingHeader}>
+                    <Text style={styles.pendingHeaderText}>Friend Request</Text>
+                  </View>
+                  <View style={styles.pendingBody}>
+                    {friendRequestList.map((profile) => {
+                      return (
+                        <InfoBox
+                          key={profile.id}
+                          username={profile.username}
+                          showname={profile.showname}
+                          profileImg={profile.profileImg}
+                        />
+                      );
+                    })}
+                  </View>
                 </View>
-                <View style={styles.pendingBody}>
-                  {friendRequestList.map((profile) => {
-                    return (
-                      <InfoBox
-                        key={profile.id}
-                        username={profile.username}
-                        showname={profile.showname}
-                        profileImg={profile.profileImg}
-                      />
-                    );
-                  })}
+              )}
+              {/* your pending list */}
+              {userRequestList.length === 0 ? (
+                <></>
+              ) : (
+                <View>
+                  <View style={styles.pendingHeader}>
+                    <Text style={styles.pendingHeaderText}>Your Request</Text>
+                  </View>
+                  <View style={styles.pendingBody}>
+                    {userRequestList.map((profile) => {
+                      return (
+                        <InfoBox
+                          key={profile.id}
+                          username={profile.username}
+                          showname={profile.showname}
+                          profileImg={profile.profileImg}
+                        />
+                      );
+                    })}
+                  </View>
                 </View>
-              </View>
-            )}
-            {/* your pending list */}
-            {userRequestList.length === 0 ? (
-              <></>
-            ) : (
-              <View>
-                <View style={styles.pendingHeader}>
-                  <Text style={styles.pendingHeaderText}>Your Request</Text>
+              )}
+              {/* friendList */}
+              {friendList.length === 0 ? (
+                <></>
+              ) : (
+                <View>
+                  <View style={styles.pendingHeader}>
+                    <Text style={styles.pendingHeaderText}>Friend List</Text>
+                  </View>
+                  <FlatList
+                    data={friendList}
+                    extraData={friendList}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => {
+                      return (
+                        <InfoBox
+                          username={item.username}
+                          showname={item.showname}
+                          profileImg={item.profileImg}
+                        />
+                      );
+                    }}
+                  />
                 </View>
-                <View style={styles.pendingBody}>
-                  {userRequestList.map((profile) => {
-                    return (
-                      <InfoBox
-                        key={profile.id}
-                        username={profile.username}
-                        showname={profile.showname}
-                        profileImg={profile.profileImg}
-                      />
-                    );
-                  })}
-                </View>
-              </View>
-            )}
-            {/* friendList */}
-            {friendList.length === 0 ? (
-              // <View
-              //   style={{
-              //     flex: 1,
-              //     alignItems: "center",
-              //     justifyContent: "center",
-              //   }}
-              // >
-              //   <Text style={{ color: "#FFF", fontSize: windowWidth * 0.05 }}>
-              //     no friend
-              //   </Text>
-              // </View>
-              <></>
-            ) : (
-              <View>
-                <View style={styles.pendingHeader}>
-                  <Text style={styles.pendingHeaderText}>Friend List</Text>
-                </View>
-
-                <FlatList
-                  data={friendList}
-                  extraData={friendList}
-                  keyExtractor={(item) => item.id}
-                  renderItem={({ item }) => {
-                    return (
-                      <InfoBox
-                        username={item.username}
-                        showname={item.showname}
-                        profileImg={item.profileImg}
-                      />
-                    );
-                  }}
-                />
-              </View>
-            )}
-          </View>
+              )}
+            </View>
+          )}
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -266,7 +259,7 @@ const styles = StyleSheet.create({
   },
   customHeader: {
     flexDirection: "row",
-    height: windowHeight * 0.08,
+    height: windowHeight * 0.05,
     backgroundColor: bg_LessDarkColor,
   },
   titleContainer: {
@@ -290,7 +283,7 @@ const styles = StyleSheet.create({
   },
   addFriendHeader: {
     width: windowWidth,
-    height: windowWidth * 0.15,
+    height: windowHeight * 0.06,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
@@ -309,10 +302,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   input: {
-    height: windowHeight * 0.05,
+    height: windowHeight * 0.04,
     width: windowWidth * 0.87,
-    borderRadius: (windowHeight * 0.05) / 2,
-    fontSize: windowHeight * 0.02,
+    borderRadius: (windowHeight * 0.04) / 2,
+    fontSize: windowWidth * 0.04,
     backgroundColor: bg_DarkColor,
     color: "#FFF",
     paddingLeft: windowWidth * 0.04,
