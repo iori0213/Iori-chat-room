@@ -1,12 +1,19 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useContext } from "react";
 import {
   windowHeight,
   windowWidth,
   bg_LessDarkColor,
-} from "../../constants/cssConst";
+} from "../../../constants/cssConst";
 import { Feather, Entypo } from "@expo/vector-icons";
-import { ChatContext } from "./ChatContext";
+import { ChatContext } from "../ChatContext";
 
 type Props = {
   userId: string;
@@ -16,7 +23,7 @@ type Props = {
   setFetching: (value: React.SetStateAction<boolean>) => void;
 };
 
-const RequestPendingBox: React.FC<Props> = ({
+const WaitingReplyBox: React.FC<Props> = ({
   userId,
   username,
   showname,
@@ -24,12 +31,6 @@ const RequestPendingBox: React.FC<Props> = ({
   setFetching,
 }) => {
   const { socket } = useContext(ChatContext);
-  const accept = () => {
-    setFetching((prev) => !prev);
-    socket?.emit("add-friend", {
-      friendName: username,
-    });
-  };
   const cancel = () => {
     setFetching((prev) => !prev);
     socket?.emit("remove-friend", {
@@ -62,18 +63,37 @@ const RequestPendingBox: React.FC<Props> = ({
         </View>
       </View>
       <View style={styles.btnBox}>
-        <TouchableOpacity style={styles.btnContainer} onPress={() => cancel()}>
+        <TouchableOpacity
+          style={styles.btnContainer}
+          onPress={() =>
+            Alert.alert(
+              "Cancel Friend Request",
+              "Do you want to cancel the friend invitation?",
+              [
+                {
+                  text: "No",
+                  onPress: () => {
+                    return;
+                  },
+                },
+                {
+                  text: "Yes",
+                  onPress: () => {
+                    cancel();
+                  },
+                },
+              ]
+            )
+          }
+        >
           <Entypo name="cross" size={avatarSize * 0.7} color="#FFF" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btnContainer} onPress={() => accept()}>
-          <Entypo name="check" size={avatarSize * 0.7} color="#FFF" />
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-export default RequestPendingBox;
+export default WaitingReplyBox;
 
 const memberContainerHeight = windowHeight * 0.07;
 const avatarSize = windowHeight * 0.05;

@@ -23,8 +23,8 @@ import { ChatContext } from "../../components/Home/ChatContext";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 import InfoBox from "../../components/Home/InfoBox";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
-import RequestPendingBox from "../../components/Home/RequestPendingBox";
-import WaitingReplyBox from "../../components/Home/WaitingReplyBox";
+import RequestPendingBox from "../../components/Home/FriendList/RequestPendingBox";
+import WaitingReplyBox from "../../components/Home/FriendList/WaitingReplyBox";
 import axios from "axios";
 import { FriendAPI } from "../../constants/backendAPI";
 
