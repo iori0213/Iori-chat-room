@@ -27,6 +27,7 @@ import RequestPendingBox from "../../components/Home/FriendList/RequestPendingBo
 import WaitingReplyBox from "../../components/Home/FriendList/WaitingReplyBox";
 import axios from "axios";
 import { FriendAPI } from "../../constants/backendAPI";
+import FriendListBox from "../../components/Home/FriendList/FriendListBox";
 
 type Props = MaterialTopTabScreenProps<
   HomeTabNavigationProps,
@@ -271,10 +272,12 @@ const FriendListScreen: React.FC<Props> = () => {
                       keyExtractor={(item) => item.id}
                       renderItem={({ item }) => {
                         return (
-                          <InfoBox
+                          <FriendListBox
+                            userId={item.id}
                             username={item.username}
                             showname={item.showname}
                             profileImg={item.profileImg}
+                            setFetching={setFetching}
                           />
                         );
                       }}
