@@ -24,6 +24,8 @@ export const friendListController = (
   };
   const profileRepo = getRepository(Profile);
   const friendShipRepo = getRepository(FriendShip);
+
+  //ANCHOR Get Friend
   const getFriend = async () => {
     const friendShips = await friendShipRepo.find({
       where: [{ user: user.id }, { friend: user.id }],
@@ -50,8 +52,6 @@ export const friendListController = (
         }
       }
     });
-    console.log("userId:", user.id);
-    console.log("friend ships:", friendShips);
     socket.emit("get-friend-cli", {
       friendList: friendList,
       userRequestList: userRequestList,
@@ -60,7 +60,7 @@ export const friendListController = (
   };
   socket.on("get-friend", getFriend);
 
-  //ANCHOR ADD FRIEND
+  //ANCHOR Add Friend
   const addFriend = async (params: { friendName: string }) => {
     const { friendName } = params;
     const userProfile = await profileRepo.findOne({
@@ -68,7 +68,8 @@ export const friendListController = (
       relations: ["avatar"],
     });
     if (!userProfile) {
-      return socket.emit("error-msg", { message: "User not found" });
+      socket.emit("error-msg", "User not found");
+      return;
     }
     const friendProfile = await profileRepo.findOne({
       where: { username: friendName },
@@ -76,31 +77,34 @@ export const friendListController = (
     });
     //if friend profile not found
     if (!friendProfile) {
-      return socket.emit("error-msg", {
-        message: "Friend not found",
-      });
+      socket.emit("error-msg", "Friend not found");
+      return;
     }
     const friendShip = await friendShipRepo.findOne({
       where: [
         { user: user.id, friend: friendProfile.id },
         { user: friendProfile.id, friend: user.id },
       ],
+      relations: ["user", "friend"],
     });
     if (friendShip) {
-      if (friendShip.user == user && !friendShip.active) {
-        return socket.emit("error-msg", {
-          message: "Your request is still pending.",
-        });
-      } else if (friendShip.friend == user && !friendShip.active) {
+      if (friendShip.user.id == user.id && !friendShip.active) {
+        socket.emit("error-msg", "Your request is still pending.");
+        return;
+      } else if (friendShip.friend.id == user.id && !friendShip.active) {
         friendShip.active = true;
         await friendShipRepo.save(friendShip);
         const returnUser = profileToProfileWithImg(userProfile);
         const returnFriend = profileToProfileWithImg(friendProfile);
-        return io.emit("add-friend-cli", {
+        io.emit("add-friend-cli", {
           user: returnUser,
           friend: returnFriend,
           activate: friendShip.active,
         });
+        return;
+      } else if (friendShip.active) {
+        socket.emit("error-msg", "Already is friend!");
+        return;
       }
     } else {
       const newFriendShip = new FriendShip();
@@ -112,52 +116,50 @@ export const friendListController = (
       const returnUser = profileToProfileWithImg(userProfile);
       const returnFriend = profileToProfileWithImg(friendProfile);
       //return result
-      return io.emit("add-friend-cli", {
+      io.emit("add-friend-cli", {
         user: returnUser,
         friend: returnFriend,
-        activate: newFriendShip.active,
       });
+      return;
     }
     return;
   };
   socket.on("add-friend", addFriend);
 
-  socket.on("remove-friend", async (params: { friendId: string }) => {
+  //ANCHOR Remove Friend
+  const removeFriend = async (params: { friendId: string }) => {
     const { friendId } = params;
     const friendProfile = await profileRepo.findOne({
       where: { id: friendId },
     });
     if (!friendProfile) {
-      return socket.emit("error-msg", { message: "Friend not found!" });
+      socket.emit("error-msg", "Friend not found!");
+      return;
     }
-
     //getting both friendship
-    const userFriendShip = await friendShipRepo.findOne({
-      where: {
-        user: user,
-        friend: friendProfile,
-      },
+    const friendShip = await friendShipRepo.findOne({
+      where: [
+        { user: user.id, friend: friendProfile.id },
+        { user: friendProfile.id, friend: user.id },
+      ],
     });
-    const friendFriendShip = await friendShipRepo.findOne({
-      where: {
-        user: friendProfile,
-        friend: user,
-      },
-    });
-    if (!userFriendShip || !friendFriendShip) {
-      return socket.emit("error-msg", { message: "Friendship not found" });
+    if (!friendShip) {
+      socket.emit("error-msg", "Friendship not found");
+      return;
     }
     //remove friendship
-    await friendShipRepo.remove(userFriendShip);
-    await friendShipRepo.remove(friendFriendShip);
-    return io.emit("remove-friend-cli", {
-      user: user.id,
-      friend: friendProfile.id,
+    await friendShipRepo.remove(friendShip);
+    io.emit("remove-friend-cli", {
+      user: user.username,
+      friend: friendProfile.username,
     });
-  });
+    return;
+  };
+  socket.on("remove-friend", removeFriend);
 
   return () => {
     socket.off("get-friend", getFriend);
     socket.off("add-friend", addFriend);
+    socket.off("remove-friend", removeFriend);
   };
 };
