@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     borderBottomColor: bg_LessDarkColor,
   },
   avatarContainer: {
-    width: memberContainerHeight,
+    width: memberContainerHeight + windowHeight * 0.03,
     height: memberContainerHeight,
     alignItems: "center",
     justifyContent: "center",
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   info: {
     flex: 1,
-    fontSize: avatarSize * 0.7,
+    fontSize: avatarSize * 0.65,
     color: "#FFF",
   },
   btnBox: {
