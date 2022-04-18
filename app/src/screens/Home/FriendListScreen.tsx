@@ -16,13 +16,17 @@ import {
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
-import { USERNAME_KEY } from "../../constants/securestoreKey";
+import { ACCESS_KEY, USERNAME_KEY } from "../../constants/securestoreKey";
 import { HomeTabNavigationProps } from "../../types/navigations";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { ChatContext } from "../../components/Home/ChatContext";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 import InfoBox from "../../components/Home/InfoBox";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
+import RequestPendingBox from "../../components/Home/RequestPendingBox";
+import WaitingReplyBox from "../../components/Home/WaitingReplyBox";
+import axios from "axios";
+import { FriendAPI } from "../../constants/backendAPI";
 
 type Props = MaterialTopTabScreenProps<
   HomeTabNavigationProps,
@@ -43,96 +47,70 @@ const FriendListScreen: React.FC<Props> = () => {
   const [friendRequestListShow, setFriendRequestListShow] = useState(true);
   const [fetching, setFetching] = useState(true);
 
+  const getFriend = async () => {
+    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
+    axios({
+      method: "get",
+      url: `${FriendAPI}/get`,
+      headers: { Authorization: `Bearer ${localAccessToken}` },
+    })
+      .then(({ data }) => {
+        setFriendList(data.friendList);
+        setUserRequestList(data.userRequestList);
+        setFriendRequestList(data.friendRequestList);
+      })
+      .catch((e) => console.log("Get Friend Problem:", e));
+
+    setFetching(false);
+  };
+
   const addFriend = async () => {
     if (friend == "") {
       return Alert.alert("Error", "Friend name field cannot be empty!");
     }
+    setFetching(true);
     socket?.emit("add-friend", { friendName: friend });
+    setFriend("");
   };
 
   const initialize = async () => {
-    const localUserName = await SecureStore.getItemAsync(USERNAME_KEY);
-    setUserName(localUserName!);
-    setFetching(false);
+    await SecureStore.getItemAsync(USERNAME_KEY).then((result) => {
+      setUserName(result!);
+    });
+    await getFriend();
   };
 
   useEffect(() => {
-    socket?.emit("get-friend");
+    initialize();
+    socket?.on("error-msg", (errorMessage) => {
+      return Alert.alert("Error", errorMessage);
+    });
     socket?.on(
-      "get-friend-cli",
-      async ({
-        friendList,
-        userRequestList,
-        friendRequestList,
-      }: {
-        friendList: ProfileWithImg[];
-        userRequestList: ProfileWithImg[];
-        friendRequestList: ProfileWithImg[];
-      }) => {
-        console.log("get friend started");
-        console.log(friendList);
-        if (friendList.length !== 0) {
-          setFriendList(friendList);
-        } else {
-          console.log("no friends");
-        }
-        if (userRequestList.length !== 0) {
-          setUserRequestList(userRequestList);
-        } else {
-          console.log("no user request");
-        }
-        if (friendRequestList.length !== 0) {
-          setFriendRequestList(friendRequestList);
-        } else {
-          console.log("no friend request");
+      "add-friend-cli",
+      ({ user, friend }: { user: ProfileWithImg; friend: ProfileWithImg }) => {
+        if (user.username == userName || friend.username == userName) {
+          setFetching(true);
+          getFriend();
+          setFetching(false);
         }
       }
     );
-    initialize();
+
     socket?.on(
-      "add-friend-cli",
-      ({
-        user,
-        friend,
-        active,
-      }: {
-        user: ProfileWithImg;
-        friend: ProfileWithImg;
-        active: boolean;
-      }) => {
-        if (user.username == userName || friend.username == userName) {
-          if (active) {
-            if (user.username == userName) {
-              setFriendRequestList((prev) =>
-                prev.filter((request) => {
-                  request.id != friend.id;
-                })
-              );
-              setFriendList((prev) => [friend, ...prev]);
-              return;
-            } else if (friend.username == userName) {
-              setUserRequestList((prev) =>
-                prev.filter((request) => request.id != user.id)
-              );
-              return;
-            }
-          } else {
-            if (user.username == userName) {
-              setUserRequestList((prev) => [friend, ...prev]);
-              return;
-            } else if (friend.username == userName) {
-              setFriendRequestList((prev) => [user, ...prev]);
-            }
-          }
+      "remove-friend-cli",
+      ({ user, friend }: { user: string; friend: string }) => {
+        if (user == userName || friend == userName) {
+          getFriend();
         }
       }
     );
 
     return () => {
-      socket?.off("get-friend-cli");
+      socket?.off("error-msg");
       socket?.off("add-friend-cli");
+      socket?.off("remove-friend-cli");
     };
-  }, []);
+  }, [userName]);
 
   type pendingProps = {
     sectionTitle: string;
@@ -225,11 +203,13 @@ const FriendListScreen: React.FC<Props> = () => {
                     <View style={styles.pendingBody}>
                       {friendRequestList.map((profile) => {
                         return (
-                          <InfoBox
+                          <RequestPendingBox
                             key={profile.id}
+                            userId={profile.id}
                             username={profile.username}
                             showname={profile.showname}
                             profileImg={profile.profileImg}
+                            setFetching={setFetching}
                           />
                         );
                       })}
@@ -258,11 +238,13 @@ const FriendListScreen: React.FC<Props> = () => {
                     <View style={styles.pendingBody}>
                       {userRequestList.map((profile) => {
                         return (
-                          <InfoBox
+                          <WaitingReplyBox
                             key={profile.id}
+                            userId={profile.id}
                             username={profile.username}
                             showname={profile.showname}
                             profileImg={profile.profileImg}
+                            setFetching={setFetching}
                           />
                         );
                       })}
@@ -275,25 +257,29 @@ const FriendListScreen: React.FC<Props> = () => {
                 <></>
               ) : (
                 <View>
-                  <View style={styles.pendingHeader}>
-                    <Text style={styles.pendingHeaderTextContainer}>
-                      Friend List
-                    </Text>
-                  </View>
-                  <FlatList
-                    data={friendList}
-                    extraData={friendList}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => {
-                      return (
-                        <InfoBox
-                          username={item.username}
-                          showname={item.showname}
-                          profileImg={item.profileImg}
-                        />
-                      );
-                    }}
+                  <PendingHeaderBox
+                    sectionTitle="Friend List"
+                    show={friendListShow}
+                    setShow={setFriendListShow}
                   />
+                  {!friendListShow ? (
+                    <></>
+                  ) : (
+                    <FlatList
+                      data={friendList}
+                      extraData={friendList}
+                      keyExtractor={(item) => item.id}
+                      renderItem={({ item }) => {
+                        return (
+                          <InfoBox
+                            username={item.username}
+                            showname={item.showname}
+                            profileImg={item.profileImg}
+                          />
+                        );
+                      }}
+                    />
+                  )}
                 </View>
               )}
             </View>
