@@ -48,20 +48,41 @@ router.post("/update", TokenAuthentication, async (req, res) => {
       .json({ success: false, message: "User profile not found!" });
   }
 
-  //img dealing ========================================================================
-  const imgBuffer = Buffer.from(profileImg, "base64");
   userProfile.showname = showname;
-  if (userProfile.avatar) {
-    userProfile.avatar.profileImg = imgBuffer;
-    await profileRepo.save(userProfile);
+  //img dealing ========================================================================
+  if (profileImg != "") {
+    const imgBuffer = Buffer.from(profileImg, "base64");
+    if (userProfile.avatar) {
+      //already have avatar ========================================================================
+      const oldAvatar = await avatarRepo.findOne({
+        where: {
+          id: userProfile.avatar.id,
+        },
+      });
+      if (!oldAvatar) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Profile avatar not found!" });
+      }
+      oldAvatar.profileImg = imgBuffer;
+      await avatarRepo.save(oldAvatar);
+      userProfile.avatar = oldAvatar;
+      await profileRepo.save(userProfile);
+      return res.json({ success: true });
+    } else {
+      //have no avatar ========================================================================
+      const newAvatar = new Avatar();
+      newAvatar.profileImg = imgBuffer;
+      await avatarRepo.save(newAvatar);
+      userProfile.avatar = newAvatar;
+      await profileRepo.save(userProfile);
+    }
+    return res.json({ success: true });
   } else {
-    const newAvatar = new Avatar();
-    newAvatar.profileImg = imgBuffer;
-    await avatarRepo.save(newAvatar);
-    userProfile.avatar = newAvatar;
+    //have no img upload ========================================================================
     await profileRepo.save(userProfile);
+    return res.json({ success: true });
   }
-  return res.json({ success: true });
 });
 
 export { router as userRouter };

@@ -108,22 +108,38 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
       return Alert.alert("Error", "Show Name can not be empty!");
     }
     if (editAvatarImg != img) {
-    }
-    axios({
-      method: "post",
-      url: `${UserAPI}/update`,
-      headers: { Authorization: `Bearer ${localAccessToken}` },
-      data: { showname: editShowname, profileImg: editAvatarImg },
-    })
-      .then((res) => {
-        setFetching(false);
-        return Alert.alert("Success", "Update process complete.", [
-          { text: "OK", onPress: () => navigation.pop() },
-        ]);
+      axios({
+        method: "post",
+        url: `${UserAPI}/update`,
+        headers: { Authorization: `Bearer ${localAccessToken}` },
+        data: { showname: editShowname, profileImg: editAvatarImg },
       })
-      .catch((e) => {
-        return Alert.alert("Error", e.response.data.message);
-      });
+        .then((res) => {
+          setFetching(false);
+          return Alert.alert("Success", "Update process complete.", [
+            { text: "OK", onPress: () => navigation.pop() },
+          ]);
+        })
+        .catch((e) => {
+          return Alert.alert("Error", e.response.data.message);
+        });
+    } else {
+      axios({
+        method: "post",
+        url: `${UserAPI}/update`,
+        headers: { Authorization: `Bearer ${localAccessToken}` },
+        data: { showname: editShowname, profileImg: "" },
+      })
+        .then((res) => {
+          setFetching(false);
+          return Alert.alert("Success", "Update process complete.", [
+            { text: "OK", onPress: () => navigation.pop() },
+          ]);
+        })
+        .catch((e) => {
+          return Alert.alert("Error", e.response.data.message);
+        });
+    }
   };
 
   //loading process
