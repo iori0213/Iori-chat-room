@@ -29,6 +29,8 @@ import { HomeTabNavigationProps } from "../../types/navigations";
 import { ChatContext } from "../../components/Home/ChatContext";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
 import { Platform } from "react-native";
+import CreateRoomInfoBox from "../../components/Home/CreateRoomInfoBox";
+import { yellow100 } from "react-native-paper/lib/typescript/styles/colors";
 
 type Props = NativeStackScreenProps<HomeTabNavigationProps, "RoomListScreen">;
 
@@ -63,23 +65,23 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
       method: "get",
       url: `${FriendAPI}/get`,
       headers: { Authorization: `Bearer ${localAccessToken}` },
-    }).then((result) => {
-      if (!result.data.success) {
-        return Alert.alert("Error", "get friend process failed!");
-      }
-      const List: MemberCheck[] = result.data.friendsArray.map(
-        (member: Profile) => {
-          const memberInfo: MemberCheck = {
-            id: member.id,
-            username: member.username,
-            showName: member.showName,
-            join: false,
-          };
-          return memberInfo;
-        }
-      );
-      setMembers(List);
-    });
+    })
+      .then(({ data }) => {
+        const List: MemberCheck[] = data.friendList.map(
+          (member: ProfileWithImg) => {
+            const memberInfo: MemberCheck = {
+              id: member.id,
+              username: member.username,
+              showName: member.showname,
+              profileImg: member.profileImg,
+              join: false,
+            };
+            return memberInfo;
+          }
+        );
+        setMembers(List);
+      })
+      .catch((e) => Alert.alert("Error", e.response.data.message));
   };
   const createChatRoom = async () => {
     if (!roomName) {
@@ -165,7 +167,9 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
                   />
                   <View style={styles.modalFriendList}>
                     <View style={styles.modalFriendListTitleContainer}>
-                      <Text style={styles.modalFriendListTitle}>Members</Text>
+                      <Text style={styles.modalFriendListTitle}>
+                        Room Members
+                      </Text>
                     </View>
                     <FlatList
                       data={members}
@@ -178,6 +182,7 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
                               style={{
                                 width: windowWidth * 0.07,
                                 height: windowWidth * 0.07,
+                                marginRight: windowWidth * 0.01,
                               }}
                               disabled={false}
                               color={item.join ? bg_LessDarkColor : "#FFF"}
@@ -193,20 +198,24 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
                                 )
                               }
                             />
-                            <Text style={styles.modalMemberName}>
-                              {item.username}
-                            </Text>
+                            <CreateRoomInfoBox
+                              username={item.username}
+                              showname={item.showName}
+                              profileImg={item.profileImg}
+                            />
                           </View>
                         );
                       }}
                     />
                   </View>
-                  <TouchableOpacity
-                    style={styles.modalSubmitContainer}
-                    onPress={() => createChatRoom()}
-                  >
-                    <Text style={styles.modalSubmit}>CREATE</Text>
-                  </TouchableOpacity>
+                  <View style={styles.footer}>
+                    <TouchableOpacity
+                      style={styles.modalSubmitContainer}
+                      onPress={() => createChatRoom()}
+                    >
+                      <Text style={styles.modalSubmit}>CREATE</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </Modal>
@@ -354,10 +363,11 @@ const styles = StyleSheet.create({
     backgroundColor: bg_LessDarkColor,
   },
   modalHeader: {
-    marginTop:
-      Platform.OS === "ios" ? windowHeight * 0.025 : windowHeight * 0.01,
+    marginTop: Platform.OS === "ios" ? windowHeight * 0.035 : 0,
     flex: 1,
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   modalTitleContainer: {
     flex: 5,
@@ -374,69 +384,67 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   modalBody: {
-    flex: 9,
+    flex: 11,
     alignItems: "center",
+    backgroundColor: bg_DarkColor,
   },
   modalInput: {
-    height: windowHeight * 0.06,
+    height: windowHeight * 0.05,
     width: windowWidth * 0.75,
     marginTop: windowHeight * 0.02,
     backgroundColor: "#FFF",
-    borderRadius: windowHeight * 0.03,
-    paddingHorizontal: windowWidth * 0.05,
+    borderRadius: 10,
+    paddingHorizontal: windowWidth * 0.03,
     color: bg_DarkColor,
     fontSize: windowHeight * 0.025,
   },
   modalFriendList: {
-    height: windowHeight * 0.65,
-    width: windowWidth * 0.8,
-    marginTop: windowHeight * 0.02,
+    flex: 1,
     backgroundColor: bg_DarkColor,
-    borderTopLeftRadius: windowWidth * 0.1,
-    borderTopRightRadius: windowWidth * 0.1,
-    borderBottomRightRadius: windowWidth * 0.1,
-    borderBottomLeftRadius: windowWidth * 0.1,
   },
   modalFriendListTitleContainer: {
-    height: windowHeight * 0.06,
-    width: windowWidth * 0.8,
+    height: windowHeight * 0.07,
+    width: windowWidth,
     alignItems: "center",
     justifyContent: "center",
-    borderTopLeftRadius: windowWidth * 0.1,
-    borderTopRightRadius: windowWidth * 0.1,
     borderBottomWidth: 3,
     borderBottomColor: bg_LessDarkColor,
   },
   modalFriendListTitle: {
-    fontSize: windowHeight * 0.04,
+    fontSize: windowHeight * 0.025,
     color: "#FFF",
   },
   modalMemberContainer: {
-    height: windowHeight * 0.06,
-    width: windowWidth * 0.8,
+    height: windowHeight * 0.1,
+    width: windowWidth,
     alignItems: "center",
     flexDirection: "row",
-    paddingLeft: windowWidth * 0.13,
-    borderBottomRightRadius: windowWidth * 0.1,
-    borderBottomLeftRadius: windowWidth * 0.1,
+    paddingLeft: windowWidth * 0.03,
+    borderBottomWidth: 2,
+    borderBottomColor: bg_LessDarkColor,
   },
   modalMemberName: {
     fontSize: windowHeight * 0.04,
     color: "#FFF",
     marginLeft: windowWidth * 0.03,
   },
+  footer: {
+    width: windowWidth,
+    height: windowHeight * 0.15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   modalSubmitContainer: {
     height: windowHeight * 0.06,
     width: windowWidth * 0.4,
     borderRadius: windowHeight * 0.03,
     borderWidth: 2,
-    borderColor: hilight_color,
+    borderColor: "#FFF",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: windowHeight * 0.02,
   },
   modalSubmit: {
     fontSize: windowHeight * 0.035,
-    color: hilight_color,
+    color: "#FFF",
   },
 });

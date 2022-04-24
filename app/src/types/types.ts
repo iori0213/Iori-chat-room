@@ -32,6 +32,7 @@ interface MemberCheck {
   id: string;
   username: string;
   showName: string;
+  profileImg: string;
   join: boolean;
 }
 
