@@ -83,6 +83,10 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
       })
       .catch((e) => Alert.alert("Error", e.response.data.message));
   };
+  const openCreateModal = async () => {
+    await getFriendList();
+    setVisible((prev) => !prev);
+  };
   const createChatRoom = async () => {
     if (!roomName) {
       return Alert.alert("Error", "room name is missing");
@@ -226,7 +230,7 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
                 </View>
                 <TouchableOpacity
                   style={styles.addBtn}
-                  onPress={() => setVisible((prev) => !prev)}
+                  onPress={() => openCreateModal()}
                 >
                   <MaterialCommunityIcons
                     name="chat-plus"
@@ -437,7 +441,7 @@ const styles = StyleSheet.create({
   modalSubmitContainer: {
     height: windowHeight * 0.06,
     width: windowWidth * 0.4,
-    borderRadius: windowHeight * 0.03,
+    borderRadius: windowHeight * 0.01,
     borderWidth: 2,
     borderColor: "#FFF",
     alignItems: "center",
