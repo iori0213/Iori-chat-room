@@ -30,7 +30,6 @@ import { ChatContext } from "../../components/Home/ChatContext";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
 import { Platform } from "react-native";
 import CreateRoomInfoBox from "../../components/Home/CreateRoomInfoBox";
-import { yellow100 } from "react-native-paper/lib/typescript/styles/colors";
 
 type Props = NativeStackScreenProps<HomeTabNavigationProps, "RoomListScreen">;
 
