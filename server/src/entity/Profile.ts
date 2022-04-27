@@ -3,6 +3,7 @@ import {
   Entity,
   JoinColumn,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -11,6 +12,7 @@ import Avatar from "./Avatar";
 import ChatRoom from "./ChatRoom";
 import { FriendShip } from "./FriendShip";
 import User from "./User";
+import UserRoomJoinTable from "./UserRoomJoinTable";
 @Entity()
 export class Profile {
   @PrimaryGeneratedColumn("uuid")
@@ -34,4 +36,7 @@ export class Profile {
 
   @ManyToMany(() => ChatRoom, (chatroom) => chatroom.members)
   chatRooms: ChatRoom[];
+
+  @ManyToOne(() => UserRoomJoinTable, (joinTable) => joinTable.profile)
+  joinTable: UserRoomJoinTable;
 }

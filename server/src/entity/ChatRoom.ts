@@ -1,6 +1,15 @@
-import { Column, Entity, JoinTable, PrimaryGeneratedColumn, ManyToMany, OneToMany } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  PrimaryGeneratedColumn,
+  ManyToMany,
+  OneToMany,
+  ManyToOne,
+} from "typeorm";
 import Message from "./Message";
 import { Profile } from "./Profile";
+import UserRoomJoinTable from "./UserRoomJoinTable";
 
 @Entity()
 export default class ChatRoom {
@@ -16,4 +25,7 @@ export default class ChatRoom {
 
   @OneToMany(() => Message, (msg) => msg.room)
   messages: Message[];
+
+  @ManyToOne(() => UserRoomJoinTable, (joinTable) => joinTable.chatRoom)
+  joinTable: UserRoomJoinTable;
 }
