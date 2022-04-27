@@ -17,7 +17,7 @@ import {
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, AntDesign, Entypo } from "@expo/vector-icons";
 import InfoBox from "../../components/Home/InfoBox";
 
 type Props = NativeStackScreenProps<
@@ -44,7 +44,9 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
           <View style={styles.roomNameContainer}>
             <Text style={styles.roomNameText}>Room Members</Text>
           </View>
-          <View style={styles.sideBtn}></View>
+          <TouchableOpacity style={styles.sideBtn}>
+            <AntDesign name="adduser" size={windowWidth * 0.08} color="#FFF" />
+          </TouchableOpacity>
         </View>
         <View style={styles.body}>
           <FlatList
@@ -60,6 +62,12 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
               );
             }}
           />
+          <View style={styles.footer}>
+            <TouchableOpacity style={styles.quitBtnContainer}>
+              <Entypo name="log-out" size={windowWidth * 0.06} color="#FFF" />
+              <Text style={styles.quitBtnText}>Quit Chat Room</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </SafeAreaView>
       <SafeAreaView style={{ flex: 0, backgroundColor: bg_DarkColor }} />
@@ -68,8 +76,6 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
 };
 
 export default RoomMembersScreen;
-const memberContainerHeight = windowHeight * 0.1;
-const avatarSize = windowHeight * 0.08;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -106,5 +112,26 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     backgroundColor: bg_DarkColor,
+    alignItems: "center",
+  },
+  footer: {
+    width: windowWidth,
+    height: windowHeight * 0.12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  quitBtnContainer: {
+    width: windowWidth * 0.8,
+    height: windowHeight * 0.08,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: bg_LessDarkColor,
+    borderRadius: 15,
+    flexDirection: "row",
+  },
+  quitBtnText: {
+    fontSize: windowWidth * 0.06,
+    color: "#FFF",
+    marginLeft: windowWidth * 0.02,
   },
 });

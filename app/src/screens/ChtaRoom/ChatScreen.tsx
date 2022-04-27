@@ -56,6 +56,29 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
     socket?.emit("get-more-msg", { msg: lastMsg });
   };
 
+  const quitChatRoom = () => {};
+
+  const quitChatRoomAlert = () => {
+    Alert.alert(
+      "Quit chat room",
+      "Are you sure you want to quite the chat room?",
+      [
+        {
+          text: "No",
+          onPress: () => {
+            return;
+          },
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            quitChatRoom();
+          },
+        },
+      ]
+    );
+  };
+
   useEffect(() => {
     socket?.emit("join-room", { roomId: roomId });
     socket?.on("error-msg", (errorMessage) => {
