@@ -35,7 +35,7 @@ type Props = NativeStackScreenProps<HomeTabNavigationProps, "RoomListScreen">;
 
 const RoomListScreen: React.FC<Props> = ({ navigation }) => {
   const { socket } = useContext(ChatContext);
-  const [fetching, setFetching] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [chatName, setChatName] = useState<string>("");
   const [roomList, setRoomList] = useState<Room[]>([]);
   const [showingList, setShowingList] = useState<Room[]>([]);
@@ -124,6 +124,7 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
         getChatRoom();
       }
     });
+    setFetching(false);
     return () => {
       socket?.off("new-room");
     };
