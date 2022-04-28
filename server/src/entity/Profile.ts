@@ -37,5 +37,5 @@ export class Profile {
   chatRooms: ChatRoom[];
 
   @OneToMany(() => UserRoomJoinTable, (joinTable) => joinTable.profile)
-  joinTable: UserRoomJoinTable;
+  joinTable: UserRoomJoinTable[];
 }

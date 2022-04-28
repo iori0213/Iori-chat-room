@@ -26,5 +26,5 @@ export default class ChatRoom {
   messages: Message[];
 
   @OneToMany(() => UserRoomJoinTable, (joinTable) => joinTable.chatRoom)
-  joinTable: UserRoomJoinTable;
+  joinTable: UserRoomJoinTable[];
 }
