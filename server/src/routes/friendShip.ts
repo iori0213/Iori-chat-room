@@ -56,8 +56,6 @@ router.get("/get", TokenAuthentication, async (req, res) => {
       }
     }
   });
-  console.log("userId:", userProfile.id);
-  console.log("friend ships:", friendShips);
   return res.json({
     friendList: friendList,
     userRequestList: userRequestList,
