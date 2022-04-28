@@ -3,6 +3,7 @@ import { getRepository, In } from "typeorm";
 import ChatRoom from "../entity/ChatRoom";
 import Message from "../entity/Message";
 import { Profile } from "../entity/Profile";
+import UserRoomJoinTable from "../entity/UserRoomJoinTable";
 import { chatController } from "./chat";
 
 export const roomController = (
@@ -105,13 +106,22 @@ export const roomController = (
       //repoes
       const profileRepo = getRepository(Profile);
       const roomRepo = getRepository(ChatRoom);
+      const joinTableRepo = getRepository(UserRoomJoinTable);
       const roomMembers: Profile[] = await profileRepo.find({
         where: { id: In(members) },
       });
+      //create a new chatroom
       const newRoom = new ChatRoom();
       newRoom.members = [profile, ...roomMembers];
       newRoom.roomname = roomName;
       await roomRepo.save(newRoom);
+      //use both profile and chatroom data to create a joinTable
+      newRoom.members.map(async (member) => {
+        const newJoinTable = new UserRoomJoinTable();
+        newJoinTable.chatRoom = newRoom;
+        newJoinTable.profile = member;
+        await joinTableRepo.save(newJoinTable);
+      });
       io.emit("new-room", {
         members: newRoom.members.map((member: Profile) => member.id),
       });
