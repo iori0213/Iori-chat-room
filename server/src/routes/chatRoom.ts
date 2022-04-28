@@ -1,5 +1,5 @@
 import express from "express";
-import { getRepository, In } from "typeorm";
+import { getRepository } from "typeorm";
 import ChatRoom from "../entity/ChatRoom";
 import { Profile } from "../entity/Profile";
 import { TokenAuthentication } from "../middlewares/TokenAuthentication.middleware";
@@ -14,16 +14,20 @@ router.get("/list", TokenAuthentication, async (req, res) => {
   // Check profile
   const user = await profileRepo.findOne({
     where: { id: userId },
-    relations: ["chatRooms"],
+    relations: ["joinTable", "joinTable.chatRoom"],
   });
   //check if user exist
   if (!user) return res.json({ success: false, message: "User not exist!" });
   //organize room list from profile.chatRooms
-  const roomList = user.chatRooms.map((room) => room);
+  const roomList = user.joinTable.map((joinData) => {
+    if (joinData.join) {
+      return joinData.chatRoom;
+    }
+  });
   return res.json({
     success: true,
     message: "get room list.",
-    roomList: roomList,
+    roomList: roomList[0] ? roomList : [],
   });
 });
 
