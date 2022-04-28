@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToOne,
+} from "typeorm";
 import ChatRoom from "./ChatRoom";
 import { Profile } from "./Profile";
 
@@ -7,10 +13,10 @@ export default class UserRoomJoinTable {
   @PrimaryGeneratedColumn("increment")
   id: number;
 
-  @OneToMany(() => Profile, (profile) => profile.joinTable)
+  @ManyToOne(() => Profile, (profile) => profile.joinTable)
   profile: Profile;
 
-  @OneToMany(() => ChatRoom, (chatRoom) => chatRoom.joinTable)
+  @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.joinTable)
   chatRoom: ChatRoom;
 
   @Column("boolean", { default: true })
