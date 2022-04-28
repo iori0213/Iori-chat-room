@@ -5,7 +5,6 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   OneToMany,
-  ManyToOne,
 } from "typeorm";
 import Message from "./Message";
 import { Profile } from "./Profile";
