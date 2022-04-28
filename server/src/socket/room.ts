@@ -15,9 +15,10 @@ export const roomController = (
     console.log({ params });
     const { roomId } = params;
     const roomRepo = getRepository(ChatRoom);
+    const joinTableRepo = getRepository(UserRoomJoinTable);
     const room = await roomRepo.findOne({
       where: { id: roomId },
-      relations: ["members", "members.avatar", "messages"],
+      relations: ["members", "messages"],
     });
     const messages = await getRepository(Message).find({
       where: { room },
@@ -43,15 +44,22 @@ export const roomController = (
       socket.join(roomId);
 
       //initialize process
-      const roomMembers = room.members.map((member) => {
-        const avatar = member.avatar
-          ? member.avatar.profileImg.toString("base64")
+      const joinTableRoomMemberData = await joinTableRepo.find({
+        where: {
+          chatRoom: room.id,
+        },
+        relations: ["profile", "profile.avatar"],
+      });
+      const roomMembers = joinTableRoomMemberData.map((data) => {
+        const avatar = data.profile.avatar
+          ? data.profile.avatar.profileImg.toString("base64")
           : "";
         return {
-          id: member.id,
-          username: member.username,
-          showname: member.showname,
+          id: data.profile.id,
+          username: data.profile.username,
+          showname: data.profile.showname,
           profileImg: avatar,
+          joinStatus: data.join,
         };
       });
       socket.emit("join-room-initialize", {
@@ -74,20 +82,6 @@ export const roomController = (
           room.members.push(newMember);
           await roomRepo.save(room);
           io.in(roomId).emit("add-member-cli", { profile: newMember });
-        }
-      });
-      //quite room
-      socket.on("quite-room", async (params: { id: string }) => {
-        const { id } = params;
-        const profileRepo = getRepository(Profile);
-        const userProfile = await profileRepo.findOne({ where: { id: id } });
-        if (!userProfile) {
-          socket.emit("error-msg", {
-            message: "User not found!",
-          });
-        } else {
-          room.members.filter((member) => member != userProfile);
-          roomRepo.save(room);
         }
       });
       //leave room process

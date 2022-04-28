@@ -6,8 +6,9 @@ import {
   SafeAreaView,
   FlatList,
   Platform,
+  Alert,
 } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HomeStackNavigationProps } from "../../types/navigations";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -19,6 +20,11 @@ import {
 } from "../../constants/cssConst";
 import { Ionicons, AntDesign, Entypo } from "@expo/vector-icons";
 import InfoBox from "../../components/Home/InfoBox";
+import axios from "axios";
+import * as SecureStore from "expo-secure-store";
+import { ACCESS_KEY } from "../../constants/securestoreKey";
+import { ChatRoomAPI } from "../../constants/backendAPI";
+import { ChatContext } from "../../components/Home/ChatContext";
 
 type Props = NativeStackScreenProps<
   HomeStackNavigationProps,
@@ -26,7 +32,50 @@ type Props = NativeStackScreenProps<
 >;
 
 const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { roomMembers } = route.params;
+  const { roomMembers, roomId } = route.params;
+  const { socket } = useContext(ChatContext);
+  const quitChatRoom = async () => {
+    const localAccessToken = await SecureStore.getItemAsync(ACCESS_KEY);
+    axios({
+      method: "post",
+      url: `${ChatRoomAPI}/quit`,
+      headers: { Authorization: `Bearer ${localAccessToken}` },
+      data: {
+        roomId: roomId,
+      },
+    })
+      .then((result) => {
+        if (!result.data.success) {
+          Alert.alert("Error", result.data.message);
+        }
+        socket?.off("add-msg");
+        socket?.off("remove-msg");
+        socket?.emit("leave-room");
+        navigation.pop(2);
+      })
+      .catch((e) => Alert.alert("Error", e.response.data.message));
+  };
+  const quitChatRoomAlert = () => {
+    Alert.alert(
+      "Quit chat room",
+      "Are you sure you want to quite the chat room?",
+      [
+        {
+          text: "No",
+          onPress: () => {
+            return;
+          },
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            quitChatRoom();
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
@@ -63,7 +112,10 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
             }}
           />
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.quitBtnContainer}>
+            <TouchableOpacity
+              style={styles.quitBtnContainer}
+              onPress={() => quitChatRoomAlert()}
+            >
               <Entypo name="log-out" size={windowWidth * 0.06} color="#FFF" />
               <Text style={styles.quitBtnText}>Quit Chat Room</Text>
             </TouchableOpacity>

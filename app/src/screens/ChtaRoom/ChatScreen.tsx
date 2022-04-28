@@ -38,7 +38,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   let userid = "";
   const { roomId, roomName } = route.params;
   const [messages, setMessages] = useState<Msg[]>([]);
-  const [members, setMembers] = useState<ProfileWithImg[]>([]);
+  const [members, setMembers] = useState<RoomMember[]>([]);
   const { socket } = useContext(ChatContext);
 
   const [msgInput, setMsgInput] = useState("");
@@ -56,29 +56,6 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
     socket?.emit("get-more-msg", { msg: lastMsg });
   };
 
-  const quitChatRoom = () => {};
-
-  const quitChatRoomAlert = () => {
-    Alert.alert(
-      "Quit chat room",
-      "Are you sure you want to quite the chat room?",
-      [
-        {
-          text: "No",
-          onPress: () => {
-            return;
-          },
-        },
-        {
-          text: "Yes",
-          onPress: () => {
-            quitChatRoom();
-          },
-        },
-      ]
-    );
-  };
-
   useEffect(() => {
     socket?.emit("join-room", { roomId: roomId });
     socket?.on("error-msg", (errorMessage) => {
@@ -86,7 +63,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
     });
     socket?.on(
       "join-room-initialize",
-      async ({ members, msgs }: { members: ProfileWithImg[]; msgs: Msg[] }) => {
+      async ({ members, msgs }: { members: RoomMember[]; msgs: Msg[] }) => {
         const localUserId = await SecureStore.getItemAsync(USERID_KEY);
         userid = localUserId!;
         setUserId(localUserId!);
@@ -161,7 +138,10 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                 style={styles.sideBtn}
                 onPress={() =>
                   navigation.navigate("RoomMembersScreen", {
-                    roomMembers: members,
+                    roomMembers: members.filter(
+                      (member) => member.joinStatus === true
+                    ),
+                    roomId: roomId,
                   })
                 }
               >

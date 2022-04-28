@@ -36,6 +36,7 @@ export type HomeStackNavigationProps = {
   };
   RoomMembersScreen: {
     roomMembers: ProfileWithImg[];
+    roomId: string;
   };
   EditProfileScreen: {
     img: string;

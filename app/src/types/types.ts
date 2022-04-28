@@ -16,6 +16,14 @@ interface ProfileWithImg {
   profileImg: string;
 }
 
+interface RoomMember {
+  id: string;
+  username: string;
+  showname: string;
+  profileImg: string;
+  joinStatus: boolean;
+}
+
 interface Room {
   id: string;
   roomname: string;

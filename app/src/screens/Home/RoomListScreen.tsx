@@ -30,6 +30,7 @@ import { ChatContext } from "../../components/Home/ChatContext";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
 import { Platform } from "react-native";
 import CreateRoomInfoBox from "../../components/Home/CreateRoomInfoBox";
+import { useFocusEffect } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<HomeTabNavigationProps, "RoomListScreen">;
 
@@ -129,6 +130,13 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
       socket?.off("new-room");
     };
   }, [socket]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getChatRoom();
+      return;
+    }, [])
+  );
 
   return (
     <SafeAreaProvider>

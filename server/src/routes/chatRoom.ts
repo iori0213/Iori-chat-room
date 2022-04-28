@@ -2,6 +2,7 @@ import express from "express";
 import { getRepository } from "typeorm";
 import ChatRoom from "../entity/ChatRoom";
 import { Profile } from "../entity/Profile";
+import UserRoomJoinTable from "../entity/UserRoomJoinTable";
 import { TokenAuthentication } from "../middlewares/TokenAuthentication.middleware";
 
 const router = express();
@@ -50,6 +51,25 @@ router.get("/room/:roomId", async (req, res) => {
     message: `get room success`,
     chatRoom: room,
   });
+});
+
+router.post("/quit", TokenAuthentication, async (req, res) => {
+  const userId = req.profile.id;
+  const { roomId } = req.body;
+
+  const joinTableRepo = getRepository(UserRoomJoinTable);
+  const joinTable = await joinTableRepo.findOne({
+    where: {
+      profile: userId,
+      chatRoom: roomId,
+    },
+  });
+  if (!joinTable) {
+    return res.json({ success: false, message: "join table not fount" });
+  }
+  joinTable.join = false;
+  await joinTableRepo.save(joinTable);
+  return res.json({ success: true, message: "Quit room" });
 });
 
 export { router as chatRoomRouter };
