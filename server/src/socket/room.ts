@@ -70,19 +70,53 @@ export const roomController = (
       //leave chat socket off function
       const leaveChat = chatController(io, socket, profile, room);
       //add new member to chat room
-      socket.on("add-member", async (params: { id: string }) => {
-        const { id } = params;
+      socket.on("add-member", async (params: { members: string[] }) => {
+        const { members } = params;
+        console.log(members);
         const profileRepo = getRepository(Profile);
-        const newMember = await profileRepo.findOne({ where: { id: id } });
-        if (!newMember) {
-          socket.emit("error-msg", {
-            message: "User not found",
+        const joinTableRepo = getRepository(UserRoomJoinTable);
+        const membersProfile = await profileRepo.find({
+          where: {
+            id: In(members),
+          },
+          relations: ["avatar"],
+        });
+        membersProfile.map(async (profile) => {
+          const joinTableCheck = await joinTableRepo.findOne({
+            where: {
+              profile: profile.id,
+              chatRoom: room.id,
+            },
           });
-        } else {
-          room.members.push(newMember);
-          await roomRepo.save(room);
-          io.in(roomId).emit("add-member-cli", { profile: newMember });
-        }
+          if (joinTableCheck) {
+            joinTableCheck.join = true;
+            await joinTableRepo.save(joinTableCheck);
+          } else {
+            room.members.push(profile);
+            const newJoinTable = new UserRoomJoinTable();
+            newJoinTable.profile = profile;
+            newJoinTable.chatRoom = room;
+            await joinTableRepo.save(newJoinTable);
+          }
+        });
+        await roomRepo.save(room);
+        //process the send back data
+        const newMembersData = membersProfile.map((profile) => {
+          const avatar = profile.avatar
+            ? profile.avatar.profileImg.toString("base64")
+            : "";
+          return {
+            id: profile.id,
+            username: profile.username,
+            showname: profile.showname,
+            profileImg: avatar,
+            joinStatus: true,
+          };
+        });
+        io.in(roomId).emit("add-member-cli", { newMembers: newMembersData });
+        io.emit("addMember-new-room", {
+          newMembersId: members,
+        });
       });
       //leave room process
       socket.on("leave-room", () => {
@@ -110,12 +144,14 @@ export const roomController = (
       newRoom.roomname = roomName;
       await roomRepo.save(newRoom);
       //use both profile and chatroom data to create a joinTable
-      newRoom.members.map(async (member) => {
-        const newJoinTable = new UserRoomJoinTable();
-        newJoinTable.chatRoom = newRoom;
-        newJoinTable.profile = member;
-        await joinTableRepo.save(newJoinTable);
-      });
+      await Promise.all(
+        newRoom.members.map(async (member) => {
+          const newJoinTable = new UserRoomJoinTable();
+          newJoinTable.chatRoom = newRoom;
+          newJoinTable.profile = member;
+          await joinTableRepo.save(newJoinTable);
+        })
+      );
       io.emit("new-room", {
         members: newRoom.members.map((member: Profile) => member.id),
       });

@@ -20,15 +20,18 @@ router.get("/list", TokenAuthentication, async (req, res) => {
   //check if user exist
   if (!user) return res.json({ success: false, message: "User not exist!" });
   //organize room list from profile.chatRooms
-  const roomList = user.joinTable.map((joinData) => {
+  const roomListData = user.joinTable.map((joinData) => {
     if (joinData.join) {
       return joinData.chatRoom;
+    } else {
+      return;
     }
   });
+  const roomList = roomListData.filter((room) => room !== undefined);
   return res.json({
     success: true,
     message: "get room list.",
-    roomList: roomList[0] ? roomList : [],
+    roomList: roomList.length == 0 ? [] : roomList,
   });
 });
 
