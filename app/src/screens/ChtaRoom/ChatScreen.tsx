@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -27,6 +27,7 @@ import Message from "../../components/Home/Message";
 import UserMessage from "../../components/Home/UserMessage";
 import { USERID_KEY } from "../../constants/securestoreKey";
 import { ActivityIndicator } from "react-native-paper";
+import { useFocusEffect } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<HomeStackNavigationProps, "ChatScreen">;
 
@@ -44,9 +45,13 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   const [msgInput, setMsgInput] = useState("");
 
   const goBack = () => {
+    socket?.off("join-room-initialize");
     socket?.off("add-msg");
     socket?.off("remove-msg");
-    socket?.emit("leave-room");
+    socket?.off("update-msg");
+    socket?.off("add-more-msg");
+    socket?.off("error-msg");
+    socket?.off("add-member-cli");
     navigation.pop();
   };
 
@@ -57,7 +62,6 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    socket?.emit("join-room", { roomId: roomId });
     socket?.on("error-msg", (errorMessage) => {
       return Alert.alert("Error", errorMessage);
     });
@@ -106,6 +110,13 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
         }
       }
     );
+    socket?.on(
+      "add-member-cli",
+      ({ newMembers }: { newMembers: RoomMember[] }) => {
+        setMembers((prev) => [...prev, ...newMembers]);
+        Alert.alert("Success", "Member benn added.");
+      }
+    );
     return () => {
       socket?.off("join-room-initialize");
       socket?.off("add-msg");
@@ -113,8 +124,15 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
       socket?.off("update-msg");
       socket?.off("add-more-msg");
       socket?.off("error-msg");
+      socket?.off("add-member-cli");
     };
   }, [socket]);
+
+  useFocusEffect(
+    useCallback(() => {
+      socket?.emit("join-room", { roomId: roomId });
+    }, [])
+  );
 
   return (
     <SafeAreaProvider>

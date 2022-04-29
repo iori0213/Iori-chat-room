@@ -2,7 +2,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -19,7 +19,6 @@ import { ChatRoomAPI, FriendAPI } from "../../constants/backendAPI";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
-  hilight_color,
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
@@ -40,6 +39,7 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
   const [chatName, setChatName] = useState<string>("");
   const [roomList, setRoomList] = useState<Room[]>([]);
   const [showingList, setShowingList] = useState<Room[]>([]);
+  const [roomLoading, setRoomLoading] = useState(true);
   //newRoom params
   const [visible, setVisible] = useState<boolean>(false);
   const [roomName, setRoomName] = useState("");
@@ -57,6 +57,7 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
       }
       setRoomList(list.data.roomList);
       setShowingList(list.data.roomList);
+      setRoomLoading(false);
     });
   };
   const getFriendList = async () => {
@@ -91,13 +92,12 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
     if (!roomName) {
       return Alert.alert("Error", "room name is missing");
     } else {
-      setFetching(true);
       const temp = members.filter((member) => member.join == true);
       const idList = temp.map((member) => member.id);
       socket?.emit("create-room", { roomName: roomName, members: idList });
       setMembers([]);
+      setRoomName("");
       setVisible(false);
-      setFetching(false);
     }
   };
   const cancelCreate = () => {
@@ -116,25 +116,34 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   useEffect(() => {
-    getChatRoom();
-    getFriendList();
     socket?.on("new-room", async (data) => {
       const chatRoomMembers: String[] = data.members;
       const userId = await SecureStore.getItemAsync(USERID_KEY);
       if (chatRoomMembers.includes(userId!)) {
+        setRoomLoading(true);
         getChatRoom();
       }
     });
+    socket?.on(
+      "addMember-new-room",
+      async ({ newMembersId }: { newMembersId: string[] }) => {
+        const userId = await SecureStore.getItemAsync(USERID_KEY);
+        if (newMembersId.includes(userId!)) {
+          setRoomLoading(true);
+          getChatRoom();
+        }
+      }
+    );
     setFetching(false);
     return () => {
       socket?.off("new-room");
+      socket?.off("addMember-new-room");
     };
   }, [socket]);
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       getChatRoom();
-      return;
     }, [])
   );
 
@@ -272,26 +281,30 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
               </View>
             </View>
             <View style={styles.body}>
-              <FlatList
-                data={showingList}
-                extraData={showingList}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate("ChatScreen", {
-                          roomId: item.id,
-                          roomName: item.roomname,
-                        })
-                      }
-                      style={styles.chatRoom}
-                    >
-                      <Text style={styles.roomName}>{item.roomname}</Text>
-                    </TouchableOpacity>
-                  );
-                }}
-              />
+              {roomLoading ? (
+                <LoadingSpinner />
+              ) : (
+                <FlatList
+                  data={showingList}
+                  extraData={showingList}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item }) => {
+                    return (
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate("ChatScreen", {
+                            roomId: item.id,
+                            roomName: item.roomname,
+                          })
+                        }
+                        style={styles.chatRoom}
+                      >
+                        <Text style={styles.roomName}>{item.roomname}</Text>
+                      </TouchableOpacity>
+                    );
+                  }}
+                />
+              )}
             </View>
           </>
         )}
