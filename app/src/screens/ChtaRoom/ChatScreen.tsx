@@ -196,6 +196,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                         avatar={tempMember[0].profileImg}
                         msgId={item.id}
                         username={item.sender.username}
+                        showname={item.sender.showname}
                         msg={item.msg}
                         created={item.createdAt}
                       />
@@ -204,6 +205,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                         avatar={tempMember[0].profileImg}
                         msgId={item.id}
                         username={item.sender.username}
+                        showname={item.sender.showname}
                         msg={item.msg}
                         created={item.createdAt}
                       />

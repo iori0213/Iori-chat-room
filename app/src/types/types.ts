@@ -6,7 +6,7 @@ interface userInfo {
 interface Profile {
   id: string;
   username: string;
-  showName: string;
+  showname: string;
 }
 
 interface ProfileWithImg {

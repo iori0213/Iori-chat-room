@@ -12,6 +12,7 @@ interface MessageProps {
   avatar: string;
   msgId: string;
   username: string;
+  showname: string;
   msg: string;
   created: string;
 }
@@ -20,6 +21,7 @@ const Message: React.FC<MessageProps> = ({
   avatar,
   msgId,
   username,
+  showname,
   msg,
   created,
 }) => {
@@ -45,7 +47,7 @@ const Message: React.FC<MessageProps> = ({
             )}
           </View>
           <View style={styles.nameContainer}>
-            <Text style={styles.name}>{username}</Text>
+            <Text style={styles.name}>{showname}</Text>
           </View>
         </View>
         <View style={styles.msgContainer}>
