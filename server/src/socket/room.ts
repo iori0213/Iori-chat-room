@@ -70,7 +70,7 @@ export const roomController = (
       //leave chat socket off function
       const leaveChat = chatController(io, socket, profile, room);
       //add new member to chat room
-      socket.on("add-member", async (params: { members: string[] }) => {
+      const addMember = async (params: { members: string[] }) => {
         const { members } = params;
         console.log(members);
         const profileRepo = getRepository(Profile);
@@ -117,10 +117,12 @@ export const roomController = (
         io.emit("addMember-new-room", {
           newMembersId: members,
         });
-      });
+      };
+      socket.on("add-member", addMember);
       //leave room process
       socket.on("leave-room", () => {
         console.log("leave room process");
+        socket.off("add-member", addMember);
         socket.leave(roomId);
         leaveChat();
       });
