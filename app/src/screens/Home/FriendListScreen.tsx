@@ -28,6 +28,7 @@ import WaitingReplyBox from "../../components/Home/FriendList/WaitingReplyBox";
 import axios from "axios";
 import { FriendAPI } from "../../constants/backendAPI";
 import FriendListBox from "../../components/Home/FriendList/FriendListBox";
+import { useFocusEffect } from "@react-navigation/native";
 
 type Props = MaterialTopTabScreenProps<
   HomeTabNavigationProps,
@@ -82,7 +83,6 @@ const FriendListScreen: React.FC<Props> = () => {
   };
 
   useEffect(() => {
-    initialize();
     socket?.on("error-msg", (errorMessage) => {
       return Alert.alert("Error", errorMessage);
     });
@@ -112,6 +112,12 @@ const FriendListScreen: React.FC<Props> = () => {
       socket?.off("remove-friend-cli");
     };
   }, [userName]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      initialize();
+    }, [])
+  );
 
   type pendingProps = {
     sectionTitle: string;
