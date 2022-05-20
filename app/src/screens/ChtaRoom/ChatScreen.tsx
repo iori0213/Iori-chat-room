@@ -45,6 +45,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   const [msgInput, setMsgInput] = useState("");
 
   const goBack = () => {
+    socket?.emit("leave-room");
     socket?.off("join-room-initialize");
     socket?.off("add-msg");
     socket?.off("remove-msg");
