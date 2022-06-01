@@ -63,6 +63,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   useEffect(() => {
+    socket?.emit("join-room", { roomId: roomId });
     socket?.on("error-msg", (errorMessage) => {
       return Alert.alert("Error", errorMessage);
     });
@@ -128,12 +129,6 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
       socket?.off("add-member-cli");
     };
   }, [socket]);
-
-  useFocusEffect(
-    useCallback(() => {
-      socket?.emit("join-room", { roomId: roomId });
-    }, [])
-  );
 
   return (
     <SafeAreaProvider>
