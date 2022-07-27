@@ -1,2 +1,3 @@
 # Iori-chat-room
-![Overview](https://user-images.githubusercontent.com/81150117/181182670-b57f73fa-04a9-4272-967b-80c22d46c39f.gif)
+Overview
+![Overview](https://user-images.githubusercontent.com/81150117/181183217-be0cfb91-1a11-499d-aa8a-0a6ec8803e18.gif)
