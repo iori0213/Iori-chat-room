@@ -44,6 +44,8 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const [msgInput, setMsgInput] = useState("");
 
+  const [sendMsgBtnDisable, setSendMsgBtnDisable] = useState(false);
+
   const goBack = () => {
     socket?.emit("leave-room");
     socket?.off("join-room-initialize");
@@ -129,6 +131,12 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
       socket?.off("add-member-cli");
     };
   }, [socket]);
+
+  useEffect(() => {
+    return () => {
+      socket?.emit("leave-room");
+    };
+  }, []);
 
   return (
     <SafeAreaProvider>
@@ -224,8 +232,13 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
                       return Alert.alert("Error", "cannot send empty message!");
                     }
                     socket?.emit("send-msg", { msg: msgInput });
+                    setSendMsgBtnDisable((prev) => !prev);
+                    setTimeout(() => {
+                      setSendMsgBtnDisable((prev) => !prev);
+                    }, 500);
                   }}
                   style={styles.textSubmitBtn}
+                  disabled={sendMsgBtnDisable}
                 >
                   <AntDesign
                     name="rightcircle"

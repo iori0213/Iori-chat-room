@@ -65,7 +65,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           CommonActions.reset({ routes: [{ name: "HomeStackNavigation" }] })
         );
       })
-      .catch((e) => console.log(e));
+      .catch((e) => Alert.alert("Error", e.response.data.message));
   };
 
   return (
