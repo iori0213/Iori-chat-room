@@ -1,9 +1,12 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import {
   windowHeight,
   windowWidth,
   bg_LessDarkColor,
+  bg_LightColor,
+  bg_DarkColor,
+  hilight_color,
 } from "../../constants/cssConst";
 import { Feather } from "@expo/vector-icons";
 
@@ -11,15 +14,24 @@ type Props = {
   username: string;
   showname: string;
   profileImg: string;
+  checked: boolean;
+  toggleFunction: () => void;
 };
 
 const CreateRoomInfoBox: React.FC<Props> = ({
   username,
   showname,
   profileImg,
+  checked,
+  toggleFunction,
 }) => {
+  const color = checked ? { color: hilight_color } : { color: "#FFF" };
   return (
-    <View style={styles.memberContainer}>
+    <TouchableOpacity
+      // prettier-ignore
+      style={[styles.memberContainer, checked? {backgroundColor: bg_LessDarkColor, borderBottomColor: bg_DarkColor,}: {borderBottomColor: bg_LessDarkColor,}]}
+      onPress={() => toggleFunction()}
+    >
       <View style={styles.avatarContainer}>
         <View style={styles.imgView}>
           {profileImg == "" ? (
@@ -39,15 +51,15 @@ const CreateRoomInfoBox: React.FC<Props> = ({
       </View>
       <View style={styles.infoContainer}>
         <View style={styles.detailInfoContainer}>
-          <Text style={styles.infoTitle}>User Name</Text>
-          <Text style={styles.info}>{username}</Text>
+          <Text style={[styles.infoTitle, color]}>User Name</Text>
+          <Text style={[styles.info, , color]}>{username}</Text>
         </View>
         <View style={styles.detailInfoContainer}>
-          <Text style={styles.infoTitle}>Show Name</Text>
-          <Text style={styles.info}>{showname}</Text>
+          <Text style={[styles.infoTitle, , color]}>Show Name</Text>
+          <Text style={[styles.info, , color]}>{showname}</Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -59,9 +71,10 @@ const avatarSize = windowHeight * 0.08;
 const styles = StyleSheet.create({
   //memberContainer
   memberContainer: {
-    width: windowWidth * 0.8,
+    width: windowWidth,
     height: memberContainerHeight,
     flexDirection: "row",
+    borderBottomWidth: 2,
   },
   avatarContainer: {
     width: memberContainerHeight,
@@ -95,10 +108,8 @@ const styles = StyleSheet.create({
   infoTitle: {
     width: windowWidth * 0.3,
     fontSize: avatarSize / 3.5,
-    color: "#FFF",
   },
   info: {
     fontSize: avatarSize / 3.5,
-    color: "#FFF",
   },
 });
