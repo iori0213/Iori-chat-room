@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -27,7 +27,6 @@ import Message from "../../components/Home/Message";
 import UserMessage from "../../components/Home/UserMessage";
 import { USERID_KEY } from "../../constants/securestoreKey";
 import { ActivityIndicator } from "react-native-paper";
-import { useFocusEffect } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<HomeStackNavigationProps, "ChatScreen">;
 
