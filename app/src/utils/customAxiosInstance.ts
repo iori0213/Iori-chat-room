@@ -12,7 +12,7 @@ customAxiosInstance.interceptors.request.use(
     try {
       accessToken = await getItemAsync(ACCESS_KEY);
     } catch (e) {
-      console.log(e);
+      console.log("Interceptors request handler: " + e);
     }
 
     if (!!accessToken) {
@@ -50,12 +50,14 @@ customAxiosInstance.interceptors.response.use(
             // prettier-ignore
             customAxiosInstance.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
           } catch (error) {
-            console.log(error);
+            console.log("catch Error:" + error);
           }
+          return customAxiosInstance(originalRequest);
         })
-        .catch((e) => console.log(e));
-
-      return customAxiosInstance(originalRequest);
+        .catch((error) => {
+          // prettier-ignore
+          console.log("Interceptors Response Error: " + error.response.data.message);
+        });
     }
     return Promise.reject(error);
   }
