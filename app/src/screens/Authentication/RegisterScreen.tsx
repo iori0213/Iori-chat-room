@@ -7,13 +7,11 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Platform,
 } from "react-native";
 import {
   bg_DarkColor,
-  bg_LightColor,
+  bg_LessDarkColor,
   cornerRadius,
-  hilight_color,
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
@@ -70,7 +68,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
                 <FontAwesome
                   name="angle-double-left"
                   size={windowWidth * 0.12}
-                  color={bg_DarkColor}
+                  color="#FFF"
                 />
               </TouchableOpacity>
               <Text style={styles.headerTextContainer}>reGisteR</Text>
@@ -144,7 +142,7 @@ const styles = StyleSheet.create({
   topContainer: {
     width: windowWidth,
     height: windowHeight * 0.2,
-    backgroundColor: bg_LightColor,
+    backgroundColor: bg_LessDarkColor,
   },
   cuttingTopContainer: {
     flex: 1,
@@ -162,7 +160,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   headerTextContainer: {
-    color: hilight_color,
+    color: "#FFF",
     fontFamily: "MajorMonoDisplay",
     fontSize: windowWidth * 0.11,
     paddingTop: windowHeight * 0.02,
@@ -173,7 +171,7 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.5,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: bg_LightColor,
+    backgroundColor: bg_LessDarkColor,
     borderTopLeftRadius: cornerRadius,
     borderBottomRightRadius: cornerRadius,
   },
@@ -181,7 +179,7 @@ const styles = StyleSheet.create({
   bottomContainer: {
     width: windowWidth,
     height: windowHeight * 0.3,
-    backgroundColor: bg_LightColor,
+    backgroundColor: bg_LessDarkColor,
   },
   cuttingBottomContainer: {
     flex: 1,
@@ -196,13 +194,13 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.07,
     marginTop: cornerRadius / 1.5,
     borderWidth: 1.5,
-    borderColor: bg_LightColor,
+    borderColor: "#FFF",
     borderRadius: windowHeight * 0.035,
     alignItems: "center",
     justifyContent: "center",
   },
   btnText: {
     fontSize: windowWidth * 0.075,
-    color: bg_LightColor,
+    color: "#FFF",
   },
 });

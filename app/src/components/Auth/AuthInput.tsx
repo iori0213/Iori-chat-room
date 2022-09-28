@@ -59,7 +59,8 @@ const inputFontSize = windowWidth * 0.04;
 const inputIconSize = windowWidth * 0.07;
 //color
 const inputBackgroundColor = "#171535";
-const inputBorderColor = "#45c1b9";
+// const inputBorderColor = "#45c1b9";
+const inputBorderColor = "#FFF";
 const placeholderColor = "#477";
 
 const styles = StyleSheet.create({

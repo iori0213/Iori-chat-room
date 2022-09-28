@@ -4,7 +4,6 @@ import {
   windowHeight,
   windowWidth,
   bg_LessDarkColor,
-  bg_LightColor,
   bg_DarkColor,
   hilight_color,
 } from "../../constants/cssConst";

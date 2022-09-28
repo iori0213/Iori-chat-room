@@ -14,10 +14,9 @@ import { AuthNavigationProps } from "../../types/navigations";
 //css const
 import {
   bg_DarkColor,
-  bg_LightColor,
+  bg_LessDarkColor,
   bottomIconSize,
   cornerRadius,
-  hilight_color,
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
@@ -77,7 +76,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             <Entypo
               name="chat"
               size={windowWidth * 0.25}
-              color={bg_LightColor}
+              color="#FFF"
               style={styles.iconContainer}
             />
             <Text style={styles.headerTextContainer}>WelcoMe bacK</Text>
@@ -127,7 +126,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               <SimpleLineIcons
                 name="social-google"
                 size={bottomIconSize}
-                color={bg_LightColor}
+                color="#FFF"
                 style={styles.Oauth2Btn}
               />
             </TouchableOpacity>
@@ -135,7 +134,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               <SimpleLineIcons
                 name="social-facebook"
                 size={bottomIconSize}
-                color={bg_LightColor}
+                color="#FFF"
                 style={styles.Oauth2Btn}
               />
             </TouchableOpacity>
@@ -143,7 +142,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               <SimpleLineIcons
                 name="social-twitter"
                 size={bottomIconSize}
-                color={bg_LightColor}
+                color="#FFF"
                 style={styles.Oauth2Btn}
               />
             </TouchableOpacity>
@@ -163,7 +162,7 @@ const styles = StyleSheet.create({
   topContainer: {
     width: windowWidth,
     height: windowHeight * 0.2,
-    backgroundColor: bg_LightColor,
+    backgroundColor: bg_LessDarkColor,
   },
   cuttingTopContainer: {
     flex: 1,
@@ -190,7 +189,7 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.4,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: bg_LightColor,
+    backgroundColor: bg_LessDarkColor,
     borderTopRightRadius: cornerRadius,
     borderBottomLeftRadius: cornerRadius,
   },
@@ -198,7 +197,7 @@ const styles = StyleSheet.create({
   bottomContainer: {
     width: windowWidth,
     height: windowHeight * 0.4,
-    backgroundColor: bg_LightColor,
+    backgroundColor: bg_LessDarkColor,
   },
   cuttingBottomContainer: {
     flex: 1,
@@ -218,14 +217,14 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.07,
     marginTop: windowHeight * 0.03,
     borderWidth: 1.5,
-    borderColor: bg_LightColor,
+    borderColor: "#FFF",
     borderRadius: windowHeight * 0.035,
     alignItems: "center",
     justifyContent: "center",
   },
   btnText: {
     fontSize: windowWidth * 0.075,
-    color: bg_LightColor,
+    color: "#FFF",
   },
   Oauth2BtnContainer: {
     width: windowWidth,
