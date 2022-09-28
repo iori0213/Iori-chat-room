@@ -189,7 +189,7 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
                   <View style={styles.modalFriendList}>
                     <View style={styles.modalFriendListTitleContainer}>
                       <Text style={styles.modalFriendListTitle}>
-                        Room Members
+                        Select Room Members
                       </Text>
                     </View>
                     <FlatList
