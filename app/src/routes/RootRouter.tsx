@@ -8,6 +8,8 @@ import LoadingSpinner from "../components/Auth/LoadingSpinner";
 import { RootNavigationProps } from "../types/navigations";
 import HomeStackNavigation from "../navigations/HomeStackNavigation";
 import customAxiosInstance from "../utils/customAxiosInstance";
+import { View } from "react-native";
+import { bg_DarkColor } from "../constants/cssConst";
 
 const RootRouter: React.FC = () => {
   const Stack = createNativeStackNavigator<RootNavigationProps>();
@@ -46,7 +48,9 @@ const RootRouter: React.FC = () => {
   }, [access]);
 
   return fetching ? (
-    <LoadingSpinner />
+    <View style={{ flex: 1, backgroundColor: bg_DarkColor }}>
+      <LoadingSpinner />
+    </View>
   ) : (
     <NavigationContainer>
       <Stack.Navigator
