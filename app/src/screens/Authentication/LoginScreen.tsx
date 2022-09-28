@@ -121,7 +121,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           {/* Oauth2 container */}
-          <View style={styles.Oauth2BtnContainer}>
+          {/* <View style={styles.Oauth2BtnContainer}>
             <TouchableOpacity>
               <SimpleLineIcons
                 name="social-google"
@@ -146,7 +146,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                 style={styles.Oauth2Btn}
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </View>
     </SafeAreaView>
