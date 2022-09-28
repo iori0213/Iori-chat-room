@@ -8,6 +8,9 @@ import {
   windowWidth,
 } from "../../constants/cssConst";
 
+import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+
 interface MessageProps {
   avatar: string;
   msgId: string;
@@ -25,7 +28,8 @@ const Message: React.FC<MessageProps> = ({
   msg,
   created,
 }) => {
-  const time = new Date(created).toLocaleString();
+  dayjs.extend(localizedFormat);
+  const time = dayjs(created).format("YYYY/MM/DD h:mm a");
   const [avatarBase64, setAvatarBase64] = useState("");
   useEffect(() => {
     setAvatarBase64(avatar);

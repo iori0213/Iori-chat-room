@@ -19,6 +19,9 @@ import {
 } from "../../constants/cssConst";
 import { ChatContext } from "./ChatContext";
 
+import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+
 interface UserMessageProps {
   avatar: string;
   msgId: string;
@@ -41,7 +44,10 @@ const UserMessage: React.FC<UserMessageProps> = ({
   const [modify, setModify] = useState(false);
   const [edit, setEdit] = useState(false);
   const [editMsg, setEditMsg] = useState("");
-  const time = new Date(created).toLocaleString();
+
+  dayjs.extend(localizedFormat);
+  const time = dayjs(created).format("YYYY/MM/DD h:mm a");
+
   const deleteCheck = () => {
     return Alert.alert(
       "Delete message",
