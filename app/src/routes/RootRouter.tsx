@@ -8,8 +8,6 @@ import LoadingSpinner from "../components/Auth/LoadingSpinner";
 import { RootNavigationProps } from "../types/navigations";
 import HomeStackNavigation from "../navigations/HomeStackNavigation";
 import customAxiosInstance from "../utils/customAxiosInstance";
-import { deleteItemAsync } from "expo-secure-store";
-import { ACCESS_KEY } from "../constants/securestoreKey";
 
 const RootRouter: React.FC = () => {
   const Stack = createNativeStackNavigator<RootNavigationProps>();
