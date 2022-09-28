@@ -34,32 +34,29 @@ customAxiosInstance.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
+    let refreshTokenValidationResult: boolean = false;
     if (error.response.status >= 400 && error.response.status < 500) {
       let newAccessToken;
       // refresh access token
       const localRefreshToken = await getItemAsync(REFRESH_KEY);
-      axios({
-        method: "post",
-        url: `${AuthAPI}/token/refresh`,
-        headers: { Authorization: `Bearer ${localRefreshToken}` },
-      })
-        .then((res) => {
-          try {
-            newAccessToken = res.data.data.newAccessToken;
-            setItemAsync(ACCESS_KEY, newAccessToken);
-            // prettier-ignore
-            customAxiosInstance.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
-          } catch (error) {
-            console.log("catch Error:" + error);
-          }
-          return customAxiosInstance(originalRequest);
-        })
-        .catch((error) => {
-          // prettier-ignore
-          console.log("Interceptors Response Error: " + error.response.data.message);
+
+      try {
+        const res = await axios({
+          method: "post",
+          url: `${AuthAPI}/token/refresh`,
+          headers: { Authorization: `Bearer ${localRefreshToken}` },
         });
+        newAccessToken = res.data.newAccessToken;
+        await setItemAsync(ACCESS_KEY, newAccessToken);
+        refreshTokenValidationResult = true;
+      } catch (error) {
+        console.log("catch Error:" + error);
+        refreshTokenValidationResult = false;
+      }
     }
-    return Promise.reject(error);
+    console.log(refreshTokenValidationResult);
+    // prettier-ignore
+    return refreshTokenValidationResult? customAxiosInstance(originalRequest) : Promise.reject(error);
   }
 );
 
