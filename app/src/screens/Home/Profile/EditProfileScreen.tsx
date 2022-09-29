@@ -31,8 +31,7 @@ import {
 import { HomeStackNavigationProps } from "../../../types/navigations";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import Animated from "react-native-reanimated";
-import BottomSheet from "reanimated-bottom-sheet";
+import Modal from "react-native-modal";
 
 import * as ImagePicker from "expo-image-picker";
 
@@ -54,15 +53,14 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   const [editAvatarImg, setEditAvatarImg] = useState(img);
 
   //Bottom Sheet
-  const ImgBottomSheet = createRef<BottomSheet>();
-  const fall = new Animated.Value(1);
+  const [bottomModalShow, setBottomModalShow] = useState(false);
 
   const takePhoto = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (permissionResult.granted === false) {
       return Alert.alert("Error", "Permission to access Camera is required!");
     }
-    ImgBottomSheet.current?.snapTo(1);
+    setBottomModalShow(false);
     const pickerResult = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
@@ -84,7 +82,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
     if (permissionResult.granted === false) {
       return Alert.alert("Error", "Permission to access Library is required!");
     }
-    ImgBottomSheet.current?.snapTo(1);
+    setBottomModalShow(false);
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
@@ -153,8 +151,8 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   }, []);
 
   //Bottom Sheet Component
-  const renderContent = () => (
-    <>
+  const ModalConent: React.FC = () => {
+    return (
       <View style={styles.bsBody}>
         <View style={styles.headerHandler}></View>
         <Text style={styles.bsTitle}>Upload Photo</Text>
@@ -172,14 +170,14 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
           <Text style={styles.bgBtnText}>Choose From Library</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => ImgBottomSheet.current?.snapTo(1)}
+          onPress={() => setBottomModalShow(false)}
           style={[styles.bsBtn, { backgroundColor: "lightcoral" }]}
         >
           <Text style={styles.bgBtnText}>Cancel</Text>
         </TouchableOpacity>
       </View>
-    </>
-  );
+    );
+  };
 
   return (
     <SafeAreaProvider>
@@ -216,15 +214,10 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
           {fetching ? (
             <LoadingSpinner />
           ) : (
-            <Animated.View
-              style={[
-                styles.avoidingView,
-                { opacity: Animated.add(0.3, Animated.multiply(fall, 1.0)) },
-              ]}
-            >
+            <View style={styles.body}>
               <TouchableOpacity
                 style={styles.AvatarContainer}
-                onPress={() => ImgBottomSheet.current?.snapTo(0)}
+                onPress={() => setBottomModalShow(true)}
               >
                 {editAvatarImg == "" ? (
                   <View
@@ -291,17 +284,25 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
                 <InfoBox infoType="Unique Name" info={editUniquename} />
                 <InfoBox infoType="Email" info={email} />
               </View>
-            </Animated.View>
+            </View>
           )}
         </View>
       </SafeAreaView>
-      <BottomSheet
-        ref={ImgBottomSheet}
-        snapPoints={[windowHeight * 0.4, 0]}
-        initialSnap={1}
-        callbackNode={fall}
-        renderContent={renderContent}
-      />
+      {bottomModalShow ? (
+        <Modal
+          children={<ModalConent />}
+          isVisible={bottomModalShow}
+          style={{
+            margin: 0,
+            justifyContent: "flex-end",
+          }}
+          onBackdropPress={() => setBottomModalShow(false)}
+          onSwipeCancel={() => setBottomModalShow(false)}
+          swipeDirection="down"
+        />
+      ) : (
+        <></>
+      )}
     </SafeAreaProvider>
   );
 };
@@ -335,7 +336,7 @@ const styles = StyleSheet.create({
     backgroundColor: bg_DarkColor,
     alignItems: "center",
   },
-  avoidingView: {
+  body: {
     flex: 1,
     alignItems: "center",
   },
@@ -458,6 +459,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#AAA",
   },
   bsBody: {
+    flex: 0.4,
     width: windowWidth,
     height: windowHeight * 0.4,
     alignItems: "center",
