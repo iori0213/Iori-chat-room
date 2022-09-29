@@ -12,7 +12,7 @@ customAxiosInstance.interceptors.request.use(
     try {
       accessToken = await getItemAsync(ACCESS_KEY);
     } catch (e) {
-      console.log("Interceptors request handler: " + e);
+      console.log("Interceptors request handler setting accessToken: " + e);
     }
 
     if (!!accessToken) {
@@ -34,6 +34,7 @@ customAxiosInstance.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
+    // the flag of refreshToken validate result
     let refreshTokenValidationResult: boolean = false;
     if (error.response.status >= 400 && error.response.status < 500) {
       let newAccessToken;
@@ -50,11 +51,14 @@ customAxiosInstance.interceptors.response.use(
         await setItemAsync(ACCESS_KEY, newAccessToken);
         refreshTokenValidationResult = true;
       } catch (error) {
-        console.log("catch Error:" + error);
+        console.log("Interceptor Catch Error:" + error);
         refreshTokenValidationResult = false;
       }
     }
-    console.log(refreshTokenValidationResult);
+    console.log(
+      "Refresh Token Validation Result:",
+      refreshTokenValidationResult
+    );
     // prettier-ignore
     return refreshTokenValidationResult? customAxiosInstance(originalRequest) : Promise.reject(error);
   }
