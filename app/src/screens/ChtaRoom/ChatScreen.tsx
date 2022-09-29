@@ -9,6 +9,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -140,6 +141,10 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
+        <StatusBar
+          backgroundColor={bg_LessDarkColor}
+          barStyle="light-content"
+        />
         {fetching ? (
           <LoadingSpinner />
         ) : (

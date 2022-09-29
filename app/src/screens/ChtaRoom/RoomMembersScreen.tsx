@@ -8,6 +8,7 @@ import {
   Platform,
   Alert,
   Modal,
+  StatusBar,
 } from "react-native";
 import React, { useContext, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -27,7 +28,6 @@ import { ACCESS_KEY } from "../../constants/securestoreKey";
 import { ChatRoomAPI, FriendAPI } from "../../constants/backendAPI";
 import { ChatContext } from "../../components/Home/ChatContext";
 import CreateRoomInfoBox from "../../components/Home/CreateRoomInfoBox";
-import Checkbox from "expo-checkbox";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
 
 type Props = NativeStackScreenProps<
@@ -141,6 +141,10 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
+        <StatusBar
+          backgroundColor={bg_LessDarkColor}
+          barStyle="light-content"
+        />
         <Modal
           transparent={false}
           visible={visible}
@@ -270,8 +274,7 @@ const styles = StyleSheet.create({
   },
   //Headers
   header: {
-    height: Platform.OS === "ios" ? windowHeight * 0.08 : windowHeight * 0.11,
-    paddingTop: Platform.OS === "ios" ? 0 : windowHeight * 0.02,
+    height: windowHeight * 0.08,
     width: windowWidth,
     flexDirection: "row",
     borderBottomWidth: 1.5,
