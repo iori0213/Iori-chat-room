@@ -3,6 +3,7 @@ import axios from "axios";
 import {
   Alert,
   KeyboardAvoidingView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -57,6 +58,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
+        <StatusBar backgroundColor={bg_DarkColor} barStyle="light-content" />
         <KeyboardAvoidingView behavior="position">
           {/* Header */}
           <View style={styles.topContainer}>

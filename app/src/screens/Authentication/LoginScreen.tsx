@@ -4,7 +4,14 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { AuthAPI } from "../../constants/backendAPI";
 //components
-import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Alert,
+  StatusBar,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthInput from "../../components/Auth/AuthInput";
 //navigation
@@ -69,6 +76,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <StatusBar backgroundColor={bg_DarkColor} barStyle="light-content" />
       {/* Header */}
       <View style={styles.topContainer}>
         <View style={styles.cuttingTopContainer}>
