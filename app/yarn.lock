@@ -5034,6 +5034,11 @@ react-native-screens@~3.10.1:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
+react-native-system-navigation-bar@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-system-navigation-bar/-/react-native-system-navigation-bar-2.0.0.tgz#6a46cf7514ca804f90fb81e13856284269e389b3"
+  integrity sha512-gvhwhl7uH+RJIoq8QdEXqdJkOMqiRwTS2vmpovactKTaTtMmoU3nYxjI9WrjBNNBFMZZDmuoWtZXrvcCdkARCg==
+
 react-native-tab-view@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-3.1.1.tgz#1f8d7a835ab4f5b1b1407ec8dddc1053b53fa3c6"
