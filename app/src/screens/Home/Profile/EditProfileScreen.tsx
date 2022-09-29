@@ -8,6 +8,7 @@ import {
   View,
   SafeAreaView,
   Platform,
+  StatusBar,
 } from "react-native";
 import React, { createRef, useEffect, useState } from "react";
 import {
@@ -185,6 +186,10 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
         <SafeAreaView style={{ flex: 0, backgroundColor: bg_LessDarkColor }} />
       ) : null}
       <SafeAreaView style={styles.safeArea}>
+        <StatusBar
+          backgroundColor={bg_LessDarkColor}
+          barStyle="light-content"
+        />
         <View style={styles.background}>
           {/* header =====================================================================================================*/}
           <View style={styles.customHeader}>
@@ -343,9 +348,7 @@ const styles = StyleSheet.create({
   //ProfileHeader===================
   customHeader: {
     flexDirection: "row",
-    height:
-      Platform.OS === "android" ? windowHeight * 0.105 : windowHeight * 0.08,
-    paddingTop: Platform.OS === "android" ? windowHeight * 0.02 : 0,
+    height: windowHeight * 0.08,
     backgroundColor: bg_LessDarkColor,
   },
   titleContainer: {

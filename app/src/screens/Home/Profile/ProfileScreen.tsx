@@ -1,6 +1,7 @@
 import {
   Alert,
   Image,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -104,6 +105,10 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
+        <StatusBar
+          backgroundColor={bg_LessDarkColor}
+          barStyle="light-content"
+        />
         <View style={styles.background}>
           {/* header ==================================================================================*/}
           <View style={styles.customHeader}>
