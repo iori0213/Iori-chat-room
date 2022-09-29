@@ -8,6 +8,7 @@ import {
   View,
   FlatList,
   TextInput,
+  StatusBar,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -21,7 +22,6 @@ import { HomeTabNavigationProps } from "../../types/navigations";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { ChatContext } from "../../components/Home/ChatContext";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
-import InfoBox from "../../components/Home/InfoBox";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
 import RequestPendingBox from "../../components/Home/FriendList/RequestPendingBox";
 import WaitingReplyBox from "../../components/Home/FriendList/WaitingReplyBox";
@@ -160,6 +160,10 @@ const FriendListScreen: React.FC<Props> = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
+        <StatusBar
+          backgroundColor={bg_LessDarkColor}
+          barStyle="light-content"
+        />
         <HomeHeader />
         <View style={styles.bodyContainer}>
           {/* add friend zone */}

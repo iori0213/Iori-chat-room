@@ -7,13 +7,13 @@ import {
   Alert,
   FlatList,
   Modal,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import Checkbox from "expo-checkbox";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { ChatRoomAPI, FriendAPI } from "../../constants/backendAPI";
 import {
@@ -150,6 +150,10 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
+        <StatusBar
+          backgroundColor={bg_LessDarkColor}
+          barStyle="light-content"
+        />
         {fetching ? (
           <LoadingSpinner />
         ) : (
