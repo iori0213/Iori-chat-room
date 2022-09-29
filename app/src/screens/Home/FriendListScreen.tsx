@@ -29,6 +29,7 @@ import axios from "axios";
 import { FriendAPI } from "../../constants/backendAPI";
 import FriendListBox from "../../components/Home/FriendList/FriendListBox";
 import { useFocusEffect } from "@react-navigation/native";
+import SystemNavigationBar from "react-native-system-navigation-bar";
 
 type Props = MaterialTopTabScreenProps<
   HomeTabNavigationProps,
@@ -118,6 +119,8 @@ const FriendListScreen: React.FC<Props> = () => {
       initialize();
     }, [])
   );
+
+  SystemNavigationBar.navigationHide();
 
   type pendingProps = {
     sectionTitle: string;

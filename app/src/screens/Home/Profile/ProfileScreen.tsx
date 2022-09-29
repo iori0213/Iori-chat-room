@@ -35,6 +35,7 @@ import {
 } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HomeTabNavigationProps } from "../../../types/navigations";
+import SystemNavigationBar from "react-native-system-navigation-bar";
 
 type Props = NativeStackScreenProps<HomeTabNavigationProps, "ProfileScreen">;
 
@@ -101,6 +102,8 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       initialize();
     }, [])
   );
+
+  SystemNavigationBar.navigationHide();
 
   return (
     <SafeAreaProvider>

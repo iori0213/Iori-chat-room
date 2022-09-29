@@ -35,6 +35,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Modal from "react-native-modal";
 
 import * as ImagePicker from "expo-image-picker";
+import SystemNavigationBar from "react-native-system-navigation-bar";
 
 type Props = NativeStackScreenProps<
   HomeStackNavigationProps,
@@ -179,6 +180,8 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
       </View>
     );
   };
+
+  SystemNavigationBar.navigationHide();
 
   return (
     <SafeAreaProvider>

@@ -29,6 +29,7 @@ import { ChatRoomAPI, FriendAPI } from "../../constants/backendAPI";
 import { ChatContext } from "../../components/Home/ChatContext";
 import CreateRoomInfoBox from "../../components/Home/CreateRoomInfoBox";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
+import SystemNavigationBar from "react-native-system-navigation-bar";
 
 type Props = NativeStackScreenProps<
   HomeStackNavigationProps,
@@ -137,6 +138,8 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
     setFriends([]);
     setVisible(false);
   };
+
+  SystemNavigationBar.navigationHide();
 
   return (
     <SafeAreaProvider>

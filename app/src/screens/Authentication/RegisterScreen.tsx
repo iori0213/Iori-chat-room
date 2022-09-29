@@ -22,6 +22,7 @@ import { AuthAPI } from "../../constants/backendAPI";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthNavigationProps } from "../../types/navigations";
 import AuthInput from "../../components/Auth/AuthInput";
+import SystemNavigationBar from "react-native-system-navigation-bar";
 
 type Props = NativeStackScreenProps<AuthNavigationProps, "RegisterScreen">;
 
@@ -54,6 +55,8 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         return Alert.alert("Register error", e.response.data.message);
       });
   };
+
+  SystemNavigationBar.navigationHide();
 
   return (
     <SafeAreaProvider>

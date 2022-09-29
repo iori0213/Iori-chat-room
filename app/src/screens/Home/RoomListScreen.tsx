@@ -30,6 +30,7 @@ import LoadingSpinner from "../../components/Auth/LoadingSpinner";
 import { Platform } from "react-native";
 import CreateRoomInfoBox from "../../components/Home/CreateRoomInfoBox";
 import { useFocusEffect } from "@react-navigation/native";
+import SystemNavigationBar from "react-native-system-navigation-bar";
 
 type Props = NativeStackScreenProps<HomeTabNavigationProps, "RoomListScreen">;
 
@@ -146,6 +147,8 @@ const RoomListScreen: React.FC<Props> = ({ navigation }) => {
       getChatRoom();
     }, [])
   );
+
+  SystemNavigationBar.navigationHide();
 
   return (
     <SafeAreaProvider>

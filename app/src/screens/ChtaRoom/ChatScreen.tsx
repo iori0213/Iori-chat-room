@@ -28,6 +28,7 @@ import Message from "../../components/Home/Message";
 import UserMessage from "../../components/Home/UserMessage";
 import { USERID_KEY } from "../../constants/securestoreKey";
 import { ActivityIndicator } from "react-native-paper";
+import SystemNavigationBar from "react-native-system-navigation-bar";
 
 type Props = NativeStackScreenProps<HomeStackNavigationProps, "ChatScreen">;
 
@@ -137,6 +138,8 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
       socket?.emit("leave-room");
     };
   }, []);
+
+  SystemNavigationBar.navigationHide();
 
   return (
     <SafeAreaProvider>

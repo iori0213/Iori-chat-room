@@ -22,13 +22,12 @@ import { AuthNavigationProps } from "../../types/navigations";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
-  bottomIconSize,
   cornerRadius,
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
 //import vector icons
-import { Entypo, SimpleLineIcons, Fontisto } from "@expo/vector-icons/";
+import { Entypo, Fontisto } from "@expo/vector-icons/";
 import {
   ACCESS_KEY,
   REFRESH_KEY,
@@ -36,6 +35,8 @@ import {
   USERID_KEY,
   USERNAME_KEY,
 } from "../../constants/securestoreKey";
+
+import SystemNavigationBar from "react-native-system-navigation-bar";
 
 type Props = NativeStackScreenProps<AuthNavigationProps, "LoginScreen">;
 
@@ -73,6 +74,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       })
       .catch((e) => Alert.alert("Error", e.response.data.message));
   };
+
+  SystemNavigationBar.navigationHide();
 
   return (
     <SafeAreaView style={styles.safeArea}>
