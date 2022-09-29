@@ -176,33 +176,22 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
                   keyExtractor={(_item, index) => index.toString()}
                   renderItem={({ item }) => {
                     return (
-                      <View style={styles.modalMemberContainer}>
-                        <Checkbox
-                          style={{
-                            width: windowWidth * 0.07,
-                            height: windowWidth * 0.07,
-                            marginRight: windowWidth * 0.01,
-                          }}
-                          disabled={false}
-                          color={item.join ? bg_LessDarkColor : "#FFF"}
-                          value={item.join}
-                          onValueChange={() =>
-                            setFriends((prev) =>
-                              prev.map((friend) => {
-                                if (friend.id == item.id) {
-                                  friend.join = !friend.join;
-                                }
-                                return friend;
-                              })
-                            )
-                          }
-                        />
-                        <CreateRoomInfoBox
-                          username={item.username}
-                          showname={item.showName}
-                          profileImg={item.profileImg}
-                        />
-                      </View>
+                      <CreateRoomInfoBox
+                        username={item.username}
+                        showname={item.showName}
+                        profileImg={item.profileImg}
+                        checked={item.join}
+                        toggleFunction={() => {
+                          setFriends((prev) =>
+                            prev.map((friend) => {
+                              if (friend.id == item.id) {
+                                friend.join = !friend.join;
+                              }
+                              return friend;
+                            })
+                          );
+                        }}
+                      />
                     );
                   }}
                 />
@@ -322,7 +311,7 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.08,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: bg_LessDarkColor,
+    backgroundColor: "#F77",
     borderRadius: 15,
     flexDirection: "row",
   },
