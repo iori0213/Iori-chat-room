@@ -11,9 +11,6 @@ import customAxiosInstance from "../utils/customAxiosInstance";
 import { View } from "react-native";
 import { bg_DarkColor } from "../constants/cssConst";
 
-// set the status bar and navigator
-import SystemNavigationBar from "react-native-system-navigation-bar";
-
 const RootRouter: React.FC = () => {
   const Stack = createNativeStackNavigator<RootNavigationProps>();
   //fetching data status
@@ -37,8 +34,6 @@ const RootRouter: React.FC = () => {
         setAccess(false);
       });
   };
-
-  SystemNavigationBar.navigationHide();
 
   useEffect(() => {
     if (access === undefined) {
