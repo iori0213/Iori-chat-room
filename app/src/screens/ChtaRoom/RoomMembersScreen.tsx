@@ -16,6 +16,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
+  bg_LightColor,
   windowHeight,
   windowWidth,
 } from "../../constants/cssConst";
@@ -139,7 +140,7 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   if (Platform.OS === "android") {
-    NavigationBar.setVisibilityAsync("hidden");
+    NavigationBar.setBackgroundColorAsync(bg_LightColor);
   }
 
   return (

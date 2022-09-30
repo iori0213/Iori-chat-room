@@ -13,6 +13,7 @@ import React, { createRef, useEffect, useState } from "react";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
+  bg_LightColor,
   windowHeight,
   windowWidth,
 } from "../../../constants/cssConst";
@@ -181,7 +182,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   if (Platform.OS === "android") {
-    NavigationBar.setVisibilityAsync("hidden");
+    NavigationBar.setBackgroundColorAsync(bg_LightColor);
   }
 
   return (
