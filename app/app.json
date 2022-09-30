@@ -26,9 +26,7 @@
       }
     },
     "androidNavigationBar": {
-      "backgroundColor": "#464285",
-      "borderColor": "#1b1936",
-      "buttonStyle": "light"
+      "backgroundColor": "#464285"
     },
     "web": {
       "favicon": "./assets/favicon.png"
