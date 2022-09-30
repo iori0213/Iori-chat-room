@@ -148,6 +148,7 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
           backgroundColor={bg_LessDarkColor}
           barStyle="light-content"
         />
+        {/* modal start ==================================================== */}
         <Modal
           transparent={false}
           visible={visible}
@@ -214,6 +215,7 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
             </View>
           </View>
         </Modal>
+        {/* screen ====================================================*/}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.pop()}
