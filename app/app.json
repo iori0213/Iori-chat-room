@@ -13,9 +13,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "iori.freechatapp"
@@ -28,7 +26,9 @@
       }
     },
     "androidNavigationBar": {
-      "visible": "sticky-immersive"
+      "backgroundColor": "#464285",
+      "borderColor": "#1b1936",
+      "buttonStyle": "light"
     },
     "web": {
       "favicon": "./assets/favicon.png"
