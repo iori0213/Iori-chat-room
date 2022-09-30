@@ -3,6 +3,7 @@ import axios from "axios";
 import {
   Alert,
   KeyboardAvoidingView,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -22,7 +23,7 @@ import { AuthAPI } from "../../constants/backendAPI";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthNavigationProps } from "../../types/navigations";
 import AuthInput from "../../components/Auth/AuthInput";
-import SystemNavigationBar from "react-native-system-navigation-bar";
+import * as NavigationBar from "expo-navigation-bar";
 
 type Props = NativeStackScreenProps<AuthNavigationProps, "RegisterScreen">;
 
@@ -56,7 +57,9 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       });
   };
 
-  SystemNavigationBar.navigationHide();
+  if (Platform.OS === "android") {
+    NavigationBar.setVisibilityAsync("hidden");
+  }
 
   return (
     <SafeAreaProvider>

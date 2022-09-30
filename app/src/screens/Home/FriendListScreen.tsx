@@ -9,6 +9,7 @@ import {
   FlatList,
   TextInput,
   StatusBar,
+  Platform,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -29,7 +30,7 @@ import axios from "axios";
 import { FriendAPI } from "../../constants/backendAPI";
 import FriendListBox from "../../components/Home/FriendList/FriendListBox";
 import { useFocusEffect } from "@react-navigation/native";
-import SystemNavigationBar from "react-native-system-navigation-bar";
+import * as NavigationBar from "expo-navigation-bar";
 
 type Props = MaterialTopTabScreenProps<
   HomeTabNavigationProps,
@@ -120,7 +121,9 @@ const FriendListScreen: React.FC<Props> = () => {
     }, [])
   );
 
-  SystemNavigationBar.navigationHide();
+  if (Platform.OS === "android") {
+    NavigationBar.setVisibilityAsync("hidden");
+  }
 
   type pendingProps = {
     sectionTitle: string;

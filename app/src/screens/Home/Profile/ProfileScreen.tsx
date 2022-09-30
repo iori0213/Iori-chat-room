@@ -1,6 +1,7 @@
 import {
   Alert,
   Image,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -35,7 +36,7 @@ import {
 } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HomeTabNavigationProps } from "../../../types/navigations";
-import SystemNavigationBar from "react-native-system-navigation-bar";
+import * as NavigationBar from "expo-navigation-bar";
 
 type Props = NativeStackScreenProps<HomeTabNavigationProps, "ProfileScreen">;
 
@@ -103,7 +104,9 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     }, [])
   );
 
-  SystemNavigationBar.navigationHide();
+  if (Platform.OS === "android") {
+    NavigationBar.setVisibilityAsync("hidden");
+  }
 
   return (
     <SafeAreaProvider>

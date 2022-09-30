@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  SafeAreaView,
   Platform,
   StatusBar,
 } from "react-native";
@@ -17,7 +16,7 @@ import {
   windowHeight,
   windowWidth,
 } from "../../../constants/cssConst";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import LoadingSpinner from "../../../components/Auth/LoadingSpinner";
 import * as SecureStore from "expo-secure-store";
 import { ACCESS_KEY } from "../../../constants/securestoreKey";
@@ -35,7 +34,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Modal from "react-native-modal";
 
 import * as ImagePicker from "expo-image-picker";
-import SystemNavigationBar from "react-native-system-navigation-bar";
+import * as NavigationBar from "expo-navigation-bar";
 
 type Props = NativeStackScreenProps<
   HomeStackNavigationProps,
@@ -181,7 +180,9 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
     );
   };
 
-  SystemNavigationBar.navigationHide();
+  if (Platform.OS === "android") {
+    NavigationBar.setVisibilityAsync("hidden");
+  }
 
   return (
     <SafeAreaProvider>

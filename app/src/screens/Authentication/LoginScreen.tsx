@@ -11,8 +11,9 @@ import {
   TouchableOpacity,
   Alert,
   StatusBar,
+  Platform,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthInput from "../../components/Auth/AuthInput";
 //navigation
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -36,7 +37,7 @@ import {
   USERNAME_KEY,
 } from "../../constants/securestoreKey";
 
-import SystemNavigationBar from "react-native-system-navigation-bar";
+import * as NavigationBar from "expo-navigation-bar";
 
 type Props = NativeStackScreenProps<AuthNavigationProps, "LoginScreen">;
 
@@ -75,64 +76,67 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       .catch((e) => Alert.alert("Error", e.response.data.message));
   };
 
-  SystemNavigationBar.navigationHide();
+  if (Platform.OS === "android") {
+    NavigationBar.setVisibilityAsync("hidden");
+  }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar backgroundColor={bg_DarkColor} barStyle="light-content" />
-      {/* Header */}
-      <View style={styles.topContainer}>
-        <View style={styles.cuttingTopContainer}>
-          <View style={styles.headerContainer}>
-            <Entypo
-              name="chat"
-              size={windowWidth * 0.25}
-              color="#FFF"
-              style={styles.iconContainer}
-            />
-            <Text style={styles.headerTextContainer}>WelcoMe bacK</Text>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar backgroundColor={bg_DarkColor} barStyle="light-content" />
+        {/* Header */}
+        <View style={styles.topContainer}>
+          <View style={styles.cuttingTopContainer}>
+            <View style={styles.headerContainer}>
+              <Entypo
+                name="chat"
+                size={windowWidth * 0.25}
+                color="#FFF"
+                style={styles.iconContainer}
+              />
+              <Text style={styles.headerTextContainer}>WelcoMe bacK</Text>
+            </View>
           </View>
         </View>
-      </View>
-      {/* Body */}
-      <View style={styles.mainContainer}>
-        <AuthInput
-          InputIcon={
-            <Fontisto name="email" size={windowWidth * 0.07} color="#FFF" />
-          }
-          SetInputState={setEmail}
-          PlaceHolder="Enter email"
-          PasswordMode={false}
-        />
-        <AuthInput
-          InputIcon={
-            <Fontisto name="locked" size={windowWidth * 0.07} color="#FFF" />
-          }
-          SetInputState={setPassword}
-          PlaceHolder="Enter password"
-          PasswordMode={true}
-        />
-      </View>
-      {/* Footer */}
-      <View style={styles.bottomContainer}>
-        <View style={styles.cuttingBottomContainer}>
-          {/* Auth container */}
-          <View style={styles.authBtnContainer}>
-            <TouchableOpacity
-              style={styles.authBtn}
-              onPress={async () => await LoginProcess()}
-            >
-              <Text style={styles.btnText}>LOGIN</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.authBtn}
-              onPress={async () => navigation.navigate("RegisterScreen")}
-            >
-              <Text style={styles.btnText}>REGISTER</Text>
-            </TouchableOpacity>
-          </View>
-          {/* Oauth2 container */}
-          {/* <View style={styles.Oauth2BtnContainer}>
+        {/* Body */}
+        <View style={styles.mainContainer}>
+          <AuthInput
+            InputIcon={
+              <Fontisto name="email" size={windowWidth * 0.07} color="#FFF" />
+            }
+            SetInputState={setEmail}
+            PlaceHolder="Enter email"
+            PasswordMode={false}
+          />
+          <AuthInput
+            InputIcon={
+              <Fontisto name="locked" size={windowWidth * 0.07} color="#FFF" />
+            }
+            SetInputState={setPassword}
+            PlaceHolder="Enter password"
+            PasswordMode={true}
+          />
+        </View>
+        {/* Footer */}
+        <View style={styles.bottomContainer}>
+          <View style={styles.cuttingBottomContainer}>
+            {/* Auth container */}
+            <View style={styles.authBtnContainer}>
+              <TouchableOpacity
+                style={styles.authBtn}
+                onPress={async () => await LoginProcess()}
+              >
+                <Text style={styles.btnText}>LOGIN</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.authBtn}
+                onPress={async () => navigation.navigate("RegisterScreen")}
+              >
+                <Text style={styles.btnText}>REGISTER</Text>
+              </TouchableOpacity>
+            </View>
+            {/* Oauth2 container */}
+            {/* <View style={styles.Oauth2BtnContainer}>
             <TouchableOpacity>
               <SimpleLineIcons
                 name="social-google"
@@ -158,9 +162,10 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               />
             </TouchableOpacity>
           </View> */}
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 

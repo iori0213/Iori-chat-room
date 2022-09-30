@@ -3,7 +3,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  SafeAreaView,
   FlatList,
   Platform,
   Alert,
@@ -13,7 +12,7 @@ import {
 import React, { useContext, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HomeStackNavigationProps } from "../../types/navigations";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
   bg_DarkColor,
   bg_LessDarkColor,
@@ -29,7 +28,7 @@ import { ChatRoomAPI, FriendAPI } from "../../constants/backendAPI";
 import { ChatContext } from "../../components/Home/ChatContext";
 import CreateRoomInfoBox from "../../components/Home/CreateRoomInfoBox";
 import LoadingSpinner from "../../components/Auth/LoadingSpinner";
-import SystemNavigationBar from "react-native-system-navigation-bar";
+import * as NavigationBar from "expo-navigation-bar";
 
 type Props = NativeStackScreenProps<
   HomeStackNavigationProps,
@@ -139,7 +138,9 @@ const RoomMembersScreen: React.FC<Props> = ({ navigation, route }) => {
     setVisible(false);
   };
 
-  SystemNavigationBar.navigationHide();
+  if (Platform.OS === "android") {
+    NavigationBar.setVisibilityAsync("hidden");
+  }
 
   return (
     <SafeAreaProvider>
