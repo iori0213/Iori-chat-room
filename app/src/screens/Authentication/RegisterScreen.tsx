@@ -59,6 +59,8 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
   if (Platform.OS === "android") {
     NavigationBar.setBackgroundColorAsync(bg_DarkColor);
+    NavigationBar.setBorderColorAsync(bg_DarkColor);
+    NavigationBar.setButtonStyleAsync("light");
   }
 
   return (
