@@ -77,7 +77,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   if (Platform.OS === "android") {
-    NavigationBar.setVisibilityAsync("hidden");
+    NavigationBar.setBackgroundColorAsync(bg_DarkColor);
   }
 
   return (
