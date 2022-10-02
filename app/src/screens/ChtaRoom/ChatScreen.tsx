@@ -66,10 +66,11 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    socket?.emit("join-room", { roomId: roomId });
+    // listener of error ============================================
     socket?.on("error-msg", (errorMessage) => {
       return Alert.alert("Error", errorMessage);
     });
+    // listener of join room initialize =============================
     socket?.on(
       "join-room-initialize",
       async ({ members, msgs }: { members: RoomMember[]; msgs: Msg[] }) => {
@@ -78,9 +79,11 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
         setUserId(localUserId!);
         setMembers(members);
         setMessages(msgs);
-        serFetching(false);
       }
     );
+    // emit join room initialize ====================================
+    socket?.emit("join-room", { roomId: roomId });
+    // listener add msg =============================================
     socket?.on("add-msg", (msg: Msg) => {
       if (userid == msg.sender.id) {
         setMsgInput("");
@@ -89,11 +92,13 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
         return [msg, ...prev];
       });
     });
+    // listener remove msg ==========================================
     socket?.on("remove-msg", (id: string) => {
       setMessages((prev) => {
         return prev.filter((msg) => msg.id != id);
       });
     });
+    // listener update msg ==========================================
     socket?.on("update-msg", (updateMsg: UpdateMsg) => {
       setMessages((Prev) =>
         Prev.map((msg) => {
@@ -104,6 +109,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
         })
       );
     });
+    // listener add more msg ========================================
     socket?.on(
       "add-more-msg",
       ({ newMsgs, notify }: { newMsgs: Msg[]; notify?: string }) => {
@@ -115,6 +121,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
         }
       }
     );
+    // listener add member client side ==============================
     socket?.on(
       "add-member-cli",
       ({ newMembers }: { newMembers: RoomMember[] }) => {
@@ -123,6 +130,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
       }
     );
     return () => {
+      // when screen unmount close all the socket listener
       socket?.off("join-room-initialize");
       socket?.off("add-msg");
       socket?.off("remove-msg");
@@ -133,16 +141,24 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
     };
   }, [socket]);
 
+  // emit leave room to trigger leaver room process in server side
   useEffect(() => {
     return () => {
+      console.log("leave room");
       socket?.emit("leave-room");
     };
   }, []);
 
+  useEffect(() => {
+    if (!!members[0]) {
+      serFetching(false);
+    }
+  }, [members]);
+
   if (Platform.OS === "android") {
-    // NavigationBar.setBackgroundColorAsync(bg_LessDarkColor);
-    // NavigationBar.setBorderColorAsync(bg_DarkColor);
-    // NavigationBar.setButtonStyleAsync("light");
+    NavigationBar.setBackgroundColorAsync(bg_LessDarkColor);
+    NavigationBar.setBorderColorAsync(bg_DarkColor);
+    NavigationBar.setButtonStyleAsync("light");
   }
 
   return (
