@@ -189,9 +189,12 @@ const EditProfileScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <SafeAreaProvider>
       {Platform.OS === "ios" ? (
-        <SafeAreaView style={{ flex: 0, backgroundColor: bg_LessDarkColor }} />
+        <SafeAreaView
+          edges={["top"]}
+          style={{ flex: 0, backgroundColor: bg_LessDarkColor }}
+        />
       ) : null}
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView edges={["bottom"]} style={styles.safeArea}>
         <StatusBar
           backgroundColor={bg_LessDarkColor}
           barStyle="light-content"
