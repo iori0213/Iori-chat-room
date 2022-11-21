@@ -203,7 +203,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
             </View>
             <KeyboardAvoidingView
               style={styles.body}
-              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
             >
               <View style={styles.msgList}>
                 <FlatList
